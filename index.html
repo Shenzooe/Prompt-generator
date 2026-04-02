@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>婚禮商品情境圖 Prompt 產生器</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: #f5f4f0; padding: 2rem 1rem; color: #1a1a1a; }
+.container { max-width: 820px; margin: 0 auto; }
+h3 { font-size: 18px; font-weight: 500; margin-bottom: 1.25rem; }
+.badge { display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: 0; background: #e6f1fb; color: #185fa5; margin-left: 6px; vertical-align: middle; }
+.section-label { font-size: 11px; font-weight: 500; color: #888; text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 8px; }
+.card { background: #fff; border: 0.5px solid #e0ddd6; border-radius: 8px; padding: 1rem 1.25rem; margin-bottom: 1rem; }
+.row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 1rem; }
+.chip { display: inline-flex; align-items: center; gap: 6px; padding: 11px 20px; border: 0.5px solid #ccc; border-radius: 8px; font-size: 15px; cursor: pointer; background: #fff; color: #1a1a1a; transition: background 0.12s; user-select: none; white-space: nowrap; }
+.chip.active { background: #f0ede8; border-color: #999; font-weight: 500; }
+.color-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 8px; margin-bottom: 1rem; }
+.color-swatch { border-radius: 6px; padding: 9px 6px; text-align: center; cursor: pointer; border: 2px solid transparent; transition: border 0.15s; background: #fff; }
+.color-swatch.selected { border-color: #1a1a1a; }
+.swatch-dot { width: 26px; height: 26px; border-radius: 0; margin: 0 auto 5px; }
+.swatch-name { font-size: 11px; color: #888; line-height: 1.3; }
+.custom-row { display: flex; gap: 8px; align-items: center; margin-bottom: 10px; }
+.custom-row input[type=color] { width: 44px; height: 44px; padding: 0; border-radius: 8px; border: none; cursor: pointer; flex-shrink: 0; -webkit-appearance: none; appearance: none; overflow: hidden; }
+.custom-row input[type=text] { flex: 1; padding: 10px 14px; border: 0.5px solid #ccc; border-radius: 8px; font-size: 14px; outline: none; }
+.custom-row input[type=text]:focus { border-color: #999; }
+.prompt-box { background: #f5f4f0; border-radius: 6px; padding: 1rem; font-size: 13px; line-height: 1.8; color: #1a1a1a; white-space: pre-wrap; word-break: break-word; min-height: 110px; }
+.neg-box { background: #f5f4f0; border-radius: 6px; padding: 0.75rem 1rem; font-size: 12px; line-height: 1.7; color: #666; white-space: pre-wrap; word-break: break-word; }
+.copy-btn { margin-top: 8px; width: 100%; padding: 10px; font-size: 14px; cursor: pointer; background: #fff; border: 0.5px solid #ccc; border-radius: 6px; color: #1a1a1a; transition: background 0.12s; }
+.copy-btn:hover { background: #f0ede8; }
+.tabs { display: flex; gap: 0; margin-bottom: 1.25rem; border-bottom: 0.5px solid #e0ddd6; }
+.tab { padding: 8px 16px; font-size: 13px; cursor: pointer; border-bottom: 2px solid transparent; color: #888; white-space: nowrap; border-radius: 6px 6px 0 0; }
+.tab.active { color: #1a1a1a; border-bottom: 2px solid #1a1a1a; font-weight: 500; }
+.note { font-size: 12px; color: #888; padding: 6px 10px; background: #f5f4f0; border-radius: 0; margin-bottom: 1rem; }
+.series-block { margin-bottom: 1rem; }
+.series-title { font-size: 12px; font-weight: 500; color: #666; margin-bottom: 6px; }
+</style>
+</head>
+<body>
+<div class="container">
+<h3>婚禮商品情境圖 Prompt 產生器 <span class="badge">特寫版</span></h3>
+
+<div class="tabs">
+  <div class="tab active" onclick="switchTab('color')">配色</div>
+  <div class="tab" onclick="switchTab('product')">商品類型</div>
+  <div class="tab" onclick="switchTab('mood')">氛圍設定</div>
+  <div class="tab" onclick="switchTab('output')">輸出 Prompt</div>
+</div>
+
+<div id="tab-color">
+  <div class="section-label">選擇主色調（可多選，建議 1–3 色）</div>
+  <div class="color-grid" id="color-grid"></div>
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+  <div class="section-label" style="margin-bottom:0">自訂顏色</div>
+  <div style="display:flex;align-items:center;gap:12px;">
+    <span id="color-count" style="font-size:12px;color:#888">0 / 3 已選</span>
+    <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:#888">
+      <span>混合搭配</span>
+      <div id="mode-toggle" onclick="toggleColorMode()" style="width:40px;height:22px;border-radius:11px;background:#ccc;cursor:pointer;position:relative;transition:background 0.2s;flex-shrink:0">
+        <div id="mode-knob" style="width:18px;height:18px;border-radius:50%;background:#fff;position:absolute;top:2px;left:2px;transition:left 0.2s;box-shadow:0 1px 3px rgba(0,0,0,0.2)"></div>
+      </div>
+      <span>個別出圖</span>
+    </div>
+  </div>
+</div>
+<div class="section-label">自訂顏色</div>
+  <div class="custom-row">
+    <input type="color" id="custom-picker" value="#c8a8b8">
+    <input type="text" id="custom-text" placeholder="輸入顏色名稱（英文最佳），如：mauve, dusty teal">
+    <button class="chip" onclick="addCustom()">+ 加入</button>
+  </div>
+  <div id="custom-chips" class="row"></div>
+</div>
+
+<div id="tab-product" style="display:none">
+  <div class="note">針對商品特寫圖，場景描述會聚焦在布料質感與裝飾細節，不出現人物。</div>
+  <div class="section-label">主要商品（可多選）</div>
+  <div class="row" id="product-chips"></div>
+  <div class="section-label" style="margin-top:0.75rem">特寫重點</div>
+  <div class="row" id="focus-chips"></div>
+  <div id="focus-hint" style="font-size:11px;color:#888;margin-top:-6px;margin-bottom:8px;display:none"></div>
+</div>
+
+<div id="tab-mood" style="display:none">
+  <div class="section-label">整體風格</div>
+  <div class="row" id="style-chips"></div>
+  <div class="section-label" style="margin-top:0.75rem">燈光氛圍</div>
+  <div class="row" id="light-chips"></div>
+  <div class="section-label" style="margin-top:0.75rem">質感關鍵字（可多選）</div>
+  <div class="row" id="texture-chips"></div>
+</div>
+
+<div id="tab-output" style="display:none">
+  <div class="section-label">主 Prompt</div>
+  <div class="card">
+    <div class="prompt-box" id="prompt-output">（請先在前幾步選擇設定）</div>
+    <button class="copy-btn" onclick="copyText('prompt-output', this)">複製 Prompt</button>
+  </div>
+  <div class="section-label">Negative Prompt</div>
+  <div class="card" style="padding:0.75rem 1.25rem">
+    <div class="neg-box" id="neg-output"></div>
+    <button class="copy-btn" onclick="copyText('neg-output', this)">複製 Negative Prompt</button>
+  </div>
+  <div id="series-section" style="display:none">
+    <div class="section-label" style="margin-top:0.5rem">批量系列 Prompt（每色獨立）</div>
+    <div id="series-blocks"></div>
+  </div>
+</div>
+</div>
+
+<script>
+const COLORS = [
+  { name: "White", hex: "#FFFFFF", desc: "pure white, crisp white" },
+  { name: "Yellow", hex: "#FFD84D", desc: "bright yellow, sunny yellow" },
+  { name: "Orange", hex: "#F4874B", desc: "warm orange, vibrant orange" },
+  { name: "Red", hex: "#D93B3B", desc: "bold red, classic red" },
+  { name: "Green", hex: "#1A8C4E", desc: "rich green, emerald green" },
+  { name: "Blue", hex: "#3A5BA0", desc: "royal blue, classic blue" },
+  { name: "Pink", hex: "#FFBBCC", desc: "soft pink, baby pink, blush" },
+  { name: "Purple", hex: "#C9A8E0", desc: "soft purple, light lavender" },
+  { name: "Ivory", hex: "#FAFAE8", desc: "ivory, warm cream, off-white" },
+  { name: "Natural", hex: "#C8A87A", desc: "natural tan, warm beige, burlap" },
+  { name: "Gold", hex: "#C8A020", desc: "metallic gold, antique gold, warm brass" },
+  { name: "Silver & Gray", hex: "#D0D4DC", desc: "silver, soft gray, metallic silver" },
+  { name: "Black", hex: "#111111", desc: "classic black, deep black" },
+  { name: "French Toile", hex: "#DDEAF7", desc: "French toile, blue and white floral pattern, delicate porcelain print" },
+  { name: "Clear", hex: "#E8F0F5", desc: "clear acrylic and glass tableware, crystal-clear charger plates, transparent candle holders, gold-rimmed glass decor, reflective surfaces" },
+  { name: "Multicolor", hex: "gradient", desc: "multicolor, vibrant mixed colors, rainbow palette" },
+];
+
+const PRODUCTS = [
+  { label: "🪑 全桌佈置", en: "full table setting with linens", focus: "fabric drape and texture" },
+  { label: "🪑 桌巾 Tablecloth", en: "tablecloth", focus: "fabric drape and texture" },
+  { label: "🪑 桌裙 Table Skirt", en: "table skirt", focus: "ruffled hem and fabric drape" },
+  { label: "🪑 桌旗 Table Runner", en: "table runner", focus: "fabric texture and centerpiece framing" },
+  { label: "🪑 桌面覆蓋 Table Overlay", en: "table overlay", focus: "layered fabric and sheer texture" },
+  { label: "🪑 餐巾 Cloth Napkin", en: "cloth napkin", focus: "folded linen detail and texture" },
+  { label: "🪑 椅套 Chair Cover", en: "chair cover", focus: "fitted fabric silhouette and drape" },
+  { label: "🪑 椅結 Chair Sash", en: "chair sash with bow", focus: "bow knot detail and ribbon texture" },
+  { label: "🪑 椅墊 Chiavari Cushion", en: "chiavari chair cushion", focus: "cushion texture and chair styling" },
+  { label: "🕯️ 燭台 Candelabra", en: "candelabra and candle holders", focus: "metal detail and candlelight glow" },
+  { label: "🌸 花藝架 Centerpiece Stand", en: "centerpiece stand with florals", focus: "height, floral arrangement and table depth" },
+  { label: "🌸 花瓶 Floral Vase", en: "floral vase arrangement", focus: "glass or metal vase and floral detail" },
+  { label: "🍽️ 底盤 Charger Plate", en: "charger plates and place settings", focus: "plate rim detail and table layering" },
+  { label: "🎂 蛋糕桌 Cake Stand", en: "cake stand and dessert display", focus: "tiered stand styling and dessert arrangement" },
+  { label: "🎨 背景布 Backdrop", en: "backdrop drape", focus: "fabric texture and backdrop fullness" },
+  { label: "🎨 天花板布幔 Ceiling Drape", en: "ceiling drape installation", focus: "flowing fabric canopy from above" },
+  { label: "🌺 花牆 Flower Wall Panel", en: "flower wall panel", focus: "floral density and petal texture" },
+  { label: "🌺 人造花束 Floral Bouquet", en: "artificial floral bouquet arrangement", focus: "petal detail and floral composition" },
+  { label: "🌿 花環藤蔓 Floral Garland", en: "floral garland and greenery vine", focus: "trailing greenery and floral accent" },
+  { label: "⛪ 走道地毯 Aisle Runner", en: "aisle runner", focus: "fabric texture and aisle perspective" },
+  { label: "⛪ 婚禮拱門 Wedding Arch", en: "wedding arch with draping", focus: "arch silhouette and floral or fabric accent" },
+  { label: "🎈 氣球拱門 Balloon Garland", en: "balloon garland arch", focus: "balloon cluster and color arrangement" },
+  { label: "💡 串燈 String Lights", en: "string lights decor", focus: "warm light bokeh and ambiance" },
+  { label: "💡 LED 字母 Marquee Letters", en: "LED marquee letters", focus: "illuminated lettering and ambient glow" },
+];
+
+const FOCUS = [
+  "布料質感與垂墜感", "刺繡與蕾絲細節", "折疊造型特寫",
+  "花藝與布料搭配", "燭台與餐具點綴", "整體桌景構圖",
+];
+
+const STYLES = [
+  "Romantic & soft", "Modern minimalist", "Rustic bohemian",
+  "Luxe glamour", "Garden whimsical", "Timeless classic",
+];
+
+const LIGHTS = [
+  "soft natural daylight", "warm golden hour", "candlelight glow", "studio soft box",
+];
+
+const TEXTURES = [
+  "silky smooth", "delicate lace overlay", "soft matte finish",
+  "subtle sheen", "flowing chiffon folds", "crisp linen texture",
+];
+
+let state = {
+  colors: [],
+  customColors: [],
+  colorMode: "mix",
+  products: ["🪑 全桌佈置"],
+  focus: [],
+  style: "Romantic & soft",
+  light: "soft natural daylight",
+  textures: [],
+};
+
+const ANGLE_DESC = "camera angle: 45-degree diagonal view from slightly above, never overhead, never straight-on. Close-up table-level perspective showing depth and fabric drape. Fixed consistent framing.";
+
+function renderColorGrid() {
+  document.getElementById("color-grid").innerHTML = COLORS.map((c, i) => `
+    <div class="color-swatch ${state.colors.includes(c.desc) ? 'selected' : ''}" onclick="toggleColor(${i})">
+      <div class="swatch-dot" style="${c.hex === 'gradient' ? 'background: linear-gradient(135deg, #ffb3ba, #ffdfba, #ffffba, #baffc9, #bae1ff, #d4baff)' : 'background:' + c.hex}"></div>
+      <div class="swatch-name">${c.name}</div>
+    </div>
+  `).join('');
+}
+
+function toggleColor(i) {
+  const d = COLORS[i].desc;
+  if (state.colors.includes(d)) {
+    state.colors = state.colors.filter(x => x !== d);
+  } else {
+    const total = state.colors.length + state.customColors.length;
+    if (total >= 3) return;
+    state.colors.push(d);
+  }
+  renderColorGrid();
+  updateColorCount();
+}
+
+function addCustom() {
+  const t = document.getElementById("custom-text").value.trim();
+  if (!t) return;
+  const total = state.colors.length + state.customColors.length;
+  if (total >= 3) return;
+  state.customColors.push(t);
+  document.getElementById("custom-text").value = "";
+  renderCustomChips();
+  updateColorCount();
+}
+
+function renderCustomChips() {
+  const el = document.getElementById("custom-chips");
+  el.innerHTML = "";
+  state.customColors.forEach(function(c, i) {
+    const div = document.createElement("div");
+    div.className = "chip active";
+    div.textContent = c + " ";
+    const x = document.createElement("span");
+    x.textContent = "×";
+    x.style.cssText = "cursor:pointer;margin-left:3px;opacity:0.5";
+    x.addEventListener("click", function(e) { e.stopPropagation(); removeCustom(i); });
+    div.appendChild(x);
+    el.appendChild(div);
+  });
+}
+
+function removeCustom(i) { state.customColors.splice(i, 1); renderCustomChips(); updateColorCount(); }
+
+function updateColorCount() {
+  const total = state.colors.length + state.customColors.length;
+  const el = document.getElementById("color-count");
+  if (el) {
+    el.textContent = total + " / 3 已選";
+    el.style.color = total >= 3 ? "#c0392b" : "#888";
+  }
+  renderColorGrid();
+}
+
+function renderChips(id, items, key, multi=true) {
+  document.getElementById(id).innerHTML = items.map(item => `
+    <div class="chip ${isActive(key, item, multi) ? 'active' : ''}" onclick="toggleChip('${key}','${item.replace(/'/g,"\\'")}',${multi})">${item}</div>
+  `).join('');
+}
+
+function isActive(k, v, multi) {
+  return multi ? (Array.isArray(state[k]) && state[k].includes(v)) : state[k] === v;
+}
+
+function toggleChip(k, v, multi) {
+  if (multi) {
+    state[k] = state[k].includes(v) ? state[k].filter(x => x !== v) : [...state[k], v];
+  } else { state[k] = v; }
+  renderAll();
+}
+
+function buildPrompt(colorOverride) {
+  const allColors = colorOverride ? [colorOverride] : [...state.colors, ...state.customColors];
+  let colorStr;
+  if (colorOverride) {
+    colorStr = colorOverride;
+  } else if (allColors.length === 0) {
+    colorStr = "neutral warm tones";
+  } else if (allColors.length === 1) {
+    colorStr = allColors[0];
+  } else if (state.colorMode === "mix") {
+    const primary = "primary color: " + allColors[0];
+    const accents = allColors.slice(1).map(function(c, i) {
+      return (i === 0 ? "accent color: " : "secondary accent: ") + c;
+    });
+    colorStr = [primary, ...accents].join(", ");
+  } else {
+    colorStr = allColors[0];
+  }
+  const prodList = state.products.map(p => {
+    const found = PRODUCTS.find(x => x.label === p);
+    return found ? found.en : p;
+  }).join(", ") || "full table setting with linens";
+  // Auto-use product default focus if none selected
+  let resolvedFocus = state.focus;
+  if (resolvedFocus.length === 0 && state.products.length > 0) {
+    const firstProduct = PRODUCTS.find(x => x.label === state.products[0]);
+    if (firstProduct) resolvedFocus = [firstProduct.focus];
+  }
+  const focusList = resolvedFocus.map(f => {
+    const map = {
+      "布料質感與垂墜感": "fabric drape and texture",
+      "刺繡與蕾絲細節": "embroidery and lace detail",
+      "折疊造型特寫": "folded linen closeup",
+      "花藝與布料搭配": "floral and linen pairing",
+      "燭台與餐具點綴": "candlestick and tableware accents",
+      "整體桌景構圖": "full table composition",
+    };
+    return map[f] || f;
+  }).join(", ");
+  const textureStr = state.textures.length > 0 ? state.textures.join(", ") + ", " : "";
+
+  const styleMap = {
+    "Romantic & soft": "soft romantic editorial style, dreamy pastel mood, gentle diffused light, delicate and airy atmosphere",
+    "Modern minimalist": "modern minimalist editorial style, clean lines, restrained palette, negative space",
+    "Rustic bohemian": "rustic bohemian style, organic textures, warm earthy tones, relaxed layered styling",
+    "Luxe glamour": "luxurious glamour style, rich textures, opulent details, high-end editorial mood",
+    "Garden whimsical": "whimsical garden party style, fresh florals, light and breezy, romantic outdoor feel",
+    "Timeless classic": "timeless classic style, elegant symmetry, refined and polished, traditional wedding aesthetic",
+  };
+  const styleDesc = styleMap[state.style] || state.style + " aesthetic";
+  return `${styleDesc}. ${ANGLE_DESC}. Wedding party ${prodList} styled product photography, highlighting ${focusList}. Color palette: ${colorStr}. ${textureStr}Lighting: ${state.light}, soft and even. No humans, no text, no logos. Highly detailed fabric texture, photorealistic, sharp focus on material quality.`;
+}
+
+function generatePrompt() {
+  const prompt = buildPrompt(null);
+  const neg = "blurry, low quality, people, hands, face, body, distorted fabric, incorrect colors, oversaturated, harsh shadows, watermark, text, logo, cartoon, painting, illustration, grainy";
+  document.getElementById("prompt-output").textContent = prompt;
+  document.getElementById("neg-output").textContent = neg;
+
+  const allColors = [...state.colors, ...state.customColors];
+  const seriesSection = document.getElementById("series-section");
+  const seriesBlocks = document.getElementById("series-blocks");
+  if (allColors.length > 1) {
+    seriesSection.style.display = "block";
+    seriesBlocks.innerHTML = '';
+    allColors.forEach((c, i) => {
+      const promptText = buildPrompt(c);
+      const block = document.createElement('div');
+      block.className = 'series-block card';
+      const title = document.createElement('div');
+      title.className = 'series-title';
+      title.textContent = '系列 ' + (i+1) + ' — ' + c;
+      const box = document.createElement('div');
+      box.className = 'prompt-box';
+      box.style.cssText = 'min-height:80px;font-size:12px;border-radius:0';
+      box.textContent = promptText;
+      const btn = document.createElement('button');
+      btn.className = 'copy-btn';
+      btn.textContent = '複製';
+      btn.addEventListener('click', () => {
+        fallbackCopy(promptText);
+        btn.textContent = '已複製！';
+        setTimeout(() => btn.textContent = '複製', 1500);
+      });
+      block.appendChild(title);
+      block.appendChild(box);
+      block.appendChild(btn);
+      seriesBlocks.appendChild(block);
+    });
+  } else {
+    seriesSection.style.display = "none";
+  }
+}
+
+function copyText(id, btn) {
+  const text = document.getElementById(id).textContent;
+  fallbackCopy(text);
+  const orig = btn.textContent;
+  btn.textContent = "已複製！";
+  setTimeout(() => btn.textContent = orig, 1500);
+}
+
+function fallbackCopy(text) {
+  const ta = document.createElement('textarea');
+  ta.value = text;
+  ta.style.cssText = 'position:fixed;top:-9999px;left:-9999px;opacity:0';
+  document.body.appendChild(ta);
+  ta.focus();
+  ta.select();
+  try { document.execCommand('copy'); } catch(e) {}
+  document.body.removeChild(ta);
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(text).catch(()=>{});
+  }
+}
+
+function copyDirect(btn) {
+  const text = btn.previousElementSibling.textContent;
+  fallbackCopy(text);
+  btn.textContent = "已複製！";
+  setTimeout(() => btn.textContent = "複製", 1500);
+}
+
+function switchTab(name) {
+  ["color","product","mood","output"].forEach((t, i) => {
+    document.getElementById("tab-"+t).style.display = t === name ? "block" : "none";
+    document.querySelectorAll(".tab")[i].classList.toggle("active", t === name);
+  });
+  if (name === "output") generatePrompt();
+}
+
+function toggleColorMode() {
+  state.colorMode = state.colorMode === "mix" ? "separate" : "mix";
+  const toggle = document.getElementById("mode-toggle");
+  const knob = document.getElementById("mode-knob");
+  if (state.colorMode === "separate") {
+    toggle.style.background = "#1a1a1a";
+    knob.style.left = "20px";
+  } else {
+    toggle.style.background = "#ccc";
+    knob.style.left = "2px";
+  }
+}
+
+function renderProductChips() {
+  const el = document.getElementById("product-chips");
+  el.innerHTML = "";
+  PRODUCTS.forEach(function(p) {
+    const div = document.createElement("div");
+    div.className = "chip" + (state.products.includes(p.label) ? " active" : "");
+    div.textContent = p.label;
+    div.addEventListener("click", function() { toggleProduct(p.label); });
+    el.appendChild(div);
+  });
+}
+function toggleProduct(label) {
+  if (state.products.includes(label)) {
+    state.products = state.products.filter(x => x !== label);
+  } else {
+    state.products.push(label);
+  }
+  renderAll();
+}
+
+function renderAll() {
+  renderColorGrid();
+  renderProductChips();
+  renderChips("focus-chips", FOCUS, "focus", true);
+  renderChips("style-chips", STYLES, "style", false);
+  renderChips("light-chips", LIGHTS, "light", false);
+  renderChips("texture-chips", TEXTURES, "textures", true);
+  renderCustomChips();
+  const hint = document.getElementById("focus-hint");
+  if (hint) {
+    if (state.products.length > 0 && state.focus.length === 0) {
+      const first = PRODUCTS.find(p => p.label === state.products[0]);
+      hint.textContent = first ? "auto focus: " + first.focus : "";
+      hint.style.display = "block";
+    } else {
+      hint.style.display = "none";
+    }
+  }
+}
+
+renderAll();
+</script>
+</body>
+</html>
