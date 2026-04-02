@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EFMT Product Image Generator</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f5f5f3; color: #1a1a1a; padding: 20px; }
+.app { max-width: 760px; margin: 0 auto; display: flex; flex-direction: column; gap: 14px; }
+h1 { font-size: 16px; font-weight: 600; padding: 12px 0 4px; }
+.lbl { font-size: 11px; font-weight: 500; color: #888; text-transform: uppercase; letter-spacing: .08em; margin-bottom: 6px; }
+.card { background: #fff; border: 0.5px solid #e0e0de; border-radius: 12px; padding: 1rem 1.25rem; }
+.row { display: flex; gap: 6px; flex-wrap: wrap; }
+.nb { font-size: 13px; padding: 5px 11px; border-radius: 8px; border: 0.5px solid #ccc; background: transparent; cursor: pointer; color: #1a1a1a; transition: all .12s; }
+.nb:hover { background: #f0f0ee; }
+.nb.on { background: #1a1a1a; color: #fff; border-color: #1a1a1a; }
+.mg { display: flex; gap: 8px; flex-wrap: wrap; }
+.mb { display: flex; flex-direction: column; align-items: center; gap: 5px; cursor: pointer; padding: 6px 8px; border-radius: 8px; border: 0.5px solid #ccc; background: transparent; transition: all .12s; min-width: 72px; max-width: 88px; }
+.mb:hover { background: #f0f0ee; border-color: #aaa; }
+.mb.on { border: 2px solid #1a1a1a; background: #f0f0ee; }
+.mt { width: 56px; height: 56px; border-radius: 6px; object-fit: cover; border: 0.5px solid #ddd; }
+.ml { font-size: 10px; color: #888; text-align: center; line-height: 1.2; max-width: 80px; word-break: break-word; }
+.mb.on .ml { color: #1a1a1a; font-weight: 500; }
+.g2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.g3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+.ob { font-size: 13px; padding: 7px 10px; border-radius: 8px; border: 0.5px solid #ccc; background: transparent; cursor: pointer; color: #1a1a1a; text-align: left; transition: all .12s; }
+.ob:hover { background: #f0f0ee; }
+.ob.on { background: #1a1a1a; color: #fff; border-color: #1a1a1a; }
+.cg { display: grid; grid-template-columns: repeat(auto-fill, minmax(62px, 1fr)); gap: 5px; }
+.cs { display: flex; flex-direction: column; align-items: center; gap: 3px; cursor: pointer; padding: 5px 3px; border-radius: 8px; border: 0.5px solid transparent; transition: all .12s; }
+.cs:hover { border-color: #ccc; background: #f0f0ee; }
+.cs.on { border-color: #1a1a1a; background: #f0f0ee; }
+.sc { width: 30px; height: 30px; border-radius: 50%; border: 0.5px solid #ddd; }
+.sn { font-size: 10px; color: #888; text-align: center; line-height: 1.2; }
+.gb { width: 100%; padding: 12px; background: #1a1a1a; color: #fff; border: none; border-radius: 12px; font-size: 14px; font-weight: 500; cursor: pointer; }
+.gb:hover { opacity: .85; }
+.out { background: #f5f5f3; border: 0.5px solid #e0e0de; border-radius: 8px; padding: 12px; font-size: 13px; line-height: 1.65; white-space: pre-wrap; word-break: break-word; margin-bottom: 8px; }
+.cp { font-size: 12px; padding: 5px 14px; border-radius: 8px; border: 0.5px solid #ccc; background: #fff; cursor: pointer; color: #666; float: right; }
+.cp:hover { color: #1a1a1a; }
+.tag { display: inline-flex; align-items: center; font-size: 11px; padding: 2px 8px; border-radius: 20px; background: #f0f0ee; border: 0.5px solid #ddd; color: #888; }
+.tag.on { background: #1a1a1a; color: #fff; border-color: #1a1a1a; }
+.cr { font-size: 12px; margin-top: 8px; display: flex; gap: 4px; align-items: center; flex-wrap: wrap; }
+.ht { font-size: 11px; color: #aaa; margin-top: 6px; clear: both; }
+#oa { display: none; }
+</style>
+</head>
+<body>
+<div class="app">
+<h1>EFMT Product Image Prompt Generator</h1>
+<div class="card">
+  <div class="lbl">1. 選擇產品類別</div>
+  <div class="row" id="cb"></div>
+  <div id="s1a" style="margin-top:10px;display:none">
+    <div class="lbl" style="margin-bottom:5px">子類別</div>
+    <div class="row" id="s1b"></div>
+  </div>
+  <div id="s2a" style="margin-top:10px;display:none">
+    <div class="lbl" style="margin-bottom:5px">材質</div>
+    <div class="mg" id="s2b"></div>
+  </div>
+  <div id="cr" class="cr" style="display:none"></div>
+</div>
+<div class="card">
+  <div class="lbl">2. 桌型</div>
+  <div class="g3">
+    <button class="ob on" data-v="round table">圓桌</button>
+    <button class="ob" data-v="square table">方桌</button>
+    <button class="ob" data-v="rectangular banquet table">長桌</button>
+  </div>
+</div>
+<div class="card">
+  <div class="lbl">3. 顏色</div>
+  <div class="cg" id="cg"></div>
+</div>
+<div class="card">
+  <div class="lbl">4. 風格</div>
+  <div class="g2" id="stb">
+    <button class="ob on" data-v="romantic">Romantic &amp; Soft</button>
+    <button class="ob" data-v="minimalist">Modern Minimalist</button>
+    <button class="ob" data-v="bohemian">Rustic Bohemian</button>
+    <button class="ob" data-v="glamour">Luxe Glamour</button>
+    <button class="ob" data-v="garden">Garden Whimsical</button>
+    <button class="ob" data-v="classic">Timeless Classic</button>
+  </div>
+</div>
+<button class="gb" id="gb">生成 Prompt</button>
+<div id="oa">
+  <div class="card">
+    <div class="lbl">Prompt — 複製貼入 Nano Banana</div>
+    <div class="out" id="po"></div>
+    <button class="cp" id="cpb">Copy</button>
+    <p class="ht">已包含 --no negative prompt</p>
+  </div>
+</div>
+</div>
+<script>
+var IMGS = {"polyester": "data:image/webp;base64,UklGRogDAABXRUJQVlA4IHwDAADQFACdASpQAFAAPpFEnEslo6KhpTgJ6LASCWkADq0W4zR2DGndaL3k6cF7mGvTPDi90t7fGAmtIDbXt9LhWi9haZpx85L4GESUIto8CEq8MYGD4HkDyjuOt7R0wq2mVtC07xTMz3tk5M2kPUTj0c+nERuN0UMwCmXC0g4oJ+K7Q+BGl0u6HswLBRsjy5e/b6nuZgmT1e3++X+Q5NfZvRH93hJt279SeB6B9CInHorgAP79f8utMo3qGF8mwo4SnXWWkBNwYim5Anw9+uFKnsjgUGdd/+8JK3mtoVuuZBy8Dko9jGVvRhu3g3DerhNCPtKtRpxx81KOmH1oclAWe3z2hGTyUXiOkpsKVKr6IkXNT6PxDAbxh0TQcGO9EXNpVJIJoEcxIStjMijg0Beadn7v/MpFRWRjdedtFrMzr4v2IWnd/lSpiWb+yHaFiLlOB5IEsf7PjXaoK2PYgiOHUyTR//zgWi9zD34LdHOuk4sfmxiQqkVRZ8EPfvH9B+GGLnchO/JT+q5OBsYACSc3PlQt7+7RuY4kWpNZFA79aT2xwiuPAogCjzMhTvUZMEem3yPN+kze4MVfnGQ8FUJm3W4d+q4gc4zj2l/J8cPE1f+PqNKG9FLdicyyJBd03CHeADa0nSe5vWfLEt2LDHLvx10lmHMvGzqxYhitU4azd7bReolX9qi6+vgz9YRcsR8r7UvtwHwqjbRqdFnyDuBMhMxUZ4s0pWAXBiZmKhh+PJuSKJvgdGUrfbM08Y5ZOgUeuxUj5M9ER8W9udteeFt4oXE6BztWeDd9scegSvEnlxhkofQmj8t6PjdnIEZLLDcJgq867ICLooJN8rTMecCQ7rxKdGysIgASntg4dekKaO+VUJGzslkTN5cAmRLed+GZzc9+7kW7xmpfZqHHxuonAW/QmzDj1ashP1VNcGb+hc1g/HPnIqvDhHxcH5v9HjGEoZESRm3UAzxosWS74v3V82N/0/DQr/s7cG95Xd7x21zrpLak3vjzhOukkP3Lx3UsKjhY/uDXoxzOnq7yHKI0EC4RQLKtREhovQ3W/wzd+R1uYL/SXQbCpW9cmvHJq1RM6igk6xrX02GoiCocQk29w82rwZvYefiFpk9pYNzr1cijGQG90LNwcUdIcNqkpRtFYGeecc/hBXKs/j3wtGOiJN4SXGNqNxBaevApMAAA", "scuba": "data:image/webp;base64,UklGRkAFAABXRUJQVlA4IDQFAABwFwCdASpQAFAAPpE8mUiloyIiJnZvMLASCUAX1vmJxdgHtC4B/d6VH/VbvTnvfOq30DekLRYax6qDCmvHMjuLpyqwZva1COlMZWFRy30L36nE0kxWEXDyOBSNXhk+xkHSCAvmOShFcEOugIBj8V+9ZdQyy3sOJP38ITfPboVzlROipR6pX2JUVbMqT2XnfUf3fOvRa1LKcmeo+clABYEgh6c3tr0XjfjGj6A5I1Eew4y2nsUTrQLTIiJs9PtJMBrnq7yAAN1tm/QWZwF2WlJACFMYVs0v/5gmYqKt2b//iG4miesiNP4wTKgMvGkGpU2ADRMzt3Jn3klsERL9UAu6pz8vy+FaPI5a2lMSmaffzTQYAyi7qUEIX5eGwR/afpFFI2yVrWiIpp9/Psxz9nJvpKb2kIvE3hBqPKNpN64ByeY0/q+yPDIzQkWsKE/OMjeCa+cPUhA5YG3oo9A6AOjVOj8Y0QGEJ+Pi0uWNEWfeDhdb7JhVWC1dmnpophLqgmxKJWhZfPfUdkmwTSqhEYxBt0mqRWM1WLLP8At8CneRAKmxQVC9b7vBCYpM4/sPqHyknvFSG4QJI/ubP6NNdMbVc3mMNbHG9QVYCxMHAQw6pa/GACxVRXlEKm6UlF2bv8/X4Q+gyW6fCsjWNRX5wijAxP+Q2lZBhb3fcTBYWIsdxt582tTPqn3HJVhyRVj5fWRMS2q3etOLkK0pcfQ7mF37dVXaPhvqVlW381IOuNlfBQdohrmicNUEyNUhhAFkvAiKQlTsUcWM1kLyf760pUB5vmXWkE05vHjzsHbYtpyiBU8DtWtyuSv4GE8yGFNE4gI8/9NythXHOTA93g6BeK2GkpWiesxrz87sce6E71/y+0ajaYaW6ktM56t52ThouNiZU13C984cjXZzgJKKHysVdnXbimSQu6E+C68uWMr3hrj17/esjC1rc5ywtdBzmElB2heDDaQQ5vHGdkdua8SCarRu5+KdvHrdz8YVv70q0weOQGgeJCj6tvadnZtmHFSTsHWcQX3HJgw9Qr49Ljt5Nfcc9r5cFk/RN9dW6Z7Lv4e5ZSwneQ7lphDZ3e4AlS3+6Jc2HoEcaENjsD81qOGcCBz2vENcqMIyici9nrfhtfvjCJ9ZhI9B0XQXYlPjw2FU55rHGKUUBKLLrttg2v03aJUyYyGPgzt12GKp3mbIeZYMQLjPgbOSir7MjdUiYr3Hzj0ZHdXu8DAAxww0ujc0Mm8+F54wZ0C7TiNv10qpXf/r5W0e4gZY04yl0mCg+MwI4isvIJUO0UmTDkLz9shbn3wrPQugwEUn1//aFg4d4OL0Ff724Rks2aijuzNweK8yRy1/6fv292Ogh6k2f3qjsjJVfzeJvjy28ynmk/PXgc9K1Fb8HVrBLSKbuD2ZogcpTcUj52c9ohWtHad3FU2r19AlNEyhXoWgvP06fq5n62JwRZhN1Glt0rGsejLEFwm3H5JV/mgKXw/hn4Mkibk7MtOJfpBoA6EL47kSDFKgewzwIb9xzd5sa5BqdcalOma9A7isTyp4GdvssKObWzVvdcotF4nRl84wk428t7x/9JQxqeDwemcQ1gNdbE4mVzlBaf4YUoiz2M3VZwwvJvP+CZf87Ua8XICvyRS4Pkw3E5yL/AZDyYZP0IoogzxGMQU3Xa4F5zHXucSFy0MjrmByWNUq1qaoRXAoxzRxFMa1h/D4N6RW8+zE6Oh1SIcU9m7SDD7ZKikR+USc7zqkNS3Ax6vMtHFyy/m8kyUJVLe2shfcYAA=", "satin": "data:image/webp;base64,UklGRmYDAABXRUJQVlA4IFoDAABQEwCdASpQAFAAPpFCmkqlo6IhpTQMMLASCUAXZoCqNBzMMdyChUdJN8y0cbr/pRGLwvHeKeK2yuR34DM3pnXegK83eVuawV7AnlFoPfh+uSzPuudKizq+mbd1vHJvShsbiCJ2DLGZ9/YybNhVdaxh7xbteM/6rBbOmMfIp994Uf7N7b8Ukn//gQfk2J2PXctNXtsW85VfQma1Zf3021lC+ygwAP76sRzAgXdrRL1pEofzcddTdt4KdXyb/AfbxWTygTqtGCKw792aNkr3q0vTPcuBWyThRMmwtBkDmVIm3U4NGduHNEDRosN9wz/a82Ic+kTaku1J64PksSabSu5zcDk6jhGrIurmBFKpmsiFj1Elc7GJSMMiqR8lqNnRPgFmLPqs6p4g8EanogdUCXTwls4ensVKeL+hrVjGMYPM2SlUrhYiANs6TdPpqMeHI/7VvwZiizm95KHfssxbMel/b8Tqfgxnzc7XbCEromT6aZR1sHGOVJI0TQ0COWjbt+fEFFRwzHOsEgD2wNeQOAzlRFcWnj3sCT+LMGL6c+WH79L0GRxSpU2OyghIO2uXy+Ra/ZeCox3M8mcQ8zVXBf6P2nYxLxzK1EXFuTiODvE6mDeRQJSBuHzeSki2r+h2f+h/msMUH3CQunYF4plkZau3iRW8dxIfoMu/vFsTUk7miijt+FkTeN3OiSSJQp/mupADmJ5vFtLV+mAAzVtXnzXgv5h/Vg6LOYhPNyBcs+MX2dPXx6XxR6AgTdjPZKiEV/SZd6/K+Q0Wph3kzuvAOL0otoW4jZ+M0EPq3kgNJrqaRqbwSRb8d7fDATP4FdJtA/RZRAfqmQN/IwzyS9Nd5pZ69TkIGL7shIPn3xyV6qT6gFxHhEBuk83/gmR+pow4IuFxr00yKWIYoseNyM0gfmb0BU7ehZvTLBISs50kJMfLzCiLlt5gPS8kqn5bKBYgaPwKNpEs5ETQBV3YeDsSlLY7rMUu8aiDiwX1uX45QeTWpQuhaqZY+aj0FVbBORQP1GrcLNsSxtdWFIF/0eV/l4/+pNmmTyaR5fTpK5qQbu9fd0UUlbRTWfcWTSMRRENP0hzyVEEfBmunzZSLzNRUVEgWu4tJrRYkLn4i0nuaEdSoDsLM8zXX28vgAAA=", "spandex": "data:image/webp;base64,UklGRvICAABXRUJQVlA4IOYCAABQFQCdASpQAFAAPpE6l0gloyIhLhXckLASCWkA1je04rM5v7g1OFVLmz75x0lgRPzwUgqScLJS08QRoti4j8yc1Kv/3H/pBN8i277WEmdRzkGj6QknbLxF6MZt4U1LMfGh03qJ4OJlaLef2CKEiGDOIZ0tFW2GAAdceGfsaBt1kJvreFl5KUnWKCDGjQkjmbjKE5g7WO9233vK7LMJY+QMNzR7qOkeBMnyx91K+peu26TrAAD+/ZsMnGZfBxJ2EV4zMLLnWHSLTtKiEehw2NkbPcEQfqAFbbr6YXP+AJ+y32tr98Wa+86dmgwp57Ptwj3/lFnTNR04Ps+ML2x2BupY+CM4fj8IMevkgdnQ7GsEFMGuuAjdFzHykMLSumEv29C7z+PEwWnCEclvuMm2JfrqA+F/xVPK0UtQAGNiXmdWt4ZLNLudLPQSCO/Cxhn2ArrnLF8bk0AXiwVHRnH31gYZTbbzPDzJbE6j4bqR4dDlAo2M4PA9s1UYu1KBnw4UtV4/wQKL2+gJFG9uAbiJ1p+kbg72l3OWbRwHSA1lYQWK1Z/bdgTxP2hnvu32DYtDOoUSZFghtY0AqEkvUXea5H11JffoRgoLmrGqU8fAjaQ7tkJD9daRNQktmMkFIIXyUW85eObBiuyT2GPnwui6CfKwIIydN2LT5DbrulLL8T3G0MXMTZkajkLZgmjOj+DKB8DAf8AmUpcTAdn2KH/2IeNxHC9vqpdkEhR9x5HUDcLtAfKJSQ8R1Ml1Jkxw1DbgEUCO6Sgaz7GntNhoMgZdHu7qG2CeItzvcf2MNAVtQeVdgRN2mrmRQ7hgJWsTBbQV8xt1xyV6iQFWIdtwpmbGVmLlxeaeVzm48Az345DEiVxVbO6LUyB7liqPyYMqmfgSkMFCZ9fCcLbBnKGNiilcj1Ejxvq+lFxrMhpEUoeugJi0tEipI1zBK4q8VdoobvYquO0y1eLSUUNIJyCVGs90vnFR98AAAAAA", "sequin": "data:image/webp;base64,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", "velvet": "data:image/webp;base64,UklGRmgGAABXRUJQVlA4IFwGAAAwGwCdASpQAFAAPpFCmUmlo6IhJ7qsMLASCWkAzvOoLu5/LeAvjihs4J+uLUOrpskZ0U47V+N6P7j6hZdhJfOEPtSgLFvYJhAIGo3/Y0qDM5PZJH2PLQrM++5gd3+oSvpWYZ11qKPwDP+0k78ej42fBD90dU8JJ7WgGe6uR+zh4jummEwzuPdgZJnzdWLFDR6+Y/oIM2H6+uuOI2J8a29DkseJ0zx5Xk1XN3OCtuQ7uTbxkN+YYWu4vZcFJNEPJse4Y0Hw2Nd2F7lVThJlA4OdnRsIFsIkDi/lRdw7iZxL8rAAAP7oqF5wLA9nAkqn8qBqxM+CIkI2aOE/R0bVJAownl6aqACoRz4k8GcL5MtFHQnEUfwpzBre/mMWDmmtDeE8B1o6JLkGMbhWtDGvHTV9HJUkbjsmo5r2ZpIHA3baa8PY33Yc0oJnog8Sllde75mPhmgHcZftCHNwZoirYjttU/e5B2eDCYrbkU4HNKrJH5kN05MFIDPJPpuxdAUpPSV2VnbGdQ4ca1bXYqQtB64365rN6JqE5m2WzZalPRjNsqwcbNQQu9oVcVkVS9QQ8xE9anuapKFpwimKIrtAolVhOyXrcF6d/kNadPiZMIcnUQBpFRhNMX7fzaosWuroRJIVp0sv2iseyYtF2IFYYEP59DsbygSYhX1S5uIlaGAa93RrMFXCefJs53+Hfi9aK+dJat/kk1u/T+baarRsTzs3Ei5LiaK0sB/7mJ2bnPgX6yqVVvnvESoO+FO8/5Ac1w/K5Ei1hqo4HE5Lk4gFx5JMyVlqUkR+ma/NOWLeFrghCEIHklmkN9zYNPI8wljPMnt/RsjoZ8Je+FPIe36/0MiWWs9aPI9sn7by8FdpbV7x2ZOJXEMIHSGFiiWOHAJkWe5JYo2mwdvQf1oMKFm1ZtGtHYstgnKt+lP2KyOzOV3YM8UxArIvt7VDF02cqr9uN6yu+tivdtL383+jTlWrAyuPa3uyDtfBNcbQUa9MJjyDjeUyFQAS093i+RTUuDxVB9ZXtkx/tfZvqavhhEvxavHpbhQGnPwhVJQ9sjCj5p3mvUx88OvQQvBDtqtiTY2sqUyZC0ccOExT8HIFOlMZ0EpUkiVUAnatXG4Y64EUWQlDkarVN5cWvppUPcoZptqwHvU8C16n9j+lHHDn2RHtDsJv8uuDajyhI16sDZufZJd3O8zunx/tlzl5HsBFjwyOMtkBTucM4bMH5qrsq1WRCtZY3B04lRu2x6fRSyCzNZPR9yIxdUAutfSaM8+rzBTllNdNc9R9TYULyB6tN1OtBrrW+grd8ZNIcvNRMcytTNPFQRdSFGEmQv1+p9hltxVLNBWOZmndHkVRzQ5NDS9yFauSFlZJWeGho9Cn/79jdsbOcottg0e+bk8LdgWknIsa0Dsy1IOko7VmZ+vM3/PmvnRNpGlNYiWlSbmYsR74UjqM9ksWmUNCqFMSF7LbFhRRvEmGpldZvGXncMPSbaiHyctn546YoqLg9CTJ+UpZH/zq9jnFxr+hTpdvfRY1/t8QPM/AG9t74xZICpUF/tXDp8osBPmM1aEKzOrFU1N1/1gHq7TnnZdtO8gngpopUHfQX18GodmlOHLQhgVnVLAHcOk+uzpZBhazzoWY0FCDwstXuNsV+QGM4ynQBur2+tEHnW46Z5ESEKS60Vz/3o9FytJbMTM+GjTDZobVebj+mohbHknTlOIM5VNLmrcq7tBiJ2OcdUw30bChWyMAzYuutabcRvWoB9GUBtCsiWSmpqOJhfqsFD5UsUWcrKEvnEIsLPCc8Uy7LncUZdyQ3shjJvKdl+y5DYu6HRsIDe6oOwujJXbicqEpKKyYRyfb44npA4kQG+OXvlAYKY3fu0dkFKTgyttkawZZ6TVb2JLP90TcUkrf9DfM3bujGRlVxmlhrSNP1h5o3+/nTTaBkNujMzFdjVVOOabPRvX7d4MM+Xx8R+JQeIfJAMYqyuA1Uc2qCXTGG3DVIYHWmZslmcqbOQ3XmkhMNQ2sY7htgnj+WMo79TRzQ6X6jTRITJBvVW7Dxj+hPQkJ7ga6cih7ho5K2wXQ+NOADlZUlOYNKHQQgiGHqL6Hy6/F8YLB9u/f0u/ISIyy01R00D7lospXwhS6D3iiqdTtKFJNktGzpJ7OalWKR6gn8OazOScC6AAAAA==", "crinkle": "data:image/webp;base64,UklGRkQEAABXRUJQVlA4IDgEAADQFgCdASpQAFAAPpFAmUklo6IhJ7VdCLASCWcA0B+xKx81DuI7MvZrMQifsQmjqy9DzfgI6xPVwPQE33OzUq4oNBCH6BW8HoHiAwXQGa4n42RM3TY40o1DS78IcnJsMF5b/wM2Xec/ZkIvfFcqevevfxRwGTT1VRgTleNNXz3OE3f/0bFHno9ztEu75gXboD5Lid2dCOomq/qyxaPHvNeMF2QrlY+KLHfZY13E30Do9OVqaYLEO7zIONf3Io3AgAD+lXYx1D27wZhxBdEUHmX7MZXrHvT/laKyl9rvfEYoTCfFNI9vnJsxaOoJ5pJlUuSi4kqvgHLME+kw+CGEvRM9I3DjZj3tJ2jrIxKudqJB+V6ReYY7/RjafHC+Ge6tZSN59Hd0ZboBcZqmumesHYkMPwO/flMQzV6ESR2N4jYgouisD9ysitY6hLlPJr+b8cv/52DfnxZjD8dJmixLZNdYH7umkhN5XBN6fE205KY1B03fZK9nEDKkxq5pZFLlrOVup83KUPwyhMR0afeU40eFJCfFscF/Bihk0eftzhJKMTt0AMWJspUos32Lsz2Jf0ms5hyfus2OtLT2Dj0FPN5ucb2b/ksPjK9GQJJfHE7qpvYBRDL74EliQaStPN+4zf8TlqpHcgZbQhSuk2AAVdWn058m5n7N4NRBqBqWM96LaJJNWEpVa+KgiKOly91k8sKmLogRfDsQ7VCThwPAmoTud0+HFyqg09IVJ2ayym265i8rLVsOoaG3ZWMTw3vVMecCtRN5SkSljT5c9b+L3lYSewnFppYqh10NLHAv0KcrKilZsuXHrl7lxTs0qJbLH+IppfsYoGn0fhbVvWIwfhH/ZFjb5SSj/Q+L3VaXq750V1T75TfGusd3fKFJIErTfKZt2JSyLoSPw2E6Bi04PrH5pbpE99GIm5lHdQ2NwxioIXlmjJdIykTk/bmJj3GY0zwqx9mXbuokUGlUbMK7XulN/WU621Qk7GS2YdGWbzqnCgI9BevplhVWsC2Y49XYI0YeSRe6ZoR3VZvMWGee5bzTWECgx+tl0eGYC4DZ+Hqk73W+NcEwHRnfD74Ozk2PiTARKxcR6/6lD0p4gaVYX/wPBxENoQNb1f63wDaQJjDFDseKHpD1P9Lj2VV22ZTUwPxG4vNjWxxS6nq9R2OQ+M25YDih2NgpLHwl7nxveyJgvga19DuTjtIRhdIKEpUhdsIstdXgZN1h+rQ8APr1nCyjPRun9HHkAwvkVosF33pNNCIH0yy+U2naNxEAGZ1AFvEaBhqnXnlRIt0DomYvY29Uu8C8jpkeSs5QCatUJDaq5SrNS6dQCdDT6QAdSK8C4/4Q/m7fgqJYbRBVeXtZ76ic0vYas2EAQ48JGmUXI/wBUQmzWusXecdO7ZZuBFcUo6ASGbN/FjVux1fcGTSusKN8XIZI0ECAAAA=", "rosette": "data:image/webp;base64,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", "burlap": "data:image/webp;base64,UklGRhYEAABXRUJQVlA4IAoEAADQFwCdASpQAFAAPpE4mEeloyKhL1QOILASCWcA0IKAF++yMGsXnl5Bbm7T5nsQHlg+6FWUl/gM8F2V8cmODjoTWunc9jQG/m1x0zUlnBSo8tkmGCZy1SavBSLr/LeJ/tqQFKi+tDwJjZ+qtabdJAf+qJ14ONAhPEDfDJy1SRABQw/W4IBGrE+MbQ00fncZUtW3iWXiK7umq7aAvWC3IvS8bSGEfVPvefoI0izSpKEPN6D99z6MpFSoVA5Yp0wpSLoOd48of8gAANCUCnl9ZQC4JjJSC57/0KNlExT/qRhi6VPf0RqixCIrRnln98Zll+p6wBtyDe9HyKNUi/H7OSGThBEAocSmO/CwRzngUSqvGQVcpzW1832/kdocC9m/8Wl8lTOIXMzaQcLTbmQU7Rr60Xg5P3SSv6e/V7WUziRb0ByXzWz7QIigGFTfIx+OzyMD11Aq8TaoJc9JKbQAyDULN/iWq1QuuT2YfLUY065hJY3Ul4g6mvHkZc6fWiK9mmgYPdk4+uddBPEM2PVdF2DwUIPa8BO9ik6NLGVKyNkJdYrqF950E4b/TraY53P52g7+0iKGK9bPb9T+7eYSv4igtxyF4Kewnww0N7P5PwW6awIMmm7UnHRZ6dTDZOVlN1s2kaV40ftmsiCumw2kNOgk0bJISQxA01123QmVzF3SSxx/fIqu9XimzVP6Ab5C2ZD+TUIrjU/LgTdw1aeG3rYmATIgdysxooyARZBAssuxGDM13UmVPkRaMDffyg22KTQz9/jOmMPij30Pbc1Q33gpmTRp2dx5CTGQwbz23Hep9HfLpk55KcIMlykfUm50ePzUye0tHbPAWDfkTCNCTeAkQZ6M4yz+xeZ8Qm1L5S2sxHfP8MtfJ6wtAbTHCYVTKGjL7ztGNA3k4eQeWgKzaGb/M+vVyT9e6ZVTvnqpkJ4RqcGKu+QvocGgZQNpqtVfDfA2i5gvudCuBL6LMcqCPViv6j3XfzlivXRnEhjYG8YMlZUzX/xynTsniEoYBY+b8aW58+A99fsXRSxmft3sg+SFVSpxyyDb3C0qfmfK49rfhHa4/5bOODUR4epE3eOUCSvmAtRlW5UMwYbdWO58s+mCSNoG6yXbQ48i3CCi+wIEs7Mb9UoL8+6FH07DwnqoDT6EPz3wTIEueinp2ruzk7Bo/Hz5F8yiAgMkqFobreUBieHHM+dr2xw0l2npL6/mO06l0X1fiPO6B0OtnmuWnZ8S67tfHcgOXc5fKeUo1vk+hSmzs2xtCwgtQ4kQbN+kX0h1CYF2gQbNY8NQU3N+iIZzoT7ba8yVp5vCBsSjWMDTPlG6gpNVgmHc4z0zpWaTtjLOUD80zh6LaKOHCDTrpSSzJ+jKH513JgAAAA=="};
+var IM = {Polyester:'polyester',Scuba:'scuba','Satin & Lamour':'satin','Satin Shimmer':'satin','Satin & Taffeta':'satin','Satin & Velvet':'satin','Satin & Cheesecloth':'satin','Polyester & Satin':'polyester','Spandex & Fitted':'spandex','Spandex Fitted':'spandex','Sequin & Shimmer':'sequin','Sequin Sparkly':'sequin','Glittering Sequin':'sequin','Shimmer Sequin & Velvet':'sequin',Sequin:'sequin','Velvet & Flocking':'velvet','Crinkle Leaf & Rosette':'crinkle','Jute Burlap & Lace':'burlap','Commercial Grade':'polyester'};
+var NAV = {'Table Linens':{'Tablecloths':['Polyester','Scuba','Satin & Lamour','Spandex & Fitted','Sequin & Shimmer','Velvet & Flocking','Crinkle Leaf & Rosette','Jute Burlap & Lace','Commercial Grade'],'Table Skirts':['Polyester','Satin Shimmer','Ruffle Jute & Tulle'],'Table Runners':['Polyester & Scuba','Satin & Velvet','Sequin','Organza & Chiffon','Cheesecloth & Lace'],'Table Overlays':['Polyester','Satin & Taffeta','Sequin Sparkly','Sheer Organza & Lace'],'Cloth Napkins':['Polyester','Satin & Cheesecloth','Shimmer Sequin & Velvet','Commercial Grade']},'Chair Covers':{'Banquet Chair Covers':['Polyester & Satin','Spandex Fitted'],'Folding Chair Covers':['Polyester & Satin','Spandex Fitted'],'Chair Sashes':['Polyester','Satin & Taffeta','Organza & Chiffon','Glittering Sequin','Jute Burlap & Lace'],'Universal Chair Covers':[],'Chiavari Chair Cushions':['Chair Cushion Pads','Chiavari Slip Covers']},'Tabletop':{'Candelabras & Candle Holders':['Candelabras','Metal Candle Holders','Glass Candle Holders','Tabletop Candles'],'Centerpiece Stands':['Centerpiece Stands','Prearranged Florals'],'Floral Vases & Planters':['Glass Vases','Metal Vases','Vase Fillers','Tabletop Planters'],'Chargers & Drinkware':['Charger Plates','Premium Drinkware','Reusable Placemats','Mirrors & Wood Slices'],'Cake & Dessert Table':['Cake Stand & Risers','Tiered Cake Stands','Cake Toppers','Dessert Servewares']},'Drapes & Backdrops':{'Backdrop Drapes':['Floral & Greenery Panels','Sparkle & Sequin','Sheer Backdrops','Stretch Spandex','Crystal & Tassels','Solid Color Curtains'],'Backdrop Stands':['Backdrop Stands','Fitted Backdrop Covers'],'Ceiling Drapes':['Ceiling Drapes','Ceiling Hanging Decor'],'Fabric Bolts':['Polyester & Spandex','Satin & Taffeta','Velvet & Rosette','Chiffon & Tulle','Burlap & Lace','Sparkly Sequin']},'Floral & Botanical':{'Artificial Flowers':['Rose Bouquets','Peony Bouquets','Long Stems','Mixed Flowers'],'Plants & Greenery':['Eucalyptus & Boxwood','Leaf & Fern Bushes','Golden Sprays','Succulents'],'Garlands & Vines':['Greenery Vines & Wreaths','Floral Garlands','Hanging Plants'],'Accent Flowers':['Kissing Balls','Large Floral Decor','Flower Heads']},'Dinnerware':{'Disposable Plates':['Dinner Plates','Salad & Dessert Plates','Eco-Friendly Plates'],'Disposable Cups':['Champagne Flutes','All Purpose Glasses','Shot Glasses','Paper Cups'],'Charger Plates':['Acrylic Charger Plates','Glass & Mirror Charger','Disposable Chargers','Reusable Placemats']},'Decor & Lighting':{'Wedding Arches':['Prearranged Arch Floral','Arch Covers','Arch Drapes','Arches & Arbors'],'Prop Columns':['Pillar Stands','Pedestal Prop Covers'],'Candles':['Flameless Candles','Wax Candles'],'String Lights':[],'LED Letters':[]}};
+var MT = {Polyester:'smooth matte fabric, soft rounded folds, clean even drape, gentle fluid creases',Scuba:'smooth scuba knit, minimal wrinkles, structured drape, broad smooth folds','Satin & Lamour':'high-gloss satin, sharp elegant folds, fluid cascading drape, strong specular highlights','Satin Shimmer':'high-gloss satin, sharp elegant folds, fluid cascading drape','Satin & Taffeta':'high-gloss satin, sharp elegant folds, specular highlights and deep shadows','Satin & Velvet':'high-gloss satin, sharp elegant folds, fluid cascading drape','Satin & Cheesecloth':'high-gloss satin, sharp elegant folds','Polyester & Satin':'smooth fabric, soft natural folds, clean drape, subtle sheen','Spandex & Fitted':'stretch spandex pulled taut, wrinkle-free smooth surface, no loose folds','Spandex Fitted':'stretch spandex pulled taut, wrinkle-free smooth surface','Sequin & Shimmer':'dense round sequins covering surface, thousands of sparkles, heavy stiff angular folds','Sequin Sparkly':'dense round sequins, glittering sparkle, heavy stiff angular folds','Glittering Sequin':'dense round sequins, glittering sparkle, stiff angular folds','Shimmer Sequin & Velvet':'mixed sequin and velvet, glittering sections contrast with soft plush velvet',Sequin:'dense sequin surface, glittering sparkle, heavy stiff angular folds','Velvet & Flocking':'crushed velvet, dense soft pile, directional nap variation, plush heavy drape, rounded soft creases','Crinkle Leaf & Rosette':'crinkle taffeta, all-over fine irregular wrinkles, iridescent two-tone shimmer, lightweight','Jute Burlap & Lace':'natural burlap jute, coarse open weave, visible woven threads, stiff heavy drape with angular creases','Commercial Grade':'heavy-duty polyester, crisp smooth surface, structured drape, clean straight folds'};
+var STYLES = {romantic:'soft romantic editorial style, dreamy pastel mood, gentle diffused light, delicate and airy atmosphere',minimalist:'modern minimalist editorial style, clean lines, restrained palette, generous negative space',bohemian:'rustic bohemian style, organic textures, warm earthy tones, relaxed layered styling',glamour:'luxurious glamour style, rich opulent textures, high-end editorial mood, polished surfaces',garden:'whimsical garden party style, fresh florals, light and breezy, romantic outdoor feel',classic:'timeless classic style, elegant symmetry, refined and polished, traditional wedding aesthetic'};
+var PM = {Tablecloths:'tablecloth draped over table','Table Skirts':'decorative table skirt','Table Runners':'table runner laid along table center','Cloth Napkins':'folded cloth napkin','Table Overlays':'sheer table overlay','Banquet Chair Covers':'banquet chair with fitted chair cover','Folding Chair Covers':'folding chair with chair cover','Chair Sashes':'chair with decorative sash tied in bow','Universal Chair Covers':'chair with universal chair cover','Chiavari Chair Cushions':'chiavari chair with cushion','Candelabras & Candle Holders':'elegant candelabra centerpiece on table','Centerpiece Stands':'floral centerpiece stand on table','Floral Vases & Planters':'floral vase arrangement on table','Chargers & Drinkware':'layered charger plate and drinkware table setting','Cake & Dessert Table':'styled cake and dessert table display','Backdrop Drapes':'fabric backdrop drape panel','Backdrop Stands':'backdrop stand with fabric cover','Ceiling Drapes':'draped ceiling fabric installation','Fabric Bolts':'rolled fabric bolt display','Artificial Flowers':'artificial flower bouquet arrangement','Plants & Greenery':'artificial greenery arrangement','Garlands & Vines':'decorative floral garland','Accent Flowers':'decorative accent floral piece','Disposable Plates':'elegant disposable plate tablesetting','Disposable Cups':'styled disposable cup arrangement','Charger Plates':'charger plate tablesetting','Wedding Arches':'decorated wedding arch with floral and fabric','Prop Columns':'decorative prop column and pedestal display',Candles:'decorative candle arrangement','String Lights':'string light decoration setup','LED Letters':'LED marquee letter display'};
+var COLORS = [{n:'White',h:'#FFFFFF',p:'pure white, crisp white'},{n:'Ivory',h:'#FAFAE8',p:'ivory, warm cream, off-white'},{n:'Blush Pink',h:'#FFBBCC',p:'soft blush pink, baby pink'},{n:'Dusty Rose',h:'#D4A0A0',p:'dusty rose, muted antique pink'},{n:'Red',h:'#D93B3B',p:'bold red, classic red'},{n:'Burgundy',h:'#6E2230',p:'deep burgundy, wine red'},{n:'Orange',h:'#F4874B',p:'warm orange, vibrant orange'},{n:'Yellow',h:'#FFD84D',p:'bright yellow, sunny yellow'},{n:'Gold',h:'#C8A020',p:'metallic gold, antique gold, warm brass'},{n:'Champagne',h:'#F0E2C0',p:'champagne, warm gold shimmer'},{n:'Sage Green',h:'#8FA98F',p:'sage green, muted soft green'},{n:'Emerald',h:'#1A8C4E',p:'rich emerald green, deep jewel green'},{n:'Mint',h:'#B5E5D8',p:'soft mint, light aqua'},{n:'Navy Blue',h:'#1B2E5E',p:'deep navy blue, midnight blue'},{n:'Royal Blue',h:'#3A5BA0',p:'royal blue, classic cobalt blue'},{n:'Dusty Blue',h:'#7B9BB5',p:'dusty blue, muted cornflower blue'},{n:'Lavender',h:'#C9A8E0',p:'soft lavender, light purple'},{n:'Purple',h:'#6A3D9A',p:'deep purple, rich violet'},{n:'Silver',h:'#D0D4DC',p:'silver gray, metallic silver'},{n:'Gray',h:'#888780',p:'warm gray, stone gray'},{n:'Taupe',h:'#C8A87A',p:'natural tan, warm taupe'},{n:'Black',h:'#111111',p:'classic black, deep black'},{n:'Sequin Silver',h:'#E8E8F0',p:'shimmering silver sequin, glittering metallic sparkle'},{n:'Sequin Gold',h:'#E8D080',p:'glittering gold sequin, shimmering golden sparkle'}];
+var NT = ['Backdrop Drapes','Backdrop Stands','Ceiling Drapes','Wedding Arches','Fabric Bolts','String Lights','LED Letters'];
+var NEG = 'blurry, low quality, people, hands, face, body, stiff plastic fabric, unnatural folds, cropped table, partial table, cut off edges, incorrect colors, oversaturated, harsh shadows, watermark, text, logo, cartoon, illustration, grainy';
+var S = {cat:null,sub1:null,sub2:null,table:'round table',color:null,style:'romantic'};
+
+function imgKey(name) {
+  if (!name) return null;
+  if (IM[name]) return IM[name];
+  var keys = Object.keys(IM);
+  for (var i=0; i<keys.length; i++) {
+    if (name.toLowerCase().indexOf(keys[i].toLowerCase().split(' ')[0]) >= 0) return IM[keys[i]];
+  }
+  return null;
+}
+
+function render() {
+  var cb = document.getElementById('cb');
+  cb.innerHTML = '';
+  Object.keys(NAV).forEach(function(cat) {
+    var b = document.createElement('button');
+    b.className = 'nb' + (S.cat===cat ? ' on' : '');
+    b.textContent = cat;
+    b.setAttribute('data-cat', cat);
+    cb.appendChild(b);
+  });
+
+  var s1a = document.getElementById('s1a'), s1b = document.getElementById('s1b');
+  if (S.cat && NAV[S.cat] && Object.keys(NAV[S.cat]).length) {
+    s1a.style.display = '';
+    s1b.innerHTML = '';
+    Object.keys(NAV[S.cat]).forEach(function(s) {
+      var b = document.createElement('button');
+      b.className = 'nb' + (S.sub1===s ? ' on' : '');
+      b.textContent = s;
+      b.setAttribute('data-sub1', s);
+      s1b.appendChild(b);
+    });
+  } else { s1a.style.display = 'none'; }
+
+  var s2a = document.getElementById('s2a'), s2b = document.getElementById('s2b');
+  if (S.sub1 && NAV[S.cat] && NAV[S.cat][S.sub1] && NAV[S.cat][S.sub1].length) {
+    s2a.style.display = '';
+    s2b.innerHTML = '';
+    NAV[S.cat][S.sub1].forEach(function(s) {
+      var ik = imgKey(s);
+      var b = document.createElement('button');
+      b.className = 'mb' + (S.sub2===s ? ' on' : '');
+      b.setAttribute('data-sub2', s);
+      if (ik && IMGS[ik]) {
+        var img = document.createElement('img');
+        img.className = 'mt';
+        img.src = IMGS[ik];
+        img.alt = s;
+        var sp = document.createElement('span');
+        sp.className = 'ml';
+        sp.textContent = s;
+        b.appendChild(img);
+        b.appendChild(sp);
+      } else {
+        var sp = document.createElement('span');
+        sp.className = 'ml';
+        sp.style.padding = '12px 4px';
+        sp.style.fontSize = '12px';
+        sp.textContent = s;
+        b.appendChild(sp);
+      }
+      s2b.appendChild(b);
+    });
+  } else { s2a.style.display = 'none'; }
+
+  var cr = document.getElementById('cr');
+  var parts = [S.cat, S.sub1, S.sub2].filter(function(x) { return x; });
+  if (parts.length) {
+    cr.style.display = '';
+    cr.innerHTML = '';
+    parts.forEach(function(p, i) {
+      if (i > 0) {
+        var sep = document.createElement('span');
+        sep.style.color = '#aaa';
+        sep.style.fontSize = '11px';
+        sep.textContent = ' › ';
+        cr.appendChild(sep);
+      }
+      var t = document.createElement('span');
+      t.className = 'tag' + (i===parts.length-1 ? ' on' : '');
+      t.textContent = p;
+      cr.appendChild(t);
+    });
+  } else { cr.style.display = 'none'; }
+
+  document.querySelectorAll('[data-v]').forEach(function(b) {
+    var isTable = b.parentElement.className === 'g3';
+    var isStyle = b.parentElement.id === 'stb';
+    if (isTable) b.className = 'ob' + (b.getAttribute('data-v')===S.table ? ' on' : '');
+    if (isStyle) b.className = 'ob' + (b.getAttribute('data-v')===S.style ? ' on' : '');
+  });
+
+  var cg = document.getElementById('cg');
+  cg.innerHTML = '';
+  COLORS.forEach(function(col) {
+    var d = document.createElement('div');
+    d.className = 'cs' + (S.color===col.n ? ' on' : '');
+    d.setAttribute('data-color', col.n);
+    var circle = document.createElement('div');
+    circle.className = 'sc';
+    circle.style.background = col.h;
+    if (col.h === '#FFFFFF') circle.style.border = '1px solid #ccc';
+    var name = document.createElement('span');
+    name.className = 'sn';
+    name.textContent = col.n;
+    d.appendChild(circle);
+    d.appendChild(name);
+    cg.appendChild(d);
+  });
+}
+
+document.getElementById('cb').addEventListener('click', function(e) {
+  var b = e.target.closest('[data-cat]');
+  if (b) { S.cat = b.getAttribute('data-cat'); S.sub1 = null; S.sub2 = null; render(); }
+});
+document.getElementById('s1b').addEventListener('click', function(e) {
+  var b = e.target.closest('[data-sub1]');
+  if (b) { S.sub1 = b.getAttribute('data-sub1'); S.sub2 = null; render(); }
+});
+document.getElementById('s2b').addEventListener('click', function(e) {
+  var b = e.target.closest('[data-sub2]');
+  if (b) { S.sub2 = b.getAttribute('data-sub2'); render(); }
+});
+document.querySelector('.g3').addEventListener('click', function(e) {
+  var b = e.target.closest('[data-v]');
+  if (b) { S.table = b.getAttribute('data-v'); render(); }
+});
+document.getElementById('stb').addEventListener('click', function(e) {
+  var b = e.target.closest('[data-v]');
+  if (b) { S.style = b.getAttribute('data-v'); render(); }
+});
+document.getElementById('cg').addEventListener('click', function(e) {
+  var d = e.target.closest('[data-color]');
+  if (d) { S.color = d.getAttribute('data-color'); render(); }
+});
+
+document.getElementById('gb').addEventListener('click', function() {
+  var styleDesc = STYLES[S.style] || STYLES.romantic;
+  var pk = S.sub1 || S.cat || 'wedding party product';
+  var pd = PM[pk] || pk.toLowerCase();
+  var col = COLORS.find(function(c) { return c.n === S.color; });
+  var colorDesc = col ? col.p : 'neutral elegant palette';
+  var matKey2 = S.sub2 || S.sub1;
+  var drape = MT[matKey2] || 'natural gravity-driven fabric folds, soft organic wrinkles cascading down, realistic cloth weight and drape';
+  var mat = S.sub2 ? ', ' + S.sub2.toLowerCase() + ' material,' : ',';
+  var tbl = NT.indexOf(S.sub1) >= 0 ? '' : (' on a ' + S.table + ',');
+  var pos = styleDesc + '. Full product shot, entire table fully visible in frame, complete table centered in composition, nothing cropped. Camera: slightly elevated 3/4 front-diagonal view. Wedding party ' + pd + mat + tbl + ' color palette: ' + colorDesc + '. Fabric texture: ' + drape + '. Lighting: studio soft box, soft and even, clean white background. No humans, no text, no logos. Photorealistic, highly detailed fabric texture, sharp focus on material quality.';
+  var full = pos + ' --no ' + NEG;
+  document.getElementById('po').textContent = full;
+  document.getElementById('oa').style.display = 'block';
+  document.getElementById('oa').scrollIntoView({behavior:'smooth', block:'nearest'});
+});
+
+document.getElementById('cpb').addEventListener('click', function() {
+  var text = document.getElementById('po').textContent;
+  var ta = document.createElement('textarea');
+  ta.value = text;
+  ta.style.position = 'fixed';
+  ta.style.opacity = '0';
+  document.body.appendChild(ta);
+  ta.select();
+  document.execCommand('copy');
+  document.body.removeChild(ta);
+  this.textContent = 'Copied!';
+  var self = this;
+  setTimeout(function() { self.textContent = 'Copy'; }, 1500);
+});
+
+render();
+</script>
+</body>
+</html>
