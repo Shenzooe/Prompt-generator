@@ -523,7 +523,7 @@ async function generateImage() {
     const res = await fetchWithRetry("/.netlify/functions/generate-image", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ prompt, model }),
+      body: JSON.stringify({ prompt, model, negative_prompt: document.getElementById("neg-output").textContent || undefined }),
     }, 3, status);
 
     const data = await res.json();
