@@ -60,6 +60,15 @@ h3 { font-size: 18px; font-weight: 500; margin-bottom: 1.25rem; }
 
 <!-- ── Tab 1: 商品 ── -->
 <div id="tab-product">
+  <div class="card" style="margin-bottom:1rem">
+    <div class="section-label" style="margin-bottom:6px">SKU 解析</div>
+    <div class="custom-row">
+      <input type="text" id="sku-input" placeholder="貼入 SKU，如：TC-EMLD-001 或直接輸入 BLUSH、SAGE…" style="flex:1">
+      <button class="chip" onclick="parseSKU()" style="flex-shrink:0">解析顏色</button>
+    </div>
+    <div id="sku-result" style="font-size:12px;margin-top:4px;display:none"></div>
+  </div>
+
   <div id="selected-products-area" style="display:none;margin-bottom:1rem">
     <div class="section-label">已選商品</div>
     <div id="selected-tags" class="row" style="margin-bottom:0.5rem"></div>
@@ -92,15 +101,6 @@ h3 { font-size: 18px; font-weight: 500; margin-bottom: 1.25rem; }
 
 <!-- ── Tab 2: 顏色 ── -->
 <div id="tab-color" style="display:none">
-  <div class="card" style="margin-bottom:1rem">
-    <div class="section-label" style="margin-bottom:6px">SKU 解析</div>
-    <div class="custom-row">
-      <input type="text" id="sku-input" placeholder="貼入 SKU，如：TC-EMLD-001 或直接輸入 BLUSH、SAGE…" style="flex:1">
-      <button class="chip" onclick="parseSKU()" style="flex-shrink:0">解析顏色</button>
-    </div>
-    <div id="sku-result" style="font-size:12px;margin-top:4px;display:none"></div>
-  </div>
-
   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
     <span id="color-count" style="font-size:12px;color:#888">0 / 3 已選</span>
     <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:#888">
