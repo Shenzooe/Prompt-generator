@@ -96,11 +96,6 @@ h3 { font-size: 18px; font-weight: 500; margin-bottom: 1.25rem; }
     <div class="prompt-box" id="prompt-output">（請先在前幾步選擇設定）</div>
     <button class="copy-btn" onclick="copyText('prompt-output', this)">複製 Prompt</button>
   </div>
-  <div class="section-label">Negative Prompt</div>
-  <div class="card" style="padding:0.75rem 1.25rem">
-    <div class="neg-box" id="neg-output"></div>
-    <button class="copy-btn" onclick="copyText('neg-output', this)">複製 Negative Prompt</button>
-  </div>
   <div class="card" style="margin-top:0.5rem">
     <button class="copy-btn" id="gen-btn" onclick="generateImage()" style="background:#1a1a1a;color:#fff;border-color:#1a1a1a;font-size:15px;padding:12px">生成圖片</button>
     <div id="gen-status" style="font-size:12px;color:#888;margin-top:8px;display:none"></div>
@@ -328,11 +323,11 @@ function buildPrompt(colorOverride) {
   return `${styleDesc}. ${ANGLE_DESC}. Wedding party ${prodList} styled product photography, highlighting ${focusList}. Color palette: ${colorStr}. ${textureStr}Lighting: ${state.light}, soft and even. No humans, no text, no logos. Highly detailed fabric texture, photorealistic, sharp focus on material quality.`;
 }
 
+const NEG_PROMPT = "blurry, low quality, people, hands, face, body, distorted fabric, incorrect colors, oversaturated, harsh shadows, watermark, text, logo, cartoon, painting, illustration, grainy";
+
 function generatePrompt() {
   const prompt = buildPrompt(null);
-  const neg = "blurry, low quality, people, hands, face, body, distorted fabric, incorrect colors, oversaturated, harsh shadows, watermark, text, logo, cartoon, painting, illustration, grainy";
-  document.getElementById("prompt-output").textContent = prompt;
-  document.getElementById("neg-output").textContent = neg;
+  document.getElementById("prompt-output").textContent = prompt + " --no " + NEG_PROMPT;
 
   const allColors = [...state.colors, ...state.customColors];
   const seriesSection = document.getElementById("series-section");
@@ -476,10 +471,12 @@ async function generateImage() {
   status.textContent = "圖片生成中，約需 20–40 秒...";
   result.style.display = "none";
   try {
+    const full = document.getElementById("prompt-output").textContent;
+    const [positivePrompt, negPart] = full.split(" --no ");
     const res = await fetch("/.netlify/functions/generate-image", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ prompt }),
+      body: JSON.stringify({ prompt: positivePrompt.trim(), negative_prompt: negPart ? negPart.trim() : NEG_PROMPT }),
     });
     if (!res.ok) {
       const text = await res.text();

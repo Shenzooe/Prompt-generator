@@ -10,7 +10,7 @@ exports.handler = async function (event) {
     return { statusCode: 400, body: "Invalid JSON" };
   }
 
-  const { prompt, model = "black-forest-labs/FLUX.1-schnell" } = body;
+  const { prompt, negative_prompt, model = "black-forest-labs/FLUX.1-schnell" } = body;
   if (!prompt) {
     return { statusCode: 400, body: "Missing prompt" };
   }
@@ -28,7 +28,10 @@ exports.handler = async function (event) {
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ inputs: prompt }),
+      body: JSON.stringify({
+        inputs: prompt,
+        ...(negative_prompt && { parameters: { negative_prompt } }),
+      }),
     }
   );
 
