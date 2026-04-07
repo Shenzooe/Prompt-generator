@@ -433,9 +433,9 @@ function renderSub2Chips() {
 
 function addProduct(cat, sub1, sub2) {
   const key = cat + '|' + sub1 + '|' + (sub2 || '');
-  if (!state.selectedProducts.some(p => p.key === key)) {
-    state.selectedProducts.push({ cat, sub1, sub2, key });
-  }
+  // Single-select per sub1: remove existing entry for same sub1, then add new
+  state.selectedProducts = state.selectedProducts.filter(p => !(p.cat === cat && p.sub1 === sub1));
+  state.selectedProducts.push({ cat, sub1, sub2, key });
   renderProductTab();
 }
 
