@@ -60,13 +60,9 @@ h3 { font-size: 18px; font-weight: 500; margin-bottom: 1.25rem; }
 
 <!-- ── Tab 1: 商品 ── -->
 <div id="tab-product">
-  <div class="card" style="margin-bottom:1rem">
-    <div class="section-label" style="margin-bottom:6px">SKU 解析</div>
-    <div class="custom-row">
-      <input type="text" id="sku-input" placeholder="貼入 SKU，如：TC-EMLD-001 或直接輸入 BLUSH、SAGE…" style="flex:1">
-      <button class="chip" onclick="parseSKU()" style="flex-shrink:0">解析顏色</button>
-    </div>
-    <div id="sku-result" style="font-size:12px;margin-top:4px;display:none"></div>
+  <div style="margin-bottom:1rem">
+    <div class="section-label">照片類型</div>
+    <div class="row" id="photo-type-chips" style="margin-bottom:0"></div>
   </div>
 
   <div id="selected-products-area" style="display:none;margin-bottom:1rem">
@@ -94,13 +90,23 @@ h3 { font-size: 18px; font-weight: 500; margin-bottom: 1.25rem; }
     <div class="mat-grid" id="sub2-chips"></div>
   </div>
 
-  <hr class="divider">
-  <div class="section-label">桌型</div>
-  <div class="row" id="table-chips"></div>
+  <div id="table-section" style="display:none">
+    <hr class="divider">
+    <div class="section-label">桌型</div>
+    <div class="row" id="table-chips"></div>
+  </div>
 </div>
 
 <!-- ── Tab 2: 顏色 ── -->
 <div id="tab-color" style="display:none">
+  <div class="card" style="margin-bottom:1rem">
+    <div class="section-label" style="margin-bottom:6px">SKU 解析</div>
+    <div class="custom-row">
+      <input type="text" id="sku-input" placeholder="貼入 SKU，如：TC-EMLD-001 或直接輸入 BLUSH、SAGE…" style="flex:1">
+      <button class="chip" onclick="parseSKU()" style="flex-shrink:0">解析顏色</button>
+    </div>
+    <div id="sku-result" style="font-size:12px;margin-top:4px;display:none"></div>
+  </div>
   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
     <span id="color-count" style="font-size:12px;color:#888">0 / 3 已選</span>
     <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:#888">
@@ -338,6 +344,7 @@ let state = {
   selectedProducts: [],       // [{cat, sub1, sub2, key}]
   nav: { cat: null, sub1: null },
   table: 'round table',
+  photoType: 'product',       // 'product' | 'lifestyle'
   colors: [],                 // color prompt desc strings
   customColors: [],
   colorMode: 'mix',
@@ -359,12 +366,25 @@ function switchTab(name) {
 
 // ── Product Tab ──────────────────────────────────────────────────────
 function renderProductTab() {
+  renderPhotoTypeChips();
   renderSelectedTags();
   renderBreadcrumb();
   renderCatChips();
   renderSub1Chips();
   renderSub2Chips();
-  renderTableChips();
+  renderTableSection();
+}
+
+function renderPhotoTypeChips() {
+  const el = document.getElementById('photo-type-chips');
+  el.innerHTML = '';
+  [['product','純商品照'],['lifestyle','情境照']].forEach(([val, label]) => {
+    const d = document.createElement('div');
+    d.className = 'chip' + (state.photoType === val ? ' active' : '');
+    d.textContent = label;
+    d.onclick = () => { state.photoType = val; renderPhotoTypeChips(); };
+    el.appendChild(d);
+  });
 }
 
 function renderCatChips() {
@@ -476,14 +496,18 @@ function navTo(level) {
   renderProductTab();
 }
 
-function renderTableChips() {
+function renderTableSection() {
+  const hasTable = state.selectedProducts.some(p => !NT.includes(p.sub1) && !NT.includes(p.cat));
+  const sec = document.getElementById('table-section');
+  sec.style.display = hasTable ? 'block' : 'none';
+  if (!hasTable) return;
   const el = document.getElementById('table-chips');
   el.innerHTML = '';
   TABLE_TYPES.forEach(t => {
     const d = document.createElement('div');
     d.className = 'chip' + (state.table === t.val ? ' active' : '');
     d.textContent = t.label;
-    d.onclick = () => { state.table = t.val; renderTableChips(); };
+    d.onclick = () => { state.table = t.val; renderTableSection(); };
     el.appendChild(d);
   });
 }
@@ -690,6 +714,10 @@ function buildPrompt(colorOverride) {
   const tableStr = hasTableProduct ? `, on a ${state.table}` : '';
   const matStr = matDescs.length > 0 ? ' Fabric texture: ' + matDescs.join('; ') + '.' : '';
   const texStr = state.textures.length > 0 ? ' ' + state.textures.join(', ') + '.' : '';
+
+  if (state.photoType === 'lifestyle') {
+    return `${styleDesc}. Wedding event scene, styled venue setting, ${prodStr}${tableStr} dressed for a wedding celebration, color palette: ${colorStr}.${matStr}${texStr} Ambient ${state.light}, warm and inviting atmosphere, soft decorative props, floral accents, candles, elegant table settings in background. No humans, no text, no logos. Photorealistic, editorial wedding photography style, rich atmospheric depth. --no ${NEG}`;
+  }
 
   return `${styleDesc}. Full product shot, entire product fully visible in frame, centered composition, nothing cropped. Camera: slightly elevated 3/4 front-diagonal view. Wedding party ${prodStr}${tableStr}, color palette: ${colorStr}.${matStr}${texStr} Lighting: ${state.light}, soft and even, clean white background. No humans, no text, no logos. Photorealistic, highly detailed fabric texture, sharp focus on material quality. --no ${NEG}`;
 }
