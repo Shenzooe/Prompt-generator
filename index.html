@@ -101,6 +101,16 @@ h3 { font-size: 18px; font-weight: 500; margin-bottom: 1.25rem; }
     <div class="neg-box" id="neg-output"></div>
     <button class="copy-btn" onclick="copyText('neg-output', this)">複製 Negative Prompt</button>
   </div>
+  <div class="card" style="margin-top:0.5rem">
+    <button class="copy-btn" id="gen-btn" onclick="generateImage()" style="background:#1a1a1a;color:#fff;border-color:#1a1a1a;font-size:15px;padding:12px">生成圖片</button>
+    <div id="gen-status" style="font-size:12px;color:#888;margin-top:8px;display:none"></div>
+    <div id="gen-result" style="margin-top:12px;display:none">
+      <img id="gen-img" style="width:100%;border-radius:6px" />
+      <a id="gen-download" download="generated.png" style="display:block;margin-top:8px">
+        <button class="copy-btn">下載圖片</button>
+      </a>
+    </div>
+  </div>
   <div id="series-section" style="display:none">
     <div class="section-label" style="margin-top:0.5rem">批量系列 Prompt（每色獨立）</div>
     <div id="series-blocks"></div>
@@ -450,6 +460,44 @@ function renderAll() {
 }
 
 renderAll();
+
+async function generateImage() {
+  const prompt = document.getElementById("prompt-output").textContent;
+  if (!prompt || prompt.includes("請先在前幾步")) {
+    alert("請先切換到輸出 Prompt 頁面產生 prompt");
+    return;
+  }
+  const btn = document.getElementById("gen-btn");
+  const status = document.getElementById("gen-status");
+  const result = document.getElementById("gen-result");
+  btn.disabled = true;
+  btn.textContent = "生成中...";
+  status.style.display = "block";
+  status.textContent = "圖片生成中，約需 20–40 秒...";
+  result.style.display = "none";
+  try {
+    const res = await fetch("/.netlify/functions/generate-image", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ prompt }),
+    });
+    if (!res.ok) {
+      const text = await res.text();
+      throw new Error(text);
+    }
+    const blob = await res.blob();
+    const url = URL.createObjectURL(blob);
+    document.getElementById("gen-img").src = url;
+    document.getElementById("gen-download").href = url;
+    result.style.display = "block";
+    status.textContent = "生成完成！";
+  } catch (e) {
+    status.textContent = "錯誤：" + e.message;
+  } finally {
+    btn.disabled = false;
+    btn.textContent = "生成圖片";
+  }
+}
 </script>
 </body>
 </html>
