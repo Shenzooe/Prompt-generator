@@ -96,11 +96,7 @@ h3 { font-size: 18px; font-weight: 500; margin-bottom: 1.25rem; }
     <div class="prompt-box" id="prompt-output">（請先在前幾步選擇設定）</div>
     <button class="copy-btn" onclick="copyText('prompt-output', this)">複製 Prompt</button>
   </div>
-  <div class="section-label">Negative Prompt</div>
-  <div class="card" style="padding:0.75rem 1.25rem">
-    <div class="neg-box" id="neg-output"></div>
-    <button class="copy-btn" onclick="copyText('neg-output', this)">複製 Negative Prompt</button>
-  </div>
+  <div id="neg-output" style="display:none"></div>
   <div id="series-section" style="display:none">
     <div class="section-label" style="margin-top:0.5rem">批量系列 Prompt（每色獨立）</div>
     <div id="series-blocks"></div>
@@ -367,7 +363,7 @@ function buildPrompt(colorOverride) {
 function generatePrompt() {
   const prompt = buildPrompt(null);
   const neg = "blurry, low quality, people, hands, face, body, distorted fabric, incorrect colors, oversaturated, harsh shadows, watermark, text, logo, cartoon, painting, illustration, grainy";
-  document.getElementById("prompt-output").textContent = prompt;
+  document.getElementById("prompt-output").textContent = prompt + " --no " + neg;
   document.getElementById("neg-output").textContent = neg;
 
   const allColors = [...state.colors, ...state.customColors];
@@ -523,7 +519,7 @@ async function generateImage() {
     const res = await fetchWithRetry("/.netlify/functions/generate-image", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ prompt, model, negative_prompt: document.getElementById("neg-output").textContent || undefined }),
+      body: JSON.stringify({ prompt: prompt.split(" --no ")[0].trim(), model, negative_prompt: document.getElementById("neg-output").textContent || undefined }),
     }, 3, status);
 
     const data = await res.json();
