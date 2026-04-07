@@ -136,6 +136,8 @@ h3 { font-size: 20px; font-weight: 500; margin-bottom: 1.25rem; }
   <div class="row" id="style-chips"></div>
   <div class="section-label" style="margin-top:0.75rem">燈光氛圍</div>
   <div class="row" id="light-chips"></div>
+  <div class="section-label" style="margin-top:0.75rem">著重畫面焦點</div>
+  <div class="row" id="focus-chips"></div>
   <div class="section-label" style="margin-top:0.75rem">質感關鍵字（可多選）</div>
   <div class="row" id="texture-chips"></div>
 </div>
@@ -338,6 +340,13 @@ const TABLE_TYPES = [
 const STYLE_KEYS = ['romantic','minimalist','bohemian','glamour','garden','classic'];
 const LIGHTS = ['soft natural daylight','warm golden hour','candlelight glow','studio soft box'];
 const TEXTURES = ['silky smooth','delicate lace overlay','soft matte finish','subtle sheen','flowing chiffon folds','crisp linen texture'];
+const FOCUS_PARTS = [
+  { val: 'fabric',   label: '布料質感', prompt: 'hero shot emphasizing fabric texture and material quality, fine weave and surface detail' },
+  { val: 'overall',  label: '整體氛圍', prompt: 'wide scene composition showcasing overall atmosphere and ambiance of the setting' },
+  { val: 'tabletop', label: '桌上擺設', prompt: 'focus on styled tabletop arrangement, decorative props, candles and florals in full view' },
+  { val: 'color',    label: '色彩搭配', prompt: 'emphasis on color harmony and palette coordination across all elements' },
+  { val: 'detail',   label: '細節特寫', prompt: 'macro-style focus on fine details and intricate craftsmanship of the product' },
+];
 
 // ── State ────────────────────────────────────────────────────────────
 let state = {
@@ -351,6 +360,7 @@ let state = {
   style: 'romantic',
   light: 'soft natural daylight',
   textures: [],
+  focus: 'overall',
 };
 
 let batchOpen = false;
@@ -660,6 +670,16 @@ function renderMoodTab() {
     lightEl.appendChild(d);
   });
 
+  const focusEl = document.getElementById('focus-chips');
+  focusEl.innerHTML = '';
+  FOCUS_PARTS.forEach(f => {
+    const d = document.createElement('div');
+    d.className = 'chip' + (state.focus === f.val ? ' active' : '');
+    d.textContent = f.label;
+    d.onclick = () => { state.focus = f.val; renderMoodTab(); };
+    focusEl.appendChild(d);
+  });
+
   const texEl = document.getElementById('texture-chips');
   texEl.innerHTML = '';
   TEXTURES.forEach(t => {
@@ -714,12 +734,14 @@ function buildPrompt(colorOverride) {
   const tableStr = hasTableProduct ? `, on a ${state.table}` : '';
   const matStr = matDescs.length > 0 ? ' Fabric texture: ' + matDescs.join('; ') + '.' : '';
   const texStr = state.textures.length > 0 ? ' ' + state.textures.join(', ') + '.' : '';
+  const focusObj = FOCUS_PARTS.find(f => f.val === state.focus);
+  const focusStr = focusObj ? ' ' + focusObj.prompt + '.' : '';
 
   if (state.photoType === 'lifestyle') {
-    return `${styleDesc}. Wedding event scene, styled venue setting, ${prodStr}${tableStr} dressed for a wedding celebration, color palette: ${colorStr}.${matStr}${texStr} Ambient ${state.light}, warm and inviting atmosphere, soft decorative props, floral accents, candles, elegant table settings in background. No humans, no text, no logos. Photorealistic, editorial wedding photography style, rich atmospheric depth. --no ${NEG}`;
+    return `${styleDesc}. Wedding event scene, styled venue setting, ${prodStr}${tableStr} dressed for a wedding celebration, color palette: ${colorStr}.${matStr}${texStr}${focusStr} Ambient ${state.light}, warm and inviting atmosphere, soft decorative props, floral accents, candles, elegant table settings in background. No humans, no text, no logos. Photorealistic, editorial wedding photography style, rich atmospheric depth. --no ${NEG}`;
   }
 
-  return `${styleDesc}. Full product shot, entire product fully visible in frame, centered composition, nothing cropped. Camera: slightly elevated 3/4 front-diagonal view. Wedding party ${prodStr}${tableStr}, color palette: ${colorStr}.${matStr}${texStr} Lighting: ${state.light}, soft and even, clean white background. No humans, no text, no logos. Photorealistic, highly detailed fabric texture, sharp focus on material quality. --no ${NEG}`;
+  return `${styleDesc}. Full product shot, entire product fully visible in frame, centered composition, nothing cropped. Camera: slightly elevated 3/4 front-diagonal view. Wedding party ${prodStr}${tableStr}, color palette: ${colorStr}.${matStr}${texStr}${focusStr} Lighting: ${state.light}, soft and even, clean white background. No humans, no text, no logos. Photorealistic, highly detailed fabric texture, sharp focus on material quality. --no ${NEG}`;
 }
 
 function generatePrompt() {
