@@ -96,24 +96,65 @@ h3 { font-size: 18px; font-weight: 500; margin-bottom: 1.25rem; }
     <div class="prompt-box" id="prompt-output">（請先在前幾步選擇設定）</div>
     <button class="copy-btn" onclick="copyText('prompt-output', this)">複製 Prompt</button>
   </div>
-  <div class="card" style="margin-top:0.5rem">
-    <button class="copy-btn" id="gen-btn" onclick="generateImage()" style="background:#1a1a1a;color:#fff;border-color:#1a1a1a;font-size:15px;padding:12px">生成圖片</button>
-    <div id="gen-status" style="font-size:12px;color:#888;margin-top:8px;display:none"></div>
-    <div id="gen-result" style="margin-top:12px;display:none">
-      <img id="gen-img" style="width:100%;border-radius:6px" />
-      <a id="gen-download" download="generated.png" style="display:block;margin-top:8px">
-        <button class="copy-btn">下載圖片</button>
-      </a>
-    </div>
+  <div class="section-label">Negative Prompt</div>
+  <div class="card" style="padding:0.75rem 1.25rem">
+    <div class="neg-box" id="neg-output"></div>
+    <button class="copy-btn" onclick="copyText('neg-output', this)">複製 Negative Prompt</button>
   </div>
   <div id="series-section" style="display:none">
     <div class="section-label" style="margin-top:0.5rem">批量系列 Prompt（每色獨立）</div>
     <div id="series-blocks"></div>
   </div>
+
+  <!-- AI Image Generation -->
+  <div class="card" style="margin-top:1rem">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.75rem">
+      <div>
+        <div class="section-label" style="margin-bottom:2px">AI 生成圖片</div>
+        <div style="font-size:12px;color:#888">使用 FLUX.1 模型，依據上方 Prompt 直接生成</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px">
+        <select id="img-model" style="font-size:12px;padding:5px 8px;border:0.5px solid #ccc;border-radius:6px;background:#fff;color:#1a1a1a;cursor:pointer">
+          <option value="black-forest-labs/FLUX.1-schnell">FLUX Schnell（快速）</option>
+          <option value="black-forest-labs/FLUX.1-dev">FLUX Dev（高品質）</option>
+        </select>
+      </div>
+    </div>
+
+    <button id="gen-btn" onclick="generateImage()" style="width:100%;padding:11px;font-size:14px;cursor:pointer;background:#1a1a1a;border:none;border-radius:6px;color:#fff;font-weight:500;transition:opacity 0.15s">
+      ✦ 生成圖片
+    </button>
+
+    <div id="gen-status" style="display:none;margin-top:10px;font-size:12px;color:#888;text-align:center"></div>
+
+    <div id="gen-result" style="display:none;margin-top:12px">
+      <img id="gen-image" src="" alt="generated" style="width:100%;border-radius:6px;border:0.5px solid #e0ddd6">
+      <div style="display:flex;gap:8px;margin-top:8px">
+        <button onclick="downloadImage()" class="copy-btn" style="flex:1">↓ 下載圖片</button>
+        <button onclick="generateImage()" class="copy-btn" style="flex:1">↺ 重新生成</button>
+      </div>
+    </div>
+
+    <div id="gen-error" style="display:none;margin-top:10px;font-size:12px;color:#c0392b;background:#fdf0f0;padding:8px 12px;border-radius:6px"></div>
+  </div>
+
 </div>
 </div>
 
 <script>
+// ── Password Protection ──────────────────────────────────────────
+(function() {
+  const PASS = "yaya0857";
+  if (sessionStorage.getItem("auth") !== "ok") {
+    const input = prompt("請輸入密碼");
+    if (input !== PASS) {
+      document.body.innerHTML = "<div style='display:flex;align-items:center;justify-content:center;height:100vh;font-family:sans-serif;color:#888'>無權限存取</div>";
+      throw new Error("Unauthorized");
+    }
+    sessionStorage.setItem("auth", "ok");
+  }
+})();
+
 const COLORS = [
   { name: "White", hex: "#FFFFFF", desc: "pure white, crisp white" },
   { name: "Yellow", hex: "#FFD84D", desc: "bright yellow, sunny yellow" },
@@ -323,11 +364,11 @@ function buildPrompt(colorOverride) {
   return `${styleDesc}. ${ANGLE_DESC}. Wedding party ${prodList} styled product photography, highlighting ${focusList}. Color palette: ${colorStr}. ${textureStr}Lighting: ${state.light}, soft and even. No humans, no text, no logos. Highly detailed fabric texture, photorealistic, sharp focus on material quality.`;
 }
 
-const NEG_PROMPT = "blurry, low quality, people, hands, face, body, distorted fabric, incorrect colors, oversaturated, harsh shadows, watermark, text, logo, cartoon, painting, illustration, grainy";
-
 function generatePrompt() {
   const prompt = buildPrompt(null);
-  document.getElementById("prompt-output").textContent = prompt + " --no " + NEG_PROMPT;
+  const neg = "blurry, low quality, people, hands, face, body, distorted fabric, incorrect colors, oversaturated, harsh shadows, watermark, text, logo, cartoon, painting, illustration, grainy";
+  document.getElementById("prompt-output").textContent = prompt;
+  document.getElementById("neg-output").textContent = neg;
 
   const allColors = [...state.colors, ...state.customColors];
   const seriesSection = document.getElementById("series-section");
@@ -456,44 +497,76 @@ function renderAll() {
 
 renderAll();
 
+// ── AI Image Generation ──────────────────────────────────────────
 async function generateImage() {
   const prompt = document.getElementById("prompt-output").textContent;
   if (!prompt || prompt.includes("請先在前幾步")) {
-    alert("請先切換到輸出 Prompt 頁面產生 prompt");
+    alert("請先前往「輸出 Prompt」頁面產生 Prompt，再生成圖片。");
     return;
   }
+
+  const model = document.getElementById("img-model").value;
   const btn = document.getElementById("gen-btn");
   const status = document.getElementById("gen-status");
   const result = document.getElementById("gen-result");
+  const errBox = document.getElementById("gen-error");
+
   btn.disabled = true;
-  btn.textContent = "生成中...";
+  btn.textContent = "生成中…";
+  btn.style.opacity = "0.6";
   status.style.display = "block";
-  status.textContent = "圖片生成中，約需 20–40 秒...";
+  status.textContent = "⏳ 送出請求中，約需 10–30 秒…";
   result.style.display = "none";
+  errBox.style.display = "none";
+
   try {
-    const full = document.getElementById("prompt-output").textContent;
-    const [positivePrompt, negPart] = full.split(" --no ");
-    const res = await fetch("/.netlify/functions/generate-image", {
+    const res = await fetchWithRetry("/.netlify/functions/generate-image", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ prompt: positivePrompt.trim(), negative_prompt: negPart ? negPart.trim() : NEG_PROMPT }),
-    });
-    if (!res.ok) {
-      const text = await res.text();
-      throw new Error(text);
+      body: JSON.stringify({ prompt, model }),
+    }, 3, status);
+
+    const data = await res.json();
+
+    if (!res.ok || data.error) {
+      throw new Error(data.error || "生成失敗，請稍後重試");
     }
-    const blob = await res.blob();
-    const url = URL.createObjectURL(blob);
-    document.getElementById("gen-img").src = url;
-    document.getElementById("gen-download").href = url;
+
+    document.getElementById("gen-image").src = data.image;
     result.style.display = "block";
-    status.textContent = "生成完成！";
-  } catch (e) {
-    status.textContent = "錯誤：" + e.message;
+    status.style.display = "none";
+  } catch (err) {
+    errBox.textContent = "❌ " + err.message;
+    errBox.style.display = "block";
+    status.style.display = "none";
   } finally {
     btn.disabled = false;
-    btn.textContent = "生成圖片";
+    btn.textContent = "✦ 生成圖片";
+    btn.style.opacity = "1";
   }
+}
+
+async function fetchWithRetry(url, options, maxRetries, statusEl) {
+  for (let i = 0; i < maxRetries; i++) {
+    const res = await fetch(url, options);
+    if (res.status === 503) {
+      const secs = 20;
+      statusEl.textContent = `⏳ 模型載入中，${secs} 秒後自動重試（第 ${i+1} 次）…`;
+      await new Promise(r => setTimeout(r, secs * 1000));
+      continue;
+    }
+    return res;
+  }
+  throw new Error("模型暫時無法使用，請稍後再試");
+}
+
+function downloadImage() {
+  const img = document.getElementById("gen-image");
+  if (!img.src) return;
+  const a = document.createElement("a");
+  a.href = img.src;
+  a.download = "wedding-decor-" + Date.now() + ".png";
+  a.click();
 }
 </script>
 </body>

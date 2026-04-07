@@ -37,7 +37,11 @@ exports.handler = async function (event) {
 
   if (!res.ok) {
     const text = await res.text();
-    return { statusCode: res.status, body: text };
+    return {
+      statusCode: res.status,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ error: text }),
+    };
   }
 
   const buffer = await res.arrayBuffer();
@@ -45,8 +49,7 @@ exports.handler = async function (event) {
 
   return {
     statusCode: 200,
-    headers: { "Content-Type": "image/png" },
-    body: base64,
-    isBase64Encoded: true,
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ image: "data:image/png;base64," + base64 }),
   };
 };
