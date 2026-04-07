@@ -818,7 +818,7 @@ async function generateImage() {
   result.style.display = 'none'; errBox.style.display = 'none';
 
   try {
-    const res = await fetchWithRetry('/.netlify/functions/generate-image', {
+    const res = await fetchWithRetry('/api/generate-image', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ prompt: positivePrompt.trim(), model, negative_prompt: negPart ? negPart.trim() : undefined }),
