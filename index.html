@@ -3,56 +3,105 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>婚禮商品情境圖 Prompt 產生器 123 555</title>
+<title>婚禮商品情境圖 Prompt 產生器</title>
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: #f5f4f0; padding: 2rem 1rem; color: #1a1a1a; }
-.container { max-width: 820px; margin: 0 auto; }
+.container { max-width: 860px; margin: 0 auto; }
 h3 { font-size: 18px; font-weight: 500; margin-bottom: 1.25rem; }
-.badge { display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: 0; background: #e6f1fb; color: #185fa5; margin-left: 6px; vertical-align: middle; }
+.badge { display: inline-block; font-size: 11px; padding: 2px 8px; background: #e6f1fb; color: #185fa5; margin-left: 6px; vertical-align: middle; }
 .section-label { font-size: 11px; font-weight: 500; color: #888; text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 8px; }
 .card { background: #fff; border: 0.5px solid #e0ddd6; border-radius: 8px; padding: 1rem 1.25rem; margin-bottom: 1rem; }
 .row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 1rem; }
-.chip { display: inline-flex; align-items: center; gap: 6px; padding: 11px 20px; border: 0.5px solid #ccc; border-radius: 8px; font-size: 15px; cursor: pointer; background: #fff; color: #1a1a1a; transition: background 0.12s; user-select: none; white-space: nowrap; }
+.chip { display: inline-flex; align-items: center; gap: 6px; padding: 9px 16px; border: 0.5px solid #ccc; border-radius: 8px; font-size: 14px; cursor: pointer; background: #fff; color: #1a1a1a; transition: background 0.12s; user-select: none; white-space: nowrap; }
 .chip.active { background: #f0ede8; border-color: #999; font-weight: 500; }
-.color-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 8px; margin-bottom: 1rem; }
-.color-swatch { border-radius: 6px; padding: 9px 6px; text-align: center; cursor: pointer; border: 2px solid transparent; transition: border 0.15s; background: #fff; }
+.chip:hover { background: #f8f7f5; }
+.color-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(72px, 1fr)); gap: 8px; margin-bottom: 1rem; }
+.color-swatch { border-radius: 6px; padding: 8px 4px; text-align: center; cursor: pointer; border: 2px solid transparent; transition: border 0.15s; background: #fff; }
 .color-swatch.selected { border-color: #1a1a1a; }
-.swatch-dot { width: 26px; height: 26px; border-radius: 0; margin: 0 auto 5px; }
-.swatch-name { font-size: 11px; color: #888; line-height: 1.3; }
+.swatch-dot { width: 24px; height: 24px; border-radius: 50%; margin: 0 auto 4px; border: 0.5px solid rgba(0,0,0,0.1); }
+.swatch-name { font-size: 10px; color: #888; line-height: 1.3; }
 .custom-row { display: flex; gap: 8px; align-items: center; margin-bottom: 10px; }
-.custom-row input[type=color] { width: 44px; height: 44px; padding: 0; border-radius: 8px; border: none; cursor: pointer; flex-shrink: 0; -webkit-appearance: none; appearance: none; overflow: hidden; }
-.custom-row input[type=text] { flex: 1; padding: 10px 14px; border: 0.5px solid #ccc; border-radius: 8px; font-size: 14px; outline: none; }
+.custom-row input[type=color] { width: 40px; height: 40px; padding: 0; border-radius: 8px; border: none; cursor: pointer; flex-shrink: 0; -webkit-appearance: none; appearance: none; overflow: hidden; }
+.custom-row input[type=text] { flex: 1; padding: 9px 12px; border: 0.5px solid #ccc; border-radius: 8px; font-size: 14px; outline: none; }
 .custom-row input[type=text]:focus { border-color: #999; }
 .prompt-box { background: #f5f4f0; border-radius: 6px; padding: 1rem; font-size: 13px; line-height: 1.8; color: #1a1a1a; white-space: pre-wrap; word-break: break-word; min-height: 110px; }
-.neg-box { background: #f5f4f0; border-radius: 6px; padding: 0.75rem 1rem; font-size: 12px; line-height: 1.7; color: #666; white-space: pre-wrap; word-break: break-word; }
 .copy-btn { margin-top: 8px; width: 100%; padding: 10px; font-size: 14px; cursor: pointer; background: #fff; border: 0.5px solid #ccc; border-radius: 6px; color: #1a1a1a; transition: background 0.12s; }
 .copy-btn:hover { background: #f0ede8; }
-.tabs { display: flex; gap: 0; margin-bottom: 1.25rem; border-bottom: 0.5px solid #e0ddd6; }
-.tab { padding: 8px 16px; font-size: 13px; cursor: pointer; border-bottom: 2px solid transparent; color: #888; white-space: nowrap; border-radius: 6px 6px 0 0; }
+.tabs { display: flex; margin-bottom: 1.25rem; border-bottom: 0.5px solid #e0ddd6; }
+.tab { padding: 8px 16px; font-size: 13px; cursor: pointer; border-bottom: 2px solid transparent; color: #888; white-space: nowrap; }
 .tab.active { color: #1a1a1a; border-bottom: 2px solid #1a1a1a; font-weight: 500; }
-.note { font-size: 12px; color: #888; padding: 6px 10px; background: #f5f4f0; border-radius: 0; margin-bottom: 1rem; }
+.mat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 8px; margin-bottom: 0.75rem; }
+.mat-chip { border: 0.5px solid #ccc; border-radius: 8px; cursor: pointer; overflow: hidden; background: #fff; transition: border 0.15s; }
+.mat-chip.selected { border: 2px solid #1a1a1a; }
+.mat-chip img { width: 100%; height: 64px; object-fit: cover; display: block; }
+.mat-chip-label { font-size: 11px; padding: 5px 6px; text-align: center; line-height: 1.3; color: #1a1a1a; }
+.breadcrumb { font-size: 12px; color: #888; margin-bottom: 0.75rem; }
+.breadcrumb span { cursor: pointer; }
+.breadcrumb span:last-child { color: #1a1a1a; font-weight: 500; cursor: default; }
+.selected-tag { display: inline-flex; align-items: center; gap: 4px; padding: 6px 12px; background: #f0ede8; border: 0.5px solid #999; border-radius: 8px; font-size: 12px; font-weight: 500; }
+.selected-tag .rm { cursor: pointer; opacity: 0.5; margin-left: 2px; font-size: 14px; line-height: 1; }
+.selected-tag .rm:hover { opacity: 1; }
 .series-block { margin-bottom: 1rem; }
 .series-title { font-size: 12px; font-weight: 500; color: #666; margin-bottom: 6px; }
+.divider { border: none; border-top: 0.5px solid #e0ddd6; margin: 1rem 0; }
 </style>
 </head>
 <body>
 <div class="container">
-<h3>婚禮商品情境圖 Prompt 產生器 <span class="badge">特寫版</span></h3>
+<h3>婚禮商品情境圖 Prompt 產生器 <span class="badge">v2</span></h3>
 
 <div class="tabs">
-  <div class="tab active" onclick="switchTab('color')">配色</div>
-  <div class="tab" onclick="switchTab('product')">商品類型</div>
-  <div class="tab" onclick="switchTab('mood')">氛圍設定</div>
+  <div class="tab active" onclick="switchTab('product')">商品</div>
+  <div class="tab" onclick="switchTab('color')">顏色</div>
+  <div class="tab" onclick="switchTab('mood')">氛圍</div>
   <div class="tab" onclick="switchTab('output')">輸出 Prompt</div>
 </div>
 
-<div id="tab-color">
-  <div class="section-label">選擇主色調（可多選，建議 1–3 色）</div>
-  <div class="color-grid" id="color-grid"></div>
+<!-- ── Tab 1: 商品 ── -->
+<div id="tab-product">
+  <div id="selected-products-area" style="display:none;margin-bottom:1rem">
+    <div class="section-label">已選商品</div>
+    <div id="selected-tags" class="row" style="margin-bottom:0.5rem"></div>
+    <hr class="divider">
+  </div>
+
+  <div id="breadcrumb-wrap" style="display:none">
+    <div class="breadcrumb" id="breadcrumb"></div>
+  </div>
+
+  <div id="cat-section">
+    <div class="section-label">商品類別</div>
+    <div class="row" id="cat-chips"></div>
+  </div>
+
+  <div id="sub1-section" style="display:none">
+    <div class="section-label" id="sub1-label">子類別</div>
+    <div class="row" id="sub1-chips"></div>
+  </div>
+
+  <div id="sub2-section" style="display:none">
+    <div class="section-label" id="sub2-label">材質</div>
+    <div class="mat-grid" id="sub2-chips"></div>
+  </div>
+
+  <hr class="divider">
+  <div class="section-label">桌型</div>
+  <div class="row" id="table-chips"></div>
+</div>
+
+<!-- ── Tab 2: 顏色 ── -->
+<div id="tab-color" style="display:none">
+  <div class="card" style="margin-bottom:1rem">
+    <div class="section-label" style="margin-bottom:6px">SKU 解析</div>
+    <div class="custom-row">
+      <input type="text" id="sku-input" placeholder="貼入 SKU，如：TC-EMLD-001 或直接輸入 BLUSH、SAGE…" style="flex:1">
+      <button class="chip" onclick="parseSKU()" style="flex-shrink:0">解析顏色</button>
+    </div>
+    <div id="sku-result" style="font-size:12px;margin-top:4px;display:none"></div>
+  </div>
+
   <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-  <div class="section-label" style="margin-bottom:0">自訂顏色</div>
-  <div style="display:flex;align-items:center;gap:12px;">
     <span id="color-count" style="font-size:12px;color:#888">0 / 3 已選</span>
     <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:#888">
       <span>混合搭配</span>
@@ -62,25 +111,20 @@ h3 { font-size: 18px; font-weight: 500; margin-bottom: 1.25rem; }
       <span>個別出圖</span>
     </div>
   </div>
-</div>
-<div class="section-label">自訂顏色</div>
+
+  <div class="section-label">選擇色調（最多 3 色）</div>
+  <div class="color-grid" id="color-grid"></div>
+
+  <div class="section-label">自訂顏色</div>
   <div class="custom-row">
     <input type="color" id="custom-picker" value="#c8a8b8">
-    <input type="text" id="custom-text" placeholder="輸入顏色名稱（英文最佳），如：mauve, dusty teal">
+    <input type="text" id="custom-text" placeholder="顏色名稱（英文），如：mauve, dusty teal">
     <button class="chip" onclick="addCustom()">+ 加入</button>
   </div>
   <div id="custom-chips" class="row"></div>
 </div>
 
-<div id="tab-product" style="display:none">
-  <div class="note">針對商品特寫圖，場景描述會聚焦在布料質感與裝飾細節，不出現人物。</div>
-  <div class="section-label">主要商品（可多選）</div>
-  <div class="row" id="product-chips"></div>
-  <div class="section-label" style="margin-top:0.75rem">特寫重點</div>
-  <div class="row" id="focus-chips"></div>
-  <div id="focus-hint" style="font-size:11px;color:#888;margin-top:-6px;margin-bottom:8px;display:none"></div>
-</div>
-
+<!-- ── Tab 3: 氛圍 ── -->
 <div id="tab-mood" style="display:none">
   <div class="section-label">整體風格</div>
   <div class="row" id="style-chips"></div>
@@ -90,39 +134,35 @@ h3 { font-size: 18px; font-weight: 500; margin-bottom: 1.25rem; }
   <div class="row" id="texture-chips"></div>
 </div>
 
+<!-- ── Tab 4: 輸出 ── -->
 <div id="tab-output" style="display:none">
   <div class="section-label">主 Prompt</div>
   <div class="card">
     <div class="prompt-box" id="prompt-output">（請先在前幾步選擇設定）</div>
     <button class="copy-btn" onclick="copyText('prompt-output', this)">複製 Prompt</button>
   </div>
-  <div id="neg-output" style="display:none"></div>
+
+  <div id="batch-btn-wrap" style="display:none;margin-bottom:0.75rem">
+    <button class="copy-btn" onclick="toggleBatch()" id="batch-btn" style="margin-top:0">展開批量系列 Prompt</button>
+  </div>
   <div id="series-section" style="display:none">
-    <div class="section-label" style="margin-top:0.5rem">批量系列 Prompt（每色獨立）</div>
+    <div class="section-label">批量系列 Prompt（每色獨立）</div>
     <div id="series-blocks"></div>
   </div>
 
-  <!-- AI Image Generation -->
-  <div class="card" style="margin-top:1rem">
+  <div class="card" style="margin-top:0.5rem">
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.75rem">
       <div>
         <div class="section-label" style="margin-bottom:2px">AI 生成圖片</div>
         <div style="font-size:12px;color:#888">使用 FLUX.1 模型，依據上方 Prompt 直接生成</div>
       </div>
-      <div style="display:flex;align-items:center;gap:8px">
-        <select id="img-model" style="font-size:12px;padding:5px 8px;border:0.5px solid #ccc;border-radius:6px;background:#fff;color:#1a1a1a;cursor:pointer">
-          <option value="black-forest-labs/FLUX.1-schnell">FLUX Schnell（快速）</option>
-          <option value="black-forest-labs/FLUX.1-dev">FLUX Dev（高品質）</option>
-        </select>
-      </div>
+      <select id="img-model" style="font-size:12px;padding:5px 8px;border:0.5px solid #ccc;border-radius:6px;background:#fff;color:#1a1a1a;cursor:pointer">
+        <option value="black-forest-labs/FLUX.1-schnell">FLUX Schnell（快速）</option>
+        <option value="black-forest-labs/FLUX.1-dev">FLUX Dev（高品質）</option>
+      </select>
     </div>
-
-    <button id="gen-btn" onclick="generateImage()" style="width:100%;padding:11px;font-size:14px;cursor:pointer;background:#1a1a1a;border:none;border-radius:6px;color:#fff;font-weight:500;transition:opacity 0.15s">
-      ✦ 生成圖片
-    </button>
-
+    <button id="gen-btn" onclick="generateImage()" style="width:100%;padding:11px;font-size:14px;cursor:pointer;background:#1a1a1a;border:none;border-radius:6px;color:#fff;font-weight:500;transition:opacity 0.15s">✦ 生成圖片</button>
     <div id="gen-status" style="display:none;margin-top:10px;font-size:12px;color:#888;text-align:center"></div>
-
     <div id="gen-result" style="display:none;margin-top:12px">
       <img id="gen-image" src="" alt="generated" style="width:100%;border-radius:6px;border:0.5px solid #e0ddd6">
       <div style="display:flex;gap:8px;margin-top:8px">
@@ -130,15 +170,13 @@ h3 { font-size: 18px; font-weight: 500; margin-bottom: 1.25rem; }
         <button onclick="generateImage()" class="copy-btn" style="flex:1">↺ 重新生成</button>
       </div>
     </div>
-
     <div id="gen-error" style="display:none;margin-top:10px;font-size:12px;color:#c0392b;background:#fdf0f0;padding:8px 12px;border-radius:6px"></div>
   </div>
-
 </div>
-</div>
+</div><!-- /.container -->
 
 <script>
-// ── Password Protection ──────────────────────────────────────────
+// ── Password Protection ──────────────────────────────────────────────
 (function() {
   const PASS = "yaya0857";
   if (sessionStorage.getItem("auth") !== "ok") {
@@ -151,261 +189,574 @@ h3 { font-size: 18px; font-weight: 500; margin-bottom: 1.25rem; }
   }
 })();
 
-const COLORS = [
-  { name: "White", hex: "#FFFFFF", desc: "pure white, crisp white" },
-  { name: "Yellow", hex: "#FFD84D", desc: "bright yellow, sunny yellow" },
-  { name: "Orange", hex: "#F4874B", desc: "warm orange, vibrant orange" },
-  { name: "Red", hex: "#D93B3B", desc: "bold red, classic red" },
-  { name: "Green", hex: "#1A8C4E", desc: "rich green, emerald green" },
-  { name: "Blue", hex: "#3A5BA0", desc: "royal blue, classic blue" },
-  { name: "Pink", hex: "#FFBBCC", desc: "soft pink, baby pink, blush" },
-  { name: "Purple", hex: "#C9A8E0", desc: "soft purple, light lavender" },
-  { name: "Ivory", hex: "#FAFAE8", desc: "ivory, warm cream, off-white" },
-  { name: "Natural", hex: "#C8A87A", desc: "natural tan, warm beige, burlap" },
-  { name: "Gold", hex: "#C8A020", desc: "metallic gold, antique gold, warm brass" },
-  { name: "Silver & Gray", hex: "#D0D4DC", desc: "silver, soft gray, metallic silver" },
-  { name: "Black", hex: "#111111", desc: "classic black, deep black" },
-  { name: "French Toile", hex: "#DDEAF7", desc: "French toile, blue and white floral pattern, delicate porcelain print" },
-  { name: "Clear", hex: "#E8F0F5", desc: "clear acrylic and glass tableware, crystal-clear charger plates, transparent candle holders, gold-rimmed glass decor, reflective surfaces" },
-  { name: "Multicolor", hex: "gradient", desc: "multicolor, vibrant mixed colors, rainbow palette" },
-];
+// ── Navigation Data ──────────────────────────────────────────────────
+var NAV = {'Table Linens':{'Tablecloths':['Polyester','Scuba','Satin & Lamour','Spandex & Fitted','Sequin & Shimmer','Velvet & Flocking','Crinkle Leaf & Rosette','Jute Burlap & Lace','Commercial Grade'],'Table Skirts':['Polyester','Satin Shimmer','Ruffle Jute & Tulle'],'Table Runners':['Polyester & Scuba','Satin & Velvet','Sequin','Organza & Chiffon','Cheesecloth & Lace'],'Table Overlays':['Polyester','Satin & Taffeta','Sequin Sparkly','Sheer Organza & Lace'],'Cloth Napkins':['Polyester','Satin & Cheesecloth','Shimmer Sequin & Velvet','Commercial Grade']},'Chair Covers':{'Banquet Chair Covers':['Polyester & Satin','Spandex Fitted'],'Folding Chair Covers':['Polyester & Satin','Spandex Fitted'],'Chair Sashes':['Polyester','Satin & Taffeta','Organza & Chiffon','Glittering Sequin','Jute Burlap & Lace'],'Universal Chair Covers':[],'Chiavari Chair Cushions':['Chair Cushion Pads','Chiavari Slip Covers']},'Tabletop':{'Candelabras & Candle Holders':['Candelabras','Metal Candle Holders','Glass Candle Holders','Tabletop Candles'],'Centerpiece Stands':['Centerpiece Stands','Prearranged Florals'],'Floral Vases & Planters':['Glass Vases','Metal Vases','Vase Fillers','Tabletop Planters'],'Chargers & Drinkware':['Charger Plates','Premium Drinkware','Reusable Placemats','Mirrors & Wood Slices'],'Cake & Dessert Table':['Cake Stand & Risers','Tiered Cake Stands','Cake Toppers','Dessert Servewares']},'Drapes & Backdrops':{'Backdrop Drapes':['Floral & Greenery Panels','Sparkle & Sequin','Sheer Backdrops','Stretch Spandex','Crystal & Tassels','Solid Color Curtains'],'Backdrop Stands':['Backdrop Stands','Fitted Backdrop Covers'],'Ceiling Drapes':['Ceiling Drapes','Ceiling Hanging Decor'],'Fabric Bolts':['Polyester & Spandex','Satin & Taffeta','Velvet & Rosette','Chiffon & Tulle','Burlap & Lace','Sparkly Sequin']},'Floral & Botanical':{'Artificial Flowers':['Rose Bouquets','Peony Bouquets','Long Stems','Mixed Flowers'],'Plants & Greenery':['Eucalyptus & Boxwood','Leaf & Fern Bushes','Golden Sprays','Succulents'],'Garlands & Vines':['Greenery Vines & Wreaths','Floral Garlands','Hanging Plants'],'Accent Flowers':['Kissing Balls','Large Floral Decor','Flower Heads']},'Dinnerware':{'Disposable Plates':['Dinner Plates','Salad & Dessert Plates','Eco-Friendly Plates'],'Disposable Cups':['Champagne Flutes','All Purpose Glasses','Shot Glasses','Paper Cups'],'Charger Plates':['Acrylic Charger Plates','Glass & Mirror Charger','Disposable Chargers','Reusable Placemats']},'Decor & Lighting':{'Wedding Arches':['Prearranged Arch Floral','Arch Covers','Arch Drapes','Arches & Arbors'],'Prop Columns':['Pillar Stands','Pedestal Prop Covers'],'Candles':['Flameless Candles','Wax Candles'],'String Lights':[],'LED Letters':[]}};
 
-const PRODUCTS = [
-  { label: "🪑 全桌佈置", en: "full table setting with linens", focus: "fabric drape and texture" },
-  { label: "🪑 桌巾 Tablecloth", en: "tablecloth", focus: "fabric drape and texture" },
-  { label: "🪑 桌裙 Table Skirt", en: "table skirt", focus: "ruffled hem and fabric drape" },
-  { label: "🪑 桌旗 Table Runner", en: "table runner", focus: "fabric texture and centerpiece framing" },
-  { label: "🪑 桌面覆蓋 Table Overlay", en: "table overlay", focus: "layered fabric and sheer texture" },
-  { label: "🪑 餐巾 Cloth Napkin", en: "cloth napkin", focus: "folded linen detail and texture" },
-  { label: "🪑 椅套 Chair Cover", en: "chair cover", focus: "fitted fabric silhouette and drape" },
-  { label: "🪑 椅結 Chair Sash", en: "chair sash with bow", focus: "bow knot detail and ribbon texture" },
-  { label: "🪑 椅墊 Chiavari Cushion", en: "chiavari chair cushion", focus: "cushion texture and chair styling" },
-  { label: "🕯️ 燭台 Candelabra", en: "candelabra and candle holders", focus: "metal detail and candlelight glow" },
-  { label: "🌸 花藝架 Centerpiece Stand", en: "centerpiece stand with florals", focus: "height, floral arrangement and table depth" },
-  { label: "🌸 花瓶 Floral Vase", en: "floral vase arrangement", focus: "glass or metal vase and floral detail" },
-  { label: "🍽️ 底盤 Charger Plate", en: "charger plates and place settings", focus: "plate rim detail and table layering" },
-  { label: "🎂 蛋糕桌 Cake Stand", en: "cake stand and dessert display", focus: "tiered stand styling and dessert arrangement" },
-  { label: "🎨 背景布 Backdrop", en: "backdrop drape", focus: "fabric texture and backdrop fullness" },
-  { label: "🎨 天花板布幔 Ceiling Drape", en: "ceiling drape installation", focus: "flowing fabric canopy from above" },
-  { label: "🌺 花牆 Flower Wall Panel", en: "flower wall panel", focus: "floral density and petal texture" },
-  { label: "🌺 人造花束 Floral Bouquet", en: "artificial floral bouquet arrangement", focus: "petal detail and floral composition" },
-  { label: "🌿 花環藤蔓 Floral Garland", en: "floral garland and greenery vine", focus: "trailing greenery and floral accent" },
-  { label: "⛪ 走道地毯 Aisle Runner", en: "aisle runner", focus: "fabric texture and aisle perspective" },
-  { label: "⛪ 婚禮拱門 Wedding Arch", en: "wedding arch with draping", focus: "arch silhouette and floral or fabric accent" },
-  { label: "🎈 氣球拱門 Balloon Garland", en: "balloon garland arch", focus: "balloon cluster and color arrangement" },
-  { label: "💡 串燈 String Lights", en: "string lights decor", focus: "warm light bokeh and ambiance" },
-  { label: "💡 LED 字母 Marquee Letters", en: "LED marquee letters", focus: "illuminated lettering and ambient glow" },
-];
+var MT = {Polyester:'smooth matte fabric, soft rounded folds, clean even drape, gentle fluid creases',Scuba:'smooth scuba knit, minimal wrinkles, structured drape, broad smooth folds','Satin & Lamour':'high-gloss satin, sharp elegant folds, fluid cascading drape, strong specular highlights','Satin Shimmer':'high-gloss satin, sharp elegant folds, fluid cascading drape','Satin & Taffeta':'high-gloss satin, sharp elegant folds, specular highlights and deep shadows','Satin & Velvet':'high-gloss satin, sharp elegant folds, fluid cascading drape','Satin & Cheesecloth':'high-gloss satin, sharp elegant folds','Polyester & Satin':'smooth fabric, soft natural folds, clean drape, subtle sheen','Spandex & Fitted':'stretch spandex pulled taut, wrinkle-free smooth surface, no loose folds','Spandex Fitted':'stretch spandex pulled taut, wrinkle-free smooth surface','Sequin & Shimmer':'dense round sequins covering surface, thousands of sparkles, heavy stiff angular folds','Sequin Sparkly':'dense round sequins, glittering sparkle, heavy stiff angular folds','Glittering Sequin':'dense round sequins, glittering sparkle, stiff angular folds','Shimmer Sequin & Velvet':'mixed sequin and velvet, glittering sections contrast with soft plush velvet',Sequin:'dense sequin surface, glittering sparkle, heavy stiff angular folds','Velvet & Flocking':'crushed velvet, dense soft pile, directional nap variation, plush heavy drape, rounded soft creases','Crinkle Leaf & Rosette':'crinkle taffeta, all-over fine irregular wrinkles, iridescent two-tone shimmer, lightweight','Jute Burlap & Lace':'natural burlap jute, coarse open weave, visible woven threads, stiff heavy drape with angular creases','Commercial Grade':'heavy-duty polyester, crisp smooth surface, structured drape, clean straight folds'};
 
-const FOCUS = [
-  "布料質感與垂墜感", "刺繡與蕾絲細節", "折疊造型特寫",
-  "花藝與布料搭配", "燭台與餐具點綴", "整體桌景構圖",
-];
+var PM = {Tablecloths:'tablecloth draped over table','Table Skirts':'decorative table skirt','Table Runners':'table runner laid along table center','Cloth Napkins':'folded cloth napkin','Table Overlays':'sheer table overlay','Banquet Chair Covers':'banquet chair with fitted chair cover','Folding Chair Covers':'folding chair with chair cover','Chair Sashes':'chair with decorative sash tied in bow','Universal Chair Covers':'chair with universal chair cover','Chiavari Chair Cushions':'chiavari chair with cushion','Candelabras & Candle Holders':'elegant candelabra centerpiece on table','Centerpiece Stands':'floral centerpiece stand on table','Floral Vases & Planters':'floral vase arrangement on table','Chargers & Drinkware':'layered charger plate and drinkware table setting','Cake & Dessert Table':'styled cake and dessert table display','Backdrop Drapes':'fabric backdrop drape panel','Backdrop Stands':'backdrop stand with fabric cover','Ceiling Drapes':'draped ceiling fabric installation','Fabric Bolts':'rolled fabric bolt display','Artificial Flowers':'artificial flower bouquet arrangement','Plants & Greenery':'artificial greenery arrangement','Garlands & Vines':'decorative floral garland','Accent Flowers':'decorative accent floral piece','Disposable Plates':'elegant disposable plate tablesetting','Disposable Cups':'styled disposable cup arrangement','Charger Plates':'charger plate tablesetting','Wedding Arches':'decorated wedding arch with floral and fabric','Prop Columns':'decorative prop column and pedestal display',Candles:'decorative candle arrangement','String Lights':'string light decoration setup','LED Letters':'LED marquee letter display'};
 
-const STYLES = [
-  "Romantic & soft", "Modern minimalist", "Rustic bohemian",
-  "Luxe glamour", "Garden whimsical", "Timeless classic",
-];
+var NT = ['Backdrop Drapes','Backdrop Stands','Ceiling Drapes','Wedding Arches','Fabric Bolts','String Lights','LED Letters'];
 
-const LIGHTS = [
-  "soft natural daylight", "warm golden hour", "candlelight glow", "studio soft box",
-];
+var STYLES_MAP = {romantic:'soft romantic editorial style, dreamy pastel mood, gentle diffused light, delicate and airy atmosphere',minimalist:'modern minimalist editorial style, clean lines, restrained palette, generous negative space',bohemian:'rustic bohemian style, organic textures, warm earthy tones, relaxed layered styling',glamour:'luxurious glamour style, rich opulent textures, high-end editorial mood, polished surfaces',garden:'whimsical garden party style, fresh florals, light and breezy, romantic outdoor feel',classic:'timeless classic style, elegant symmetry, refined and polished, traditional wedding aesthetic'};
 
-const TEXTURES = [
-  "silky smooth", "delicate lace overlay", "soft matte finish",
-  "subtle sheen", "flowing chiffon folds", "crisp linen texture",
-];
+var STYLE_LABELS = {romantic:'Romantic & Soft',minimalist:'Modern Minimalist',bohemian:'Rustic Bohemian',glamour:'Luxe Glamour',garden:'Garden Whimsical',classic:'Timeless Classic'};
 
+var COLORS = [{n:'White',h:'#FFFFFF',p:'pure white, crisp white'},{n:'Ivory',h:'#FAFAE8',p:'ivory, warm cream, off-white'},{n:'Blush Pink',h:'#FFBBCC',p:'soft blush pink, baby pink'},{n:'Dusty Rose',h:'#D4A0A0',p:'dusty rose, muted antique pink'},{n:'Red',h:'#D93B3B',p:'bold red, classic red'},{n:'Burgundy',h:'#6E2230',p:'deep burgundy, wine red'},{n:'Orange',h:'#F4874B',p:'warm orange, vibrant orange'},{n:'Yellow',h:'#FFD84D',p:'bright yellow, sunny yellow'},{n:'Gold',h:'#C8A020',p:'metallic gold, antique gold, warm brass'},{n:'Champagne',h:'#F0E2C0',p:'champagne, warm gold shimmer'},{n:'Sage Green',h:'#8FA98F',p:'sage green, muted soft green'},{n:'Emerald',h:'#1A8C4E',p:'rich emerald green, deep jewel green'},{n:'Mint',h:'#B5E5D8',p:'soft mint, light aqua'},{n:'Navy Blue',h:'#1B2E5E',p:'deep navy blue, midnight blue'},{n:'Royal Blue',h:'#3A5BA0',p:'royal blue, classic cobalt blue'},{n:'Dusty Blue',h:'#7B9BB5',p:'dusty blue, muted cornflower blue'},{n:'Lavender',h:'#C9A8E0',p:'soft lavender, light purple'},{n:'Purple',h:'#6A3D9A',p:'deep purple, rich violet'},{n:'Silver',h:'#D0D4DC',p:'silver gray, metallic silver'},{n:'Gray',h:'#888780',p:'warm gray, stone gray'},{n:'Taupe',h:'#C8A87A',p:'natural tan, warm taupe'},{n:'Black',h:'#111111',p:'classic black, deep black'},{n:'Sequin Silver',h:'#E8E8F0',p:'shimmering silver sequin, glittering metallic sparkle'},{n:'Sequin Gold',h:'#E8D080',p:'glittering gold sequin, shimmering golden sparkle'}];
+
+var NEG = 'blurry, low quality, people, hands, face, body, stiff plastic fabric, unnatural folds, cropped table, partial table, cut off edges, incorrect colors, oversaturated, harsh shadows, watermark, text, logo, cartoon, illustration, grainy';
+
+// ── SKU Color Lookup ─────────────────────────────────────────────────
+var SKU_MAP = {
+  WHT:{n:'White',p:'pure white, crisp white',h:'#FFFFFF'},
+  IVR:{n:'Ivory',p:'ivory, warm cream, off-white',h:'#FAFAE8'},
+  BLK:{n:'Black',p:'classic black, deep black',h:'#111111'},
+  APPL:{n:'Apple Green',p:'apple green, fresh vivid green',h:'#4CAF50'},
+  BLUE:{n:'Baby Blue',p:'soft baby blue, light cornflower blue',h:'#89CFF0'},
+  BLU:{n:'Baby Blue',p:'soft baby blue, light cornflower blue',h:'#89CFF0'},
+  BURG:{n:'Burgundy',p:'deep burgundy, wine red',h:'#6E2230'},
+  CHMP:{n:'Champagne',p:'champagne, warm gold shimmer',h:'#F0E2C0'},
+  CHOC:{n:'Chocolate',p:'rich chocolate brown, dark brown',h:'#5C3317'},
+  GOLD:{n:'Gold',p:'metallic gold, antique gold, warm brass',h:'#C8A020'},
+  GD:{n:'Gold',p:'metallic gold, antique gold, warm brass',h:'#C8A020'},
+  GLD:{n:'Gold',p:'metallic gold, antique gold, warm brass',h:'#C8A020'},
+  NAT:{n:'Natural',p:'natural tan, warm taupe, burlap',h:'#C8A87A'},
+  LAV:{n:'Lavender',p:'soft lavender, light purple',h:'#C9A8E0'},
+  NAVY:{n:'Navy',p:'deep navy blue, midnight blue',h:'#1B2E5E'},
+  ORNG:{n:'Orange',p:'warm orange, vibrant orange',h:'#F4874B'},
+  PCH:{n:'Peach',p:'soft peach, light warm orange',h:'#FFCBA4'},
+  PINK:{n:'Pink',p:'soft pink, baby pink, blush',h:'#FFBBCC'},
+  PURP:{n:'Purple',p:'deep purple, rich violet',h:'#6A3D9A'},
+  RED:{n:'Red',p:'bold red, classic red',h:'#D93B3B'},
+  ROY:{n:'Royal Blue',p:'royal blue, classic cobalt blue',h:'#3A5BA0'},
+  TEA:{n:'Tea Green',p:'soft tea green, muted sage',h:'#8FA98F'},
+  SILV:{n:'Silver',p:'silver gray, metallic silver',h:'#D0D4DC'},
+  PERI:{n:'Periwinkle',p:'periwinkle blue, soft blue-violet',h:'#CCCCFF'},
+  TURQ:{n:'Turquoise',p:'turquoise, bright blue-green',h:'#40E0D0'},
+  WILL:{n:'Willow',p:'willow green, muted sage green',h:'#98B898'},
+  YEL:{n:'Yellow',p:'bright yellow, sunny yellow',h:'#FFD84D'},
+  CLR:{n:'Clear',p:'clear, transparent, crystal-clear',h:'#E8F0F5'},
+  SILV_BLK:{n:'Silver/Black',p:'silver and black two-tone combination',h:'#888888'},
+  WHT_BLK:{n:'White/Black',p:'white and black two-tone',h:'#AAAAAA'},
+  BLKRED:{n:'Black/Red',p:'black and red combination',h:'#550000'},
+  BLK_RED:{n:'Black/Red',p:'black and red combination',h:'#550000'},
+  BKRD:{n:'Black/Red',p:'black and red combination',h:'#550000'},
+  BRNT:{n:'Burnt Orange',p:'burnt orange, deep warm orange',h:'#CC5500'},
+  CORL:{n:'Coral',p:'coral, warm pink-orange',h:'#FF6B6B'},
+  CORAL:{n:'Coral',p:'coral, warm pink-orange',h:'#FF6B6B'},
+  FUSH:{n:'Fuchsia',p:'vibrant fuchsia, hot pink',h:'#FF00CC'},
+  LIME:{n:'Lime',p:'bright lime green, vivid green',h:'#AAFF00'},
+  ASST:{n:'Assorted',p:'assorted mixed colors, multicolor',h:'#CCCCCC'},
+  MIX:{n:'Assorted',p:'assorted mixed colors, multicolor',h:'#CCCCCC'},
+  HUNT:{n:'Hunter Green',p:'deep hunter green, forest green',h:'#355E3B'},
+  EGG:{n:'Eggplant',p:'deep eggplant, dark purple-brown',h:'#614051'},
+  EMR:{n:'Emerald',p:'rich emerald green, deep jewel green',h:'#1A8C4E'},
+  EMLD:{n:'Emerald',p:'rich emerald green, deep jewel green',h:'#1A8C4E'},
+  EMER:{n:'Emerald',p:'rich emerald green, deep jewel green',h:'#1A8C4E'},
+  AQUA:{n:'Aqua',p:'bright aqua, light cyan',h:'#00CFCF'},
+  COPP:{n:'Copper',p:'metallic copper, warm reddish-gold',h:'#B87333'},
+  ANTQ:{n:'Antique Gold',p:'antique gold, aged bronze',h:'#AE9768'},
+  MINT:{n:'Mint',p:'soft mint, light aqua',h:'#B5E5D8'},
+  MNT:{n:'Mint',p:'soft mint, light aqua',h:'#B5E5D8'},
+  GRAY:{n:'Charcoal Gray',p:'charcoal gray, dark warm gray',h:'#5C5C5C'},
+  GREY:{n:'Charcoal Gray',p:'charcoal gray, dark warm gray',h:'#5C5C5C'},
+  BLUSH:{n:'Blush',p:'soft blush pink, rose blush',h:'#DE8FA8'},
+  SVSV:{n:'Silver/Silver',p:'bright metallic silver, silver shimmer',h:'#C0C0C0'},
+  OLVE:{n:'Olive Green',p:'olive green, muted earthy green',h:'#808000'},
+  DENM:{n:'Denim Dark',p:'dark denim blue, deep indigo',h:'#1560BD'},
+  RG:{n:'Rose Gold',p:'rose gold, warm pink metallic',h:'#B76E79'},
+  VLT:{n:'Violet',p:'violet, blue-purple',h:'#8B00FF'},
+  TAN:{n:'Tan',p:'warm tan, light brown',h:'#D2B48C'},
+  WINE:{n:'Wine',p:'deep wine red, dark merlot',h:'#722F37'},
+  MAUV:{n:'Mauve',p:'dusty mauve, muted pink-purple',h:'#C8A0B8'},
+  SAGE:{n:'Sage Green',p:'sage green, muted soft green',h:'#8FA98F'},
+  TAUP:{n:'Taupe',p:'warm taupe, greige',h:'#B09A80'},
+  MAB:{n:'Marble',p:'marble, black and white swirl pattern',h:'#CCCCCC'},
+  '046GD':{n:'Blush/Gold',p:'blush pink and gold combination',h:'#D4A0A0'},
+  DR:{n:'Dusty Rose',p:'dusty rose, muted antique pink',h:'#D4A0A0'},
+  BEI:{n:'Beige',p:'warm beige, light sand',h:'#F5F5DC'},
+  LAVPK:{n:'Dark Lavender/Pink',p:'dark lavender and pink, purple-pink',h:'#9B59B6'},
+  DSG:{n:'Eucalyptus Sage',p:'eucalyptus sage green, soft muted green',h:'#7A9E7E'},
+  TERC:{n:'Terracotta',p:'terracotta, warm earthy orange-red',h:'#C1440E'},
+  TEAL:{n:'Teal',p:'teal, blue-green',h:'#008080'},
+  NUDE:{n:'Nude',p:'nude, soft skin tone beige',h:'#E3BC9A'},
+  PCOK:{n:'Peacock Teal',p:'peacock teal, deep blue-green',h:'#005F6B'},
+  CRM:{n:'Cream',p:'cream, warm off-white',h:'#FFF8E7'},
+  DKBN:{n:'Dark Brown',p:'dark brown, espresso',h:'#3B1F0A'},
+  WHGD:{n:'White+Gold',p:'white and gold combination',h:'#F5F5E0'},
+  WHTG:{n:'White+Gold',p:'white and gold combination',h:'#F5F5E0'},
+  BRN:{n:'Brown',p:'warm brown, natural brown',h:'#7B4F2E'},
+  ABW:{n:'Iridescent',p:'iridescent, color-shifting shimmer',h:'#D8E8F0'},
+  ABWB:{n:'Iridescent Blue',p:'iridescent blue, blue shimmer',h:'#B0C8E0'},
+  MULTI:{n:'Multi-Colored',p:'multicolor, vibrant mixed colors, rainbow palette',h:'#CCCCCC'},
+  FRO:{n:'Frosted',p:'frosted white, icy white',h:'#F0F8FF'},
+  OFW:{n:'Off-White',p:'off-white, warm white',h:'#FAF0E6'},
+  MOSS:{n:'Moss Green',p:'moss green, deep earthy green',h:'#8A9A5B'},
+  MOCH:{n:'Mocha Brown',p:'mocha brown, warm coffee brown',h:'#6F4E37'},
+  CRML:{n:'Caramel',p:'caramel, warm amber-brown',h:'#C68642'},
+  RNBW:{n:'Rainbow',p:'rainbow, full spectrum multicolor',h:'#CCCCCC'},
+  BRNZ:{n:'Bronze',p:'metallic bronze, warm brown-gold',h:'#CD7F32'},
+  WHEA:{n:'Wheat',p:'wheat, golden straw',h:'#F5DEB3'},
+  CRS:{n:'Cinnamon Rose',p:'cinnamon rose, warm rosy red',h:'#C05050'},
+  AMB:{n:'Amber',p:'amber, warm golden orange',h:'#FFBF00'},
+  CLGD:{n:'Clear+Gold',p:'clear and gold combination',h:'#E8E0C0'},
+  BKGD:{n:'Black+Gold',p:'black and gold combination',h:'#222200'},
+  HNGD:{n:'Hunter+Gold',p:'hunter green and gold combination',h:'#2E5E24'},
+  NATGD:{n:'Natural+Gold',p:'natural and gold combination',h:'#C8B878'},
+  '080GD':{n:'Dusty Rose+Gold',p:'dusty rose and gold combination',h:'#C89878'},
+  '086GD':{n:'Dusty Blue+Gold',p:'dusty blue and gold combination',h:'#7898A8'},
+  '087GD':{n:'Dusty Sage+Gold',p:'dusty sage and gold combination',h:'#8AAA7A'},
+  GDGD:{n:'Gold+Gold',p:'metallic gold, rich golden shimmer',h:'#C8A020'},
+  WHBK:{n:'White+Black',p:'white and black combination',h:'#AAAAAA'},
+  WHBL:{n:'White+Blue',p:'white and blue combination',h:'#AACCE0'},
+  CLBK:{n:'Clear+Black',p:'clear and black combination',h:'#444444'},
+  CLSV:{n:'Clear+Silver',p:'clear and silver combination',h:'#D8DCE0'},
+  CLRG:{n:'Clear+Glitter',p:'clear with glitter, sparkling transparent',h:'#E8E8F8'},
+  MGD:{n:'Matte Gold',p:'matte gold, soft warm gold',h:'#B8982A'},
+  COFF:{n:'Coffee',p:'coffee brown, warm dark brown',h:'#6F4E37'},
+  PRL:{n:'Pearl White',p:'pearl white, luminous white',h:'#F8F8F0'},
+  CLBLU:{n:'Clear+Blue',p:'clear and blue combination',h:'#B0C8E0'}
+};
+
+// ── Material Thumbnails ──────────────────────────────────────────────
+var IMGS = {"polyester":"data:image/webp;base64,UklGRogDAABXRUJQVlA4IHwDAADQFACdASpQAFAAPpFEnEslo6KhpTgJ6LASCWkADq0W4zR2DGndaL3k6cF7mGvTPDi90t7fGAmtIDbXt9LhWi9haZpx85L4GESUIto8CEq8MYGD4HkDyjuOt7R0wq2mVtC07xTMz3tk5M2kPUTj0c+nERuN0UMwCmXC0g4oJ+K7Q+BGl0u6HswLBRsjy5e/b6nuZgmT1e3++X+Q5NfZvRH93hJt279SeB6B9CInHorgAP79f8utMo3qGF8mwo4SnXWWkBNwYim5Anw9+uFKnsjgUGdd/+8JK3mtoVuuZBy8Dko9jGVvRhu3g3DerhNCPtKtRpxx81KOmH1oclAWe3z2hGTyUXiOkpsKVKr6IkXNT6PxDAbxh0TQcGO9EXNpVJIJoEcxIStjMijg0Beadn7v/MpFRWRjdedtFrMzr4v2IWnd/lSpiWb+yHaFiLlOB5IEsf7PjXaoK2PYgiOHUyTR//zgWi9zD34LdHOuk4sfmxiQqkVRZ8EPfvH9B+GGLnchO/JT+q5OBsYACSc3PlQt7+7RuY4kWpNZFA79aT2xwiuPAogCjzMhTvUZMEem3yPN+kze4MVfnGQ8FUJm3W4d+q4gc4zj2l/J8cPE1f+PqNKG9FLdicyyJBd03CHeADa0nSe5vWfLEt2LDHLvx10lmHMvGzqxYhitU4azd7bReolX9qi6+vgz9YRcsR8r7UvtwHwqjbRqdFnyDuBMhMxUZ4s0pWAXBiZmKhh+PJuSKJvgdGUrfbM08Y5ZOgUeuxUj5M9ER8W9udteeFt4oXE6BztWeDd9scegSvEnlxhkofQmj8t6PjdnIEZLLDcJgq867ICLooJN8rTMecCQ7rxKdGysIgASntg4dekKaO+VUJGzslkTN5cAmRLed+GZzc9+7kW7xmpfZqHHxuonAW/QmzDj1ashP1VNcGb+hc1g/HPnIqvDhHxcH5v9HjGEoZESRm3UAzxosWS74v3V82N/0/DQr/s7cG95Xd7x21zrpLak3vjzhOukkP3Lx3UsKjhY/uDXoxzOnq7yHKI0EC4RQLKtREhovQ3W/wzd+R1uYL/SXQbCpW9cmvHJq1RM6igk6xrX02GoiCocQk29w82rwZvYefiFpk9pYNzr1cijGQG90LNwcUdIcNqkpRtFYGeecc/hBXKs/j3wtGOiJN4SXGNqNxBaevApMAAA","scuba":"data:image/webp;base64,UklGRkAFAABXRUJQVlA4IDQFAABwFwCdASpQAFAAPpE8mUiloyIiJnZvMLASCUAX1vmJxdgHtC4B/d6VH/VbvTnvfOq30DekLRYax6qDCmvHMjuLpyqwZva1COlMZWFRy30L36nE0kxWEXDyOBSNXhk+xkHSCAvmOShFcEOugIBj8V+9ZdQyy3sOJP38ITfPboVzlROipR6pX2JUVbMqT2XnfUf3fOvRa1LKcmeo+clABYEgh6c3tr0XjfjGj6A5I1Eew4y2nsUTrQLTIiJs9PtJMBrnq7yAAN1tm/QWZwF2WlJACFMYVs0v/5gmYqKt2b//iG4miesiNP4wTKgMvGkGpU2ADRMzt3Jn3klsERL9UAu6pz8vy+FaPI5a2lMSmaffzTQYAyi7qUEIX5eGwR/afpFFI2yVrWiIpp9/Psxz9nJvpKb2kIvE3hBqPKNpN64ByeY0/q+yPDIzQkWsKE/OMjeCa+cPUhA5YG3oo9A6AOjVOj8Y0QGEJ+Pi0uWNEWfeDhdb7JhVWC1dmnpophLqgmxKJWhZfPfUdkmwTSqhEYxBt0mqRWM1WLLP8At8CneRAKmxQVC9b7vBCYpM4/sPqHyknvFSG4QJI/ubP6NNdMbVc3mMNbHG9QVYCxMHAQw6pa/GACxVRXlEKm6UlF2bv8/X4Q+gyW6fCsjWNRX5wijAxP+Q2lZBhb3fcTBYWIsdxt582tTPqn3HJVhyRVj5fWRMS2q3etOLkK0pcfQ7mF37dVXaPhvqVlW381IOuNlfBQdohrmicNUEyNUhhAFkvAiKQlTsUcWM1kLyf760pUB5vmXWkE05vHjzsHbYtpyiBU8DtWtyuSv4GE8yGFNE4gI8/9NythXHOTA93g6BeK2GkpWiesxrz87sce6E71/y+0ajaYaW6ktM56t52ThouNiZU13C984cjXZzgJKKHysVdnXbimSQu6E+C68uWMr3hrj17/esjC1rc5ywtdBzmElB2heDDaQQ5vHGdkdua8SCarRu5+KdvHrdz8YVv70q0weOQGgeJCj6tvadnZtmHFSTsHWcQX3HJgw9Qr49Ljt5Nfcc9r5cFk/RN9dW6Z7Lv4e5ZSwneQ7lphDZ3e4AlS3+6Jc2HoEcaENjsD81qOGcCBz2vENcqMIyici9nrfhtfvjCJ9ZhI9B0XQXYlPjw2FU55rHGKUUBKLLrttg2v03aJUyYyGPgzt12GKp3mbIeZYMQLjPgbOSir7MjdUiYr3Hzj0ZHdXu8DAAxww0ujc0Mm8+F54wZ0C7TiNv10qpXf/r5W0e4gZY04yl0mCg+MwI4isvIJUO0UmTDkLz9shbn3wrPQugwEUn1//aFg4d4OL0Ff724Rks2aijuzNweK8yRy1/6fv292Ogh6k2f3qjsjJVfzeJvjy28ynmk/PXgc9K1Fb8HVrBLSKbuD2ZogcpTcUj52c9ohWtHad3FU2r19AlNEyhXoWgvP06fq5n62JwRZhN1Glt0rGsejLEFwm3H5JV/mgKXw/hn4Mkibk7MtOJfpBoA6EL47kSDFKgewzwIb9xzd5sa5BqdcalOma9A7isTyp4GdvssKObWzVvdcotF4nRl84wk428t7x/9JQxqeDwemcQ1gNdbE4mVzlBaf4YUoiz2M3VZwwvJvP+CZf87Ua8XICvyRS4Pkw3E5yL/AZDyYZP0IoogzxGMQU3Xa4F5zHXucSFy0MjrmByWNUq1qaoRXAoxzRxFMa1h/D4N6RW8+zE6Oh1SIcU9m7SDD7ZKikR+USc7zqkNS3Ax6vMtHFyy/m8kyUJVLe2shfcYAA=","satin":"data:image/webp;base64,UklGRmYDAABXRUJQVlA4IFoDAABQEwCdASpQAFAAPpFCmkqlo6IhpTQMMLASCUAXZoCqNBzMMdyChUdJN8y0cbr/pRGLwvHeKeK2yuR34DM3pnXegK83eVuawV7AnlFoPfh+uSzPuudKizq+mbd1vHJvShsbiCJ2DLGZ9/YybNhVdaxh7xbteM/6rBbOmMfIp994Uf7N7b8Ukn//gQfk2J2PXctNXtsW85VfQma1Zf3021lC+ygwAP76sRzAgXdrRL1pEofzcddTdt4KdXyb/AfbxWTygTqtGCKw792aNkr3q0vTPcuBWyThRMmwtBkDmVIm3U4NGduHNEDRosN9wz/a82Ic+kTaku1J64PksSabSu5zcDk6jhGrIurmBFKpmsiFj1Elc7GJSMMiqR8lqNnRPgFmLPqs6p4g8EanogdUCXTwls4ensVKeL+hrVjGMYPM2SlUrhYiANs6TdPpqMeHI/7VvwZiizm95KHfssxbMel/b8Tqfgxnzc7XbCEromT6aZR1sHGOVJI0TQ0COWjbt+fEFFRwzHOsEgD2wNeQOAzlRFcWnj3sCT+LMGL6c+WH79L0GRxSpU2OyghIO2uXy+Ra/ZeCox3M8mcQ8zVXBf6P2nYxLxzK1EXFuTiODvE6mDeRQJSBuHzeSki2r+h2f+h/msMUH3CQunYF4plkZau3iRW8dxIfoMu/vFsTUk7miijt+FkTeN3OiSSJQp/mupADmJ5vFtLV+mAAzVtXnzXgv5h/Vg6LOYhPNyBcs+MX2dPXx6XxR6AgTdjPZKiEV/SZd6/K+Q0Wph3kzuvAOL0otoW4jZ+M0EPq3kgNJrqaRqbwSRb8d7fDATP4FdJtA/RZRAfqmQN/IwzyS9Nd5pZ69TkIGL7shIPn3xyV6qT6gFxHhEBuk83/gmR+pow4IuFxr00yKWIYoseNyM0gfmb0BU7ehZvTLBISs50kJMfLzCiLlt5gPS8kqn5bKBYgaPwKNpEs5ETQBV3YeDsSlLY7rMUu8aiDiwX1uX45QeTWpQuhaqZY+aj0FVbBORQP1GrcLNsSxtdWFIF/0eV/l4/+pNmmTyaR5fTpK5qQbu9fd0UUlbRTWfcWTSMRRENP0hzyVEEfBmunzZSLzNRUVEgWu4tJrRYkLn4i0nuaEdSoDsLM8zXX28vgAAA=","spandex":"data:image/webp;base64,UklGRvICAABXRUJQVlA4IOYCAABQFQCdASpQAFAAPpE6l0gloyIhLhXckLASCWkA1je04rM5v7g1OFVLmz75x0lgRPzwUgqScLJS08QRoti4j8yc1Kv/3H/pBN8i277WEmdRzkGj6QknbLxF6MZt4U1LMfGh03qJ4OJlaLef2CKEiGDOIZ0tFW2GAAdceGfsaBt1kJvreFl5KUnWKCDGjQkjmbjKE5g7WO9233vK7LMJY+QMNzR7qOkeBMnyx91K+peu26TrAAD+/ZsMnGZfBxJ2EV4zMLLnWHSLTtKiEehw2NkbPcEQfqAFbbr6YXP+AJ+y32tr98Wa+86dmgwp57Ptwj3/lFnTNR04Ps+ML2x2BupY+CM4fj8IMevkgdnQ7GsEFMGuuAjdFzHykMLSumEv29C7z+PEwWnCEclvuMm2JfrqA+F/xVPK0UtQAGNiXmdWt4ZLNLudLPQSCO/Cxhn2ArrnLF8bk0AXiwVHRnH31gYZTbbzPDzJbE6j4bqR4dDlAo2M4PA9s1UYu1KBnw4UtV4/wQKL2+gJFG9uAbiJ1p+kbg72l3OWbRwHSA1lYQWK1Z/bdgTxP2hnvu32DYtDOoUSZFghtY0AqEkvUXea5H11JffoRgoLmrGqU8fAjaQ7tkJD9daRNQktmMkFIIXyUW85eObBiuyT2GPnwui6CfKwIIydN2LT5DbrulLL8T3G0MXMTZkajkLZgmjOj+DKB8DAf8AmUpcTAdn2KH/2IeNxHC9vqpdkEhR9x5HUDcLtAfKJSQ8R1Ml1Jkxw1DbgEUCO6Sgaz7GntNhoMgZdHu7qG2CeItzvcf2MNAVtQeVdgRN2mrmRQ7hgJWsTBbQV8xt1xyV6iQFWIdtwpmbGVmLlxeaeVzm48Az345DEiVxVbO6LUyB7liqPyYMqmfgSkMFCZ9fCcLbBnKGNiilcj1Ejxvq+lFxrMhpEUoeugJi0tEipI1zBK4q8VdoobvYquO0y1eLSUUNIJyCVGs90vnFR98AAAAAA","sequin":"data:image/webp;base64,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","velvet":"data:image/webp;base64,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","crinkle":"data:image/webp;base64,UklGRkQEAABXRUJQVlA4IDgEAADQFgCdASpQAFAAPpFAmUklo6IhJ7VdCLASCWcA0B+xKx81DuI7MvZrMQifsQmjqy9DzfgI6xPVwPQE33OzUq4oNBCH6BW8HoHiAwXQGa4n42RM3TY40o1DS78IcnJsMF5b/wM2Xec/ZkIvfFcqevevfxRwGTT1VRgTleNNXz3OE3f/0bFHno9ztEu75gXboD5Lid2dCOomq/qyxaPHvNeMF2QrlY+KLHfZY13E30Do9OVqaYLEO7zIONf3Io3AgAD+lXYx1D27wZhxBdEUHmX7MZXrHvT/laKyl9rvfEYoTCfFNI9vnJsxaOoJ5pJlUuSi4kqvgHLME+kw+CGEvRM9I3DjZj3tJ2jrIxKudqJB+V6ReYY7/RjafHC+Ge6tZSN59Hd0ZboBcZqmumesHYkMPwO/flMQzV6ESR2N4jYgouisD9ysitY6hLlPJr+b8cv/52DfnxZjD8dJmixLZNdYH7umkhN5XBN6fE205KY1B03fZK9nEDKkxq5pZFLlrOVup83KUPwyhMR0afeU40eFJCfFscF/Bihk0eftzhJKMTt0AMWJspUos32Lsz2Jf0ms5hyfus2OtLT2Dj0FPN5ucb2b/ksPjK9GQJJfHE7qpvYBRDL74EliQaStPN+4zf8TlqpHcgZbQhSuk2AAVdWn058m5n7N4NRBqBqWM96LaJJNWEpVa+KgiKOly91k8sKmLogRfDsQ7VCThwPAmoTud0+HFyqg09IVJ2ayym265i8rLVsOoaG3ZWMTw3vVMecCtRN5SkSljT5c9b+L3lYSewnFppYqh10NLHAv0KcrKilZsuXHrl7lxTs0qJbLH+IppfsYoGn0fhbVvWIwfhH/ZFjb5SSj/Q+L3VaXq750V1T75TfGusd3fKFJIErTfKZt2JSyLoSPw2E6Bi04PrH5pbpE99GIm5lHdQ2NwxioIXlmjJdIykTk/bmJj3GY0zwqx9mXbuokUGlUbMK7XulN/WU621Qk7GS2YdGWbzqnCgI9BevplhVWsC2Y49XYI0YeSRe6ZoR3VZvMWGee5bzTWECgx+tl0eGYC4DZ+Hqk73W+NcEwHRnfD74Ozk2PiTARKxcR6/6lD0p4gaVYX/wPBxENoQNb1f63wDaQJjDFDseKHpD1P9Lj2VV22ZTUwPxG4vNjWxxS6nq9R2OQ+M25YDih2NgpLHwl7nxveyJgvga19DuTjtIRhdIKEpUhdsIstdXgZN1h+rQ8APr1nCyjPRun9HHkAwvkVosF33pNNCIH0yy+U2naNxEAGZ1AFvEaBhqnXnlRIt0DomYvY29Uu8C8jpkeSs5QCatUJDaq5SrNS6dQCdDT6QAdSK8C4/4Q/m7fgqJYbRBVeXtZ76ic0vYas2EAQ48JGmUXI/wBUQmzWusXecdO7ZZuBFcUo6ASGbN/FjVux1fcGTSusKN8XIZI0ECAAAA==","rosette":"data:image/webp;base64,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","burlap":"data:image/webp;base64,UklGRhYEAABXRUJQVlA4IAoEAADQFwCdASpQAFAAPpE4mEeloyKhL1QOILASCWcA0IKAF++yMGsXnl5Bbm7T5nsQHlg+6FWUl/gM8F2V8cmODjoTWunc9jQG/m1x0zUlnBSo8tkmGCZy1SavBSLr/LeJ/tqQFKi+tDwJjZ+qtabdJAf+qJ14ONAhPEDfDJy1SRABQw/W4IBGrE+MbQ00fncZUtW3iWXiK7umq7aAvWC3IvS8bSGEfVPvefoI0izSpKEPN6D99z6MpFSoVA5Yp0wpSLoOd48of8gAANCUCnl9ZQC4JjJSC57/0KNlExT/qRhi6VPf0RqixCIrRnln98Zll+p6wBtyDe9HyKNUi/H7OSGThBEAocSmO/CwRzngUSqvGQVcpzW1832/kdocC9m/8Wl8lTOIXMzaQcLTbmQU7Rr60Xg5P3SSv6e/V7WUziRb0ByXzWz7QIigGFTfIx+OzyMD11Aq8TaoJc9JKbQAyDULN/iWq1QuuT2YfLUY065hJY3Ul4g6mvHkZc6fWiK9mmgYPdk4+uddBPEM2PVdF2DwUIPa8BO9ik6NLGVKyNkJdYrqF950E4b/TraY53P52g7+0iKGK9bPb9T+7eYSv4igtxyF4Kewnww0N7P5PwW6awIMmm7UnHRZ6dTDZOVlN1s2kaV40ftmsiCumw2kNOgk0bJISQxA01123QmVzF3SSxx/fIqu9XimzVP6Ab5C2ZD+TUIrjU/LgTdw1aeG3rYmATIgdysxooyARZBAssuxGDM13UmVPkRaMDffyg22KTQz9/jOmMPij30Pbc1Q33gpmTRp2dx5CTGQwbz23Hep9HfLpk55KcIMlykfUm50ePzUye0tHbPAWDfkTCNCTeAkQZ6M4yz+xeZ8Qm1L5S2sxHfP8MtfJ6wtAbTHCYVTKGjL7ztGNA3k4eQeWgKzaGb/M+vVyT9e6ZVTvnqpkJ4RqcGKu+QvocGgZQNpqtVfDfA2i5gvudCuBL6LMcqCPViv6j3XfzlivXRnEhjYG8YMlZUzX/xynTsniEoYBY+b8aW58+A99fsXRSxmft3sg+SFVSpxyyDb3C0qfmfK49rfhHa4/5bOODUR4epE3eOUCSvmAtRlW5UMwYbdWO58s+mCSNoG6yXbQ48i3CCi+wIEs7Mb9UoL8+6FH07DwnqoDT6EPz3wTIEueinp2ruzk7Bo/Hz5F8yiAgMkqFobreUBieHHM+dr2xw0l2npL6/mO06l0X1fiPO6B0OtnmuWnZ8S67tfHcgOXc5fKeUo1vk+hSmzs2xtCwgtQ4kQbN+kX0h1CYF2gQbNY8NQU3N+iIZzoT7ba8yVp5vCBsSjWMDTPlG6gpNVgmHc4z0zpWaTtjLOUD80zh6LaKOHCDTrpSSzJ+jKH513JgAAAA=="};
+
+var IM = {Polyester:'polyester',Scuba:'scuba','Satin & Lamour':'satin','Satin Shimmer':'satin','Satin & Taffeta':'satin','Satin & Velvet':'satin','Satin & Cheesecloth':'satin','Polyester & Satin':'polyester','Spandex & Fitted':'spandex','Spandex Fitted':'spandex','Sequin & Shimmer':'sequin','Sequin Sparkly':'sequin','Glittering Sequin':'sequin','Shimmer Sequin & Velvet':'sequin',Sequin:'sequin','Velvet & Flocking':'velvet','Crinkle Leaf & Rosette':'crinkle','Jute Burlap & Lace':'burlap','Commercial Grade':'polyester'};
+
+// ── Constants ────────────────────────────────────────────────────────
+const TABLE_TYPES = [
+  {val:'round table', label:'Round'},
+  {val:'square table', label:'Square'},
+  {val:'rectangular banquet table', label:'Rectangular Banquet'},
+];
+const STYLE_KEYS = ['romantic','minimalist','bohemian','glamour','garden','classic'];
+const LIGHTS = ['soft natural daylight','warm golden hour','candlelight glow','studio soft box'];
+const TEXTURES = ['silky smooth','delicate lace overlay','soft matte finish','subtle sheen','flowing chiffon folds','crisp linen texture'];
+
+// ── State ────────────────────────────────────────────────────────────
 let state = {
-  colors: [],
+  selectedProducts: [],       // [{cat, sub1, sub2, key}]
+  nav: { cat: null, sub1: null },
+  table: 'round table',
+  colors: [],                 // color prompt desc strings
   customColors: [],
-  colorMode: "mix",
-  products: ["🪑 全桌佈置"],
-  focus: [],
-  style: "Romantic & soft",
-  light: "soft natural daylight",
+  colorMode: 'mix',
+  style: 'romantic',
+  light: 'soft natural daylight',
   textures: [],
 };
 
-const ANGLE_DESC = "camera angle: 45-degree diagonal view from slightly above, never overhead, never straight-on. Close-up table-level perspective showing depth and fabric drape. Fixed consistent framing.";
+let batchOpen = false;
 
+// ── Tab Switching ────────────────────────────────────────────────────
+function switchTab(name) {
+  ['product','color','mood','output'].forEach((t, i) => {
+    document.getElementById('tab-'+t).style.display = t === name ? 'block' : 'none';
+    document.querySelectorAll('.tab')[i].classList.toggle('active', t === name);
+  });
+  if (name === 'output') generatePrompt();
+}
+
+// ── Product Tab ──────────────────────────────────────────────────────
+function renderProductTab() {
+  renderSelectedTags();
+  renderBreadcrumb();
+  renderCatChips();
+  renderSub1Chips();
+  renderSub2Chips();
+  renderTableChips();
+}
+
+function renderCatChips() {
+  const el = document.getElementById('cat-chips');
+  el.innerHTML = '';
+  Object.keys(NAV).forEach(cat => {
+    const d = document.createElement('div');
+    d.className = 'chip' + (state.nav.cat === cat ? ' active' : '');
+    d.textContent = cat;
+    d.onclick = () => { state.nav.cat = cat; state.nav.sub1 = null; renderProductTab(); };
+    el.appendChild(d);
+  });
+}
+
+function renderSub1Chips() {
+  const sec = document.getElementById('sub1-section');
+  if (!state.nav.cat) { sec.style.display = 'none'; return; }
+  sec.style.display = 'block';
+  document.getElementById('sub1-label').textContent = state.nav.cat;
+  const el = document.getElementById('sub1-chips');
+  el.innerHTML = '';
+  Object.keys(NAV[state.nav.cat]).forEach(sub1 => {
+    const d = document.createElement('div');
+    d.className = 'chip' + (state.nav.sub1 === sub1 ? ' active' : '');
+    d.textContent = sub1;
+    d.onclick = () => {
+      state.nav.sub1 = sub1;
+      const mats = NAV[state.nav.cat][sub1];
+      if (!mats || mats.length === 0) {
+        addProduct(state.nav.cat, sub1, null);
+      } else {
+        renderProductTab();
+      }
+    };
+    el.appendChild(d);
+  });
+}
+
+function renderSub2Chips() {
+  const sec = document.getElementById('sub2-section');
+  if (!state.nav.cat || !state.nav.sub1) { sec.style.display = 'none'; return; }
+  const mats = NAV[state.nav.cat][state.nav.sub1];
+  if (!mats || mats.length === 0) { sec.style.display = 'none'; return; }
+  sec.style.display = 'block';
+  document.getElementById('sub2-label').textContent = state.nav.sub1 + ' — 材質';
+  const el = document.getElementById('sub2-chips');
+  el.innerHTML = '';
+  mats.forEach(mat => {
+    const imgKey = IM[mat] || null;
+    const isSelected = state.selectedProducts.some(p => p.cat === state.nav.cat && p.sub1 === state.nav.sub1 && p.sub2 === mat);
+    const d = document.createElement('div');
+    d.className = 'mat-chip' + (isSelected ? ' selected' : '');
+    d.onclick = () => addProduct(state.nav.cat, state.nav.sub1, mat);
+    if (imgKey && IMGS[imgKey]) {
+      const img = document.createElement('img');
+      img.src = IMGS[imgKey];
+      d.appendChild(img);
+    }
+    const lbl = document.createElement('div');
+    lbl.className = 'mat-chip-label';
+    lbl.textContent = mat;
+    d.appendChild(lbl);
+    el.appendChild(d);
+  });
+}
+
+function addProduct(cat, sub1, sub2) {
+  const key = cat + '|' + sub1 + '|' + (sub2 || '');
+  if (!state.selectedProducts.some(p => p.key === key)) {
+    state.selectedProducts.push({ cat, sub1, sub2, key });
+  }
+  renderProductTab();
+}
+
+function removeProduct(key) {
+  state.selectedProducts = state.selectedProducts.filter(p => p.key !== key);
+  renderProductTab();
+}
+
+function renderSelectedTags() {
+  const area = document.getElementById('selected-products-area');
+  const el = document.getElementById('selected-tags');
+  if (state.selectedProducts.length === 0) { area.style.display = 'none'; return; }
+  area.style.display = 'block';
+  el.innerHTML = '';
+  state.selectedProducts.forEach(p => {
+    const label = [p.sub1 || p.cat, p.sub2].filter(Boolean).join(' / ');
+    const d = document.createElement('div');
+    d.className = 'selected-tag';
+    d.innerHTML = label + ' <span class="rm" onclick="removeProduct(\'' + p.key.replace(/'/g,"\\'") + '\')">×</span>';
+    el.appendChild(d);
+  });
+}
+
+function renderBreadcrumb() {
+  const wrap = document.getElementById('breadcrumb-wrap');
+  const el = document.getElementById('breadcrumb');
+  if (!state.nav.cat) { wrap.style.display = 'none'; return; }
+  wrap.style.display = 'block';
+  const parts = [state.nav.cat, state.nav.sub1].filter(Boolean);
+  el.innerHTML = parts.map((p, i) => {
+    const isLast = i === parts.length - 1;
+    return `<span onclick="${isLast ? '' : 'navTo(' + i + ')'}" style="${!isLast ? 'text-decoration:underline;cursor:pointer' : 'cursor:default'}">${p}</span>`;
+  }).join(' <span style="color:#ccc">›</span> ');
+}
+
+function navTo(level) {
+  if (level === 0) state.nav.sub1 = null;
+  renderProductTab();
+}
+
+function renderTableChips() {
+  const el = document.getElementById('table-chips');
+  el.innerHTML = '';
+  TABLE_TYPES.forEach(t => {
+    const d = document.createElement('div');
+    d.className = 'chip' + (state.table === t.val ? ' active' : '');
+    d.textContent = t.label;
+    d.onclick = () => { state.table = t.val; renderTableChips(); };
+    el.appendChild(d);
+  });
+}
+
+// ── Color Tab ────────────────────────────────────────────────────────
 function renderColorGrid() {
-  document.getElementById("color-grid").innerHTML = COLORS.map((c, i) => `
-    <div class="color-swatch ${state.colors.includes(c.desc) ? 'selected' : ''}" onclick="toggleColor(${i})">
-      <div class="swatch-dot" style="${c.hex === 'gradient' ? 'background: linear-gradient(135deg, #ffb3ba, #ffdfba, #ffffba, #baffc9, #bae1ff, #d4baff)' : 'background:' + c.hex}"></div>
-      <div class="swatch-name">${c.name}</div>
+  document.getElementById('color-grid').innerHTML = COLORS.map((c, i) => `
+    <div class="color-swatch ${state.colors.includes(c.p) ? 'selected' : ''}" onclick="toggleColor(${i})">
+      <div class="swatch-dot" style="background:${c.h}"></div>
+      <div class="swatch-name">${c.n}</div>
     </div>
   `).join('');
 }
 
 function toggleColor(i) {
-  const d = COLORS[i].desc;
-  if (state.colors.includes(d)) {
-    state.colors = state.colors.filter(x => x !== d);
+  const p = COLORS[i].p;
+  if (state.colors.includes(p)) {
+    state.colors = state.colors.filter(x => x !== p);
   } else {
-    const total = state.colors.length + state.customColors.length;
-    if (total >= 3) return;
-    state.colors.push(d);
+    if (state.colors.length + state.customColors.length >= 3) return;
+    state.colors.push(p);
   }
   renderColorGrid();
   updateColorCount();
 }
 
-function addCustom() {
-  const t = document.getElementById("custom-text").value.trim();
-  if (!t) return;
+function updateColorCount() {
   const total = state.colors.length + state.customColors.length;
-  if (total >= 3) return;
+  const el = document.getElementById('color-count');
+  el.textContent = total + ' / 3 已選';
+  el.style.color = total >= 3 ? '#c0392b' : '#888';
+  renderColorGrid();
+}
+
+function addCustom() {
+  const t = document.getElementById('custom-text').value.trim();
+  if (!t) return;
+  if (state.colors.length + state.customColors.length >= 3) return;
   state.customColors.push(t);
-  document.getElementById("custom-text").value = "";
+  document.getElementById('custom-text').value = '';
   renderCustomChips();
   updateColorCount();
 }
 
 function renderCustomChips() {
-  const el = document.getElementById("custom-chips");
-  el.innerHTML = "";
-  state.customColors.forEach(function(c, i) {
-    const div = document.createElement("div");
-    div.className = "chip active";
-    div.textContent = c + " ";
-    const x = document.createElement("span");
-    x.textContent = "×";
-    x.style.cssText = "cursor:pointer;margin-left:3px;opacity:0.5";
-    x.addEventListener("click", function(e) { e.stopPropagation(); removeCustom(i); });
-    div.appendChild(x);
-    el.appendChild(div);
+  const el = document.getElementById('custom-chips');
+  el.innerHTML = '';
+  state.customColors.forEach((c, i) => {
+    const d = document.createElement('div');
+    d.className = 'chip active';
+    d.textContent = c + ' ';
+    const x = document.createElement('span');
+    x.textContent = '×';
+    x.style.cssText = 'cursor:pointer;margin-left:2px;opacity:0.5';
+    x.onclick = (e) => { e.stopPropagation(); state.customColors.splice(i, 1); renderCustomChips(); updateColorCount(); };
+    d.appendChild(x);
+    el.appendChild(d);
   });
 }
 
-function removeCustom(i) { state.customColors.splice(i, 1); renderCustomChips(); updateColorCount(); }
-
-function updateColorCount() {
-  const total = state.colors.length + state.customColors.length;
-  const el = document.getElementById("color-count");
-  if (el) {
-    el.textContent = total + " / 3 已選";
-    el.style.color = total >= 3 ? "#c0392b" : "#888";
+function toggleColorMode() {
+  state.colorMode = state.colorMode === 'mix' ? 'separate' : 'mix';
+  const toggle = document.getElementById('mode-toggle');
+  const knob = document.getElementById('mode-knob');
+  if (state.colorMode === 'separate') {
+    toggle.style.background = '#1a1a1a'; knob.style.left = '20px';
+  } else {
+    toggle.style.background = '#ccc'; knob.style.left = '2px';
   }
+}
+
+// ── SKU Parser ───────────────────────────────────────────────────────
+function parseSKU() {
+  const raw = document.getElementById('sku-input').value.trim().toUpperCase();
+  const resultEl = document.getElementById('sku-result');
+  if (!raw) return;
+
+  // Split by common separators and test each segment
+  const segments = raw.split(/[-_/\s]+/);
+  const found = [];
+
+  // Also try compound codes (e.g. "046GD", "080GD")
+  const compoundCodes = Object.keys(SKU_MAP).filter(k => k.match(/\d/));
+
+  for (const seg of segments) {
+    // Try exact match first
+    if (SKU_MAP[seg]) {
+      found.push({ code: seg, ...SKU_MAP[seg] });
+      continue;
+    }
+    // Try compound codes that appear within segment
+    for (const code of compoundCodes) {
+      if (seg.includes(code) && SKU_MAP[code]) {
+        found.push({ code, ...SKU_MAP[code] });
+      }
+    }
+  }
+
+  // Also try the full string as a code
+  if (found.length === 0 && SKU_MAP[raw]) {
+    found.push({ code: raw, ...SKU_MAP[raw] });
+  }
+
+  if (found.length === 0) {
+    resultEl.style.display = 'block';
+    resultEl.style.color = '#c0392b';
+    resultEl.textContent = '找不到對應顏色，請確認 SKU 代碼';
+    return;
+  }
+
+  const added = [];
+  for (const match of found) {
+    if (state.colors.length + state.customColors.length < 3) {
+      if (!state.colors.includes(match.p)) {
+        state.colors.push(match.p);
+        added.push(match.n);
+      }
+    }
+  }
+
   renderColorGrid();
+  updateColorCount();
+
+  resultEl.style.display = 'block';
+  resultEl.style.color = added.length ? '#1a8c4e' : '#888';
+  resultEl.textContent = added.length
+    ? '已加入：' + added.join('、')
+    : '顏色已在選單中或已達上限';
 }
 
-function renderChips(id, items, key, multi=true) {
-  document.getElementById(id).innerHTML = items.map(item => `
-    <div class="chip ${isActive(key, item, multi) ? 'active' : ''}" onclick="toggleChip('${key}','${item.replace(/'/g,"\\'")}',${multi})">${item}</div>
-  `).join('');
+// ── Mood Tab ─────────────────────────────────────────────────────────
+function renderMoodTab() {
+  const styleEl = document.getElementById('style-chips');
+  styleEl.innerHTML = '';
+  STYLE_KEYS.forEach(k => {
+    const d = document.createElement('div');
+    d.className = 'chip' + (state.style === k ? ' active' : '');
+    d.textContent = STYLE_LABELS[k];
+    d.onclick = () => { state.style = k; renderMoodTab(); };
+    styleEl.appendChild(d);
+  });
+
+  const lightEl = document.getElementById('light-chips');
+  lightEl.innerHTML = '';
+  LIGHTS.forEach(l => {
+    const d = document.createElement('div');
+    d.className = 'chip' + (state.light === l ? ' active' : '');
+    d.textContent = l;
+    d.onclick = () => { state.light = l; renderMoodTab(); };
+    lightEl.appendChild(d);
+  });
+
+  const texEl = document.getElementById('texture-chips');
+  texEl.innerHTML = '';
+  TEXTURES.forEach(t => {
+    const d = document.createElement('div');
+    d.className = 'chip' + (state.textures.includes(t) ? ' active' : '');
+    d.textContent = t;
+    d.onclick = () => {
+      state.textures = state.textures.includes(t)
+        ? state.textures.filter(x => x !== t)
+        : [...state.textures, t];
+      renderMoodTab();
+    };
+    texEl.appendChild(d);
+  });
 }
 
-function isActive(k, v, multi) {
-  return multi ? (Array.isArray(state[k]) && state[k].includes(v)) : state[k] === v;
-}
-
-function toggleChip(k, v, multi) {
-  if (multi) {
-    state[k] = state[k].includes(v) ? state[k].filter(x => x !== v) : [...state[k], v];
-  } else { state[k] = v; }
-  renderAll();
+// ── Prompt Building ──────────────────────────────────────────────────
+function buildColorStr(allColors) {
+  if (allColors.length === 0) return 'neutral warm tones';
+  if (allColors.length === 1) return allColors[0];
+  if (state.colorMode === 'mix') {
+    return 'primary color: ' + allColors[0] + ', ' +
+      allColors.slice(1).map((c, i) => (i === 0 ? 'accent color: ' : 'secondary accent: ') + c).join(', ');
+  }
+  return allColors[0];
 }
 
 function buildPrompt(colorOverride) {
   const allColors = colorOverride ? [colorOverride] : [...state.colors, ...state.customColors];
-  let colorStr;
-  if (colorOverride) {
-    colorStr = colorOverride;
-  } else if (allColors.length === 0) {
-    colorStr = "neutral warm tones";
-  } else if (allColors.length === 1) {
-    colorStr = allColors[0];
-  } else if (state.colorMode === "mix") {
-    const primary = "primary color: " + allColors[0];
-    const accents = allColors.slice(1).map(function(c, i) {
-      return (i === 0 ? "accent color: " : "secondary accent: ") + c;
-    });
-    colorStr = [primary, ...accents].join(", ");
-  } else {
-    colorStr = allColors[0];
-  }
-  const prodList = state.products.map(p => {
-    const found = PRODUCTS.find(x => x.label === p);
-    return found ? found.en : p;
-  }).join(", ") || "full table setting with linens";
-  // Auto-use product default focus if none selected
-  let resolvedFocus = state.focus;
-  if (resolvedFocus.length === 0 && state.products.length > 0) {
-    const firstProduct = PRODUCTS.find(x => x.label === state.products[0]);
-    if (firstProduct) resolvedFocus = [firstProduct.focus];
-  }
-  const focusList = resolvedFocus.map(f => {
-    const map = {
-      "布料質感與垂墜感": "fabric drape and texture",
-      "刺繡與蕾絲細節": "embroidery and lace detail",
-      "折疊造型特寫": "folded linen closeup",
-      "花藝與布料搭配": "floral and linen pairing",
-      "燭台與餐具點綴": "candlestick and tableware accents",
-      "整體桌景構圖": "full table composition",
-    };
-    return map[f] || f;
-  }).join(", ");
-  const textureStr = state.textures.length > 0 ? state.textures.join(", ") + ", " : "";
+  const colorStr = buildColorStr(allColors);
+  const styleDesc = STYLES_MAP[state.style] || state.style;
 
-  const styleMap = {
-    "Romantic & soft": "soft romantic editorial style, dreamy pastel mood, gentle diffused light, delicate and airy atmosphere",
-    "Modern minimalist": "modern minimalist editorial style, clean lines, restrained palette, negative space",
-    "Rustic bohemian": "rustic bohemian style, organic textures, warm earthy tones, relaxed layered styling",
-    "Luxe glamour": "luxurious glamour style, rich textures, opulent details, high-end editorial mood",
-    "Garden whimsical": "whimsical garden party style, fresh florals, light and breezy, romantic outdoor feel",
-    "Timeless classic": "timeless classic style, elegant symmetry, refined and polished, traditional wedding aesthetic",
-  };
-  const styleDesc = styleMap[state.style] || state.style + " aesthetic";
-  return `${styleDesc}. ${ANGLE_DESC}. Wedding party ${prodList} styled product photography, highlighting ${focusList}. Color palette: ${colorStr}. ${textureStr}Lighting: ${state.light}, soft and even. No humans, no text, no logos. Highly detailed fabric texture, photorealistic, sharp focus on material quality.`;
+  let prodDescs = [];
+  let matDescs = [];
+  let hasTableProduct = false;
+
+  if (state.selectedProducts.length === 0) {
+    prodDescs = ['full table setting with linens'];
+    hasTableProduct = true;
+  } else {
+    state.selectedProducts.forEach(p => {
+      const productKey = p.sub1 || p.cat;
+      const desc = PM[productKey] || PM[p.cat] || 'wedding party product';
+      prodDescs.push(desc);
+      if (p.sub2 && MT[p.sub2]) matDescs.push(MT[p.sub2]);
+      const isNoTable = NT.includes(p.sub1) || NT.includes(p.cat);
+      if (!isNoTable) hasTableProduct = true;
+    });
+  }
+
+  const prodStr = prodDescs.join(' and ');
+  const tableStr = hasTableProduct ? `, on a ${state.table}` : '';
+  const matStr = matDescs.length > 0 ? ' Fabric texture: ' + matDescs.join('; ') + '.' : '';
+  const texStr = state.textures.length > 0 ? ' ' + state.textures.join(', ') + '.' : '';
+
+  return `${styleDesc}. Full product shot, entire product fully visible in frame, centered composition, nothing cropped. Camera: slightly elevated 3/4 front-diagonal view. Wedding party ${prodStr}${tableStr}, color palette: ${colorStr}.${matStr}${texStr} Lighting: ${state.light}, soft and even, clean white background. No humans, no text, no logos. Photorealistic, highly detailed fabric texture, sharp focus on material quality. --no ${NEG}`;
 }
 
 function generatePrompt() {
   const prompt = buildPrompt(null);
-  const neg = "blurry, low quality, people, hands, face, body, distorted fabric, incorrect colors, oversaturated, harsh shadows, watermark, text, logo, cartoon, painting, illustration, grainy";
-  document.getElementById("prompt-output").textContent = prompt + " --no " + neg;
-  document.getElementById("neg-output").textContent = neg;
+  document.getElementById('prompt-output').textContent = prompt;
 
   const allColors = [...state.colors, ...state.customColors];
-  const seriesSection = document.getElementById("series-section");
-  const seriesBlocks = document.getElementById("series-blocks");
+  const batchWrap = document.getElementById('batch-btn-wrap');
+  const seriesSec = document.getElementById('series-section');
+
   if (allColors.length > 1) {
-    seriesSection.style.display = "block";
-    seriesBlocks.innerHTML = '';
-    allColors.forEach((c, i) => {
-      const promptText = buildPrompt(c);
-      const block = document.createElement('div');
-      block.className = 'series-block card';
-      const title = document.createElement('div');
-      title.className = 'series-title';
-      title.textContent = '系列 ' + (i+1) + ' — ' + c;
-      const box = document.createElement('div');
-      box.className = 'prompt-box';
-      box.style.cssText = 'min-height:80px;font-size:12px;border-radius:0';
-      box.textContent = promptText;
-      const btn = document.createElement('button');
-      btn.className = 'copy-btn';
-      btn.textContent = '複製';
-      btn.addEventListener('click', () => {
-        fallbackCopy(promptText);
-        btn.textContent = '已複製！';
-        setTimeout(() => btn.textContent = '複製', 1500);
-      });
-      block.appendChild(title);
-      block.appendChild(box);
-      block.appendChild(btn);
-      seriesBlocks.appendChild(block);
-    });
+    batchWrap.style.display = 'block';
+    if (!batchOpen) seriesSec.style.display = 'none';
+    else renderBatch(allColors);
   } else {
-    seriesSection.style.display = "none";
+    batchWrap.style.display = 'none';
+    seriesSec.style.display = 'none';
+    batchOpen = false;
   }
 }
 
+function toggleBatch() {
+  batchOpen = !batchOpen;
+  const btn = document.getElementById('batch-btn');
+  const sec = document.getElementById('series-section');
+  if (batchOpen) {
+    btn.textContent = '收起批量系列 Prompt';
+    sec.style.display = 'block';
+    renderBatch([...state.colors, ...state.customColors]);
+  } else {
+    btn.textContent = '展開批量系列 Prompt';
+    sec.style.display = 'none';
+  }
+}
+
+function renderBatch(allColors) {
+  const el = document.getElementById('series-blocks');
+  el.innerHTML = '';
+  allColors.forEach((c, i) => {
+    const text = buildPrompt(c);
+    const block = document.createElement('div');
+    block.className = 'series-block card';
+    const title = document.createElement('div');
+    title.className = 'series-title';
+    title.textContent = '系列 ' + (i+1) + ' — ' + c;
+    const box = document.createElement('div');
+    box.className = 'prompt-box';
+    box.style.cssText = 'min-height:80px;font-size:12px';
+    box.textContent = text;
+    const btn = document.createElement('button');
+    btn.className = 'copy-btn';
+    btn.textContent = '複製';
+    btn.onclick = () => { fallbackCopy(text); btn.textContent = '已複製！'; setTimeout(() => btn.textContent = '複製', 1500); };
+    block.appendChild(title);
+    block.appendChild(box);
+    block.appendChild(btn);
+    el.appendChild(block);
+  });
+}
+
+// ── Clipboard ────────────────────────────────────────────────────────
 function copyText(id, btn) {
-  const text = document.getElementById(id).textContent;
-  fallbackCopy(text);
+  fallbackCopy(document.getElementById(id).textContent);
   const orig = btn.textContent;
-  btn.textContent = "已複製！";
+  btn.textContent = '已複製！';
   setTimeout(() => btn.textContent = orig, 1500);
 }
 
@@ -414,131 +765,49 @@ function fallbackCopy(text) {
   ta.value = text;
   ta.style.cssText = 'position:fixed;top:-9999px;left:-9999px;opacity:0';
   document.body.appendChild(ta);
-  ta.focus();
-  ta.select();
+  ta.focus(); ta.select();
   try { document.execCommand('copy'); } catch(e) {}
   document.body.removeChild(ta);
-  if (navigator.clipboard) {
-    navigator.clipboard.writeText(text).catch(()=>{});
-  }
+  if (navigator.clipboard) navigator.clipboard.writeText(text).catch(()=>{});
 }
 
-function copyDirect(btn) {
-  const text = btn.previousElementSibling.textContent;
-  fallbackCopy(text);
-  btn.textContent = "已複製！";
-  setTimeout(() => btn.textContent = "複製", 1500);
-}
-
-function switchTab(name) {
-  ["color","product","mood","output"].forEach((t, i) => {
-    document.getElementById("tab-"+t).style.display = t === name ? "block" : "none";
-    document.querySelectorAll(".tab")[i].classList.toggle("active", t === name);
-  });
-  if (name === "output") generatePrompt();
-}
-
-function toggleColorMode() {
-  state.colorMode = state.colorMode === "mix" ? "separate" : "mix";
-  const toggle = document.getElementById("mode-toggle");
-  const knob = document.getElementById("mode-knob");
-  if (state.colorMode === "separate") {
-    toggle.style.background = "#1a1a1a";
-    knob.style.left = "20px";
-  } else {
-    toggle.style.background = "#ccc";
-    knob.style.left = "2px";
-  }
-}
-
-function renderProductChips() {
-  const el = document.getElementById("product-chips");
-  el.innerHTML = "";
-  PRODUCTS.forEach(function(p) {
-    const div = document.createElement("div");
-    div.className = "chip" + (state.products.includes(p.label) ? " active" : "");
-    div.textContent = p.label;
-    div.addEventListener("click", function() { toggleProduct(p.label); });
-    el.appendChild(div);
-  });
-}
-function toggleProduct(label) {
-  if (state.products.includes(label)) {
-    state.products = state.products.filter(x => x !== label);
-  } else {
-    state.products.push(label);
-  }
-  renderAll();
-}
-
-function renderAll() {
-  renderColorGrid();
-  renderProductChips();
-  renderChips("focus-chips", FOCUS, "focus", true);
-  renderChips("style-chips", STYLES, "style", false);
-  renderChips("light-chips", LIGHTS, "light", false);
-  renderChips("texture-chips", TEXTURES, "textures", true);
-  renderCustomChips();
-  const hint = document.getElementById("focus-hint");
-  if (hint) {
-    if (state.products.length > 0 && state.focus.length === 0) {
-      const first = PRODUCTS.find(p => p.label === state.products[0]);
-      hint.textContent = first ? "auto focus: " + first.focus : "";
-      hint.style.display = "block";
-    } else {
-      hint.style.display = "none";
-    }
-  }
-}
-
-renderAll();
-
-// ── AI Image Generation ──────────────────────────────────────────
+// ── AI Image Generation ──────────────────────────────────────────────
 async function generateImage() {
-  const prompt = document.getElementById("prompt-output").textContent;
-  if (!prompt || prompt.includes("請先在前幾步")) {
-    alert("請先前往「輸出 Prompt」頁面產生 Prompt，再生成圖片。");
+  const fullPrompt = document.getElementById('prompt-output').textContent;
+  if (!fullPrompt || fullPrompt.includes('請先在前幾步')) {
+    alert('請先前往「輸出 Prompt」頁面產生 Prompt，再生成圖片。');
     return;
   }
+  const [positivePrompt, negPart] = fullPrompt.split(' --no ');
+  const model = document.getElementById('img-model').value;
+  const btn = document.getElementById('gen-btn');
+  const status = document.getElementById('gen-status');
+  const result = document.getElementById('gen-result');
+  const errBox = document.getElementById('gen-error');
 
-  const model = document.getElementById("img-model").value;
-  const btn = document.getElementById("gen-btn");
-  const status = document.getElementById("gen-status");
-  const result = document.getElementById("gen-result");
-  const errBox = document.getElementById("gen-error");
-
-  btn.disabled = true;
-  btn.textContent = "生成中…";
-  btn.style.opacity = "0.6";
-  status.style.display = "block";
-  status.textContent = "⏳ 送出請求中，約需 10–30 秒…";
-  result.style.display = "none";
-  errBox.style.display = "none";
+  btn.disabled = true; btn.textContent = '生成中…'; btn.style.opacity = '0.6';
+  status.style.display = 'block'; status.textContent = '⏳ 送出請求中，約需 10–30 秒…';
+  result.style.display = 'none'; errBox.style.display = 'none';
 
   try {
-    const res = await fetchWithRetry("/.netlify/functions/generate-image", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ prompt: prompt.split(" --no ")[0].trim(), model, negative_prompt: document.getElementById("neg-output").textContent || undefined }),
+    const res = await fetchWithRetry('/.netlify/functions/generate-image', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ prompt: positivePrompt.trim(), model, negative_prompt: negPart ? negPart.trim() : undefined }),
     }, 3, status);
 
     const data = await res.json();
+    if (!res.ok || data.error) throw new Error(data.error || '生成失敗，請稍後重試');
 
-    if (!res.ok || data.error) {
-      throw new Error(data.error || "生成失敗，請稍後重試");
-    }
-
-    document.getElementById("gen-image").src = data.image;
-    result.style.display = "block";
-    status.style.display = "none";
+    document.getElementById('gen-image').src = data.image;
+    result.style.display = 'block';
+    status.style.display = 'none';
   } catch (err) {
-    errBox.textContent = "❌ " + err.message;
-    errBox.style.display = "block";
-    status.style.display = "none";
+    errBox.textContent = '❌ ' + err.message;
+    errBox.style.display = 'block';
+    status.style.display = 'none';
   } finally {
-    btn.disabled = false;
-    btn.textContent = "✦ 生成圖片";
-    btn.style.opacity = "1";
+    btn.disabled = false; btn.textContent = '✦ 生成圖片'; btn.style.opacity = '1';
   }
 }
 
@@ -546,24 +815,30 @@ async function fetchWithRetry(url, options, maxRetries, statusEl) {
   for (let i = 0; i < maxRetries; i++) {
     const res = await fetch(url, options);
     if (res.status === 503) {
-      const secs = 20;
-      statusEl.textContent = `⏳ 模型載入中，${secs} 秒後自動重試（第 ${i+1} 次）…`;
-      await new Promise(r => setTimeout(r, secs * 1000));
+      statusEl.textContent = `⏳ 模型載入中，20 秒後自動重試（第 ${i+1} 次）…`;
+      await new Promise(r => setTimeout(r, 20000));
       continue;
     }
     return res;
   }
-  throw new Error("模型暫時無法使用，請稍後再試");
+  throw new Error('模型暫時無法使用，請稍後再試');
 }
 
 function downloadImage() {
-  const img = document.getElementById("gen-image");
+  const img = document.getElementById('gen-image');
   if (!img.src) return;
-  const a = document.createElement("a");
+  const a = document.createElement('a');
   a.href = img.src;
-  a.download = "wedding-decor-" + Date.now() + ".png";
+  a.download = 'wedding-decor-' + Date.now() + '.png';
   a.click();
 }
+
+// ── Init ─────────────────────────────────────────────────────────────
+renderProductTab();
+renderColorGrid();
+renderCustomChips();
+updateColorCount();
+renderMoodTab();
 </script>
 </body>
 </html>
