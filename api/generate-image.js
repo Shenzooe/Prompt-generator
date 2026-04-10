@@ -39,9 +39,9 @@ module.exports = async function handler(req, res) {
       return res.status(200).json({ image: "data:image/jpeg;base64," + b64 });
 
     } else {
-      // gemini-2.0-flash-preview-image-generation
+      // gemini-2.0-flash-exp-image-generation
       const geminiRes = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-preview-image-generation:generateContent?key=${apiKey}`,
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp-image-generation:generateContent?key=${apiKey}`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
