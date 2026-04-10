@@ -3,14 +3,7 @@ module.exports = async function handler(req, res) {
     return res.status(405).json({ error: "Method Not Allowed" });
   }
 
-  const { prompt, model = "imagen-3.0-generate-002", listModels } = req.body || {};
-
-  if (listModels) {
-    const apiKey = process.env.GEMINI_API_KEY;
-    const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`);
-    const data = await r.json();
-    return res.status(200).json(data.models?.map(m => m.name) || data);
-  }
+  const { prompt, model = "imagen-4.0-generate-001" } = req.body || {};
 
   if (!prompt) {
     return res.status(400).json({ error: "Missing prompt" });
@@ -22,9 +15,9 @@ module.exports = async function handler(req, res) {
   }
 
   try {
-    if (model === "imagen-3.0-generate-002") {
+    if (model.startsWith("imagen-")) {
       const geminiRes = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/imagen-3.0-generate-002:predict?key=${apiKey}`,
+        `https://generativelanguage.googleapis.com/v1beta/models/${model}:predict?key=${apiKey}`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -46,9 +39,8 @@ module.exports = async function handler(req, res) {
       return res.status(200).json({ image: "data:image/jpeg;base64," + b64 });
 
     } else {
-      // gemini-2.0-flash-exp-image-generation
       const geminiRes = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp-image-generation:generateContent?key=${apiKey}`,
+        `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
