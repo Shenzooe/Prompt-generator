@@ -9,9 +9,9 @@ module.exports = async function handler(req, res) {
     return res.status(400).json({ error: "Missing prompt" });
   }
 
-  const apiKey = process.env.GEMINI_TOKEN;
+  const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) {
-    return res.status(500).json({ error: "GEMINI_TOKEN not configured" });
+    return res.status(500).json({ error: "GEMINI_API_KEY not configured" });
   }
 
   try {
