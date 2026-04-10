@@ -1,20 +1,16 @@
 module.exports = async function handler(req, res) {
-  if (req.method === "GET") {
-    const apiKey = process.env.GEMINI_API_KEY;
-    const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`);
-    const data = await r.json();
-    const imageModels = (data.models || []).filter(m =>
-      m.supportedGenerationMethods?.some(method => method === "predict" || method === "generateContent") &&
-      (m.name.includes("imagen") || m.name.includes("image"))
-    );
-    return res.status(200).json(imageModels.map(m => ({ name: m.name, methods: m.supportedGenerationMethods })));
-  }
-
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method Not Allowed" });
   }
 
-  const { prompt, model = "imagen-3.0-generate-002" } = req.body || {};
+  const { prompt, model = "imagen-3.0-generate-002", listModels } = req.body || {};
+
+  if (listModels) {
+    const apiKey = process.env.GEMINI_API_KEY;
+    const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`);
+    const data = await r.json();
+    return res.status(200).json(data.models?.map(m => m.name) || data);
+  }
 
   if (!prompt) {
     return res.status(400).json({ error: "Missing prompt" });
