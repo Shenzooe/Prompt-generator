@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gemini API 測試</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: #f5f4f0; padding: 2rem 1rem; color: #1a1a1a; }
+.container { max-width: 720px; margin: 0 auto; }
+h1 { font-size: 22px; font-weight: 600; margin-bottom: 1.5rem; }
+.card { background: #fff; border: 0.5px solid #e0ddd6; border-radius: 8px; padding: 1.25rem; margin-bottom: 1rem; }
+.card h2 { font-size: 15px; font-weight: 600; margin-bottom: 0.75rem; color: #444; }
+.card p { font-size: 13px; color: #888; margin-bottom: 0.75rem; }
+textarea { width: 100%; padding: 10px 12px; border: 0.5px solid #ccc; border-radius: 6px; font-size: 14px; resize: vertical; font-family: inherit; min-height: 72px; outline: none; }
+textarea:focus { border-color: #999; }
+input[type=text] { width: 100%; padding: 10px 12px; border: 0.5px solid #ccc; border-radius: 6px; font-size: 14px; outline: none; }
+input[type=text]:focus { border-color: #999; }
+.btn { display: inline-block; margin-top: 10px; padding: 9px 20px; font-size: 14px; cursor: pointer; background: #1a1a1a; color: #fff; border: none; border-radius: 6px; }
+.btn:hover { background: #333; }
+.btn:disabled { background: #999; cursor: not-allowed; }
+pre { margin-top: 10px; background: #f5f4f0; border-radius: 6px; padding: 12px; font-size: 12px; line-height: 1.7; white-space: pre-wrap; word-break: break-all; max-height: 300px; overflow-y: auto; }
+.badge { display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: 4px; margin-left: 6px; vertical-align: middle; }
+.badge.ok { background: #e6f9f0; color: #1a7a4a; }
+.badge.err { background: #fde8e8; color: #c0392b; }
+label { font-size: 13px; color: #555; display: block; margin-bottom: 4px; }
+.field { margin-bottom: 10px; }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>Gemini API 測試</h1>
+
+  <!-- 共用 Model 設定 -->
+  <div class="card">
+    <h2>共用設定</h2>
+    <div class="field">
+      <label>Model（文字生成 / Token 計數用）</label>
+      <input type="text" id="modelInput" value="gemini-2.0-flash">
+    </div>
+    <div class="field">
+      <label>測試用 Prompt</label>
+      <textarea id="sharedPrompt">用一句話介紹你自己。</textarea>
+    </div>
+  </div>
+
+  <!-- 1. 文字生成 -->
+  <div class="card">
+    <h2>① 文字生成 <span id="badge-text" class="badge" style="display:none"></span></h2>
+    <p>呼叫 <code>generateContent</code>，確認 API key 有效且模型回傳文字。</p>
+    <button class="btn" onclick="runTest('text', 'text')">執行</button>
+    <pre id="out-text">（尚未執行）</pre>
+  </div>
+
+  <!-- 2. Token 計數 -->
+  <div class="card">
+    <h2>② Token 計數 <span id="badge-count-tokens" class="badge" style="display:none"></span></h2>
+    <p>呼叫 <code>countTokens</code>，回傳輸入文字的 token 數，不消耗 quota。</p>
+    <button class="btn" onclick="runTest('count-tokens', 'count-tokens')">執行</button>
+    <pre id="out-count-tokens">（尚未執行）</pre>
+  </div>
+
+  <!-- 3. Embedding -->
+  <div class="card">
+    <h2>③ Embedding <span id="badge-embed" class="badge" style="display:none"></span></h2>
+    <p>呼叫 <code>embedContent</code>（text-embedding-004），回傳向量維度與前 8 個值。</p>
+    <button class="btn" onclick="runTest('embed', 'embed')">執行</button>
+    <pre id="out-embed">（尚未執行）</pre>
+  </div>
+
+  <!-- 4. 列出模型 -->
+  <div class="card">
+    <h2>④ 列出可用模型 <span id="badge-list-models" class="badge" style="display:none"></span></h2>
+    <p>呼叫 <code>models.list</code>，列出所有支援的 Gemini 模型。</p>
+    <button class="btn" onclick="runTest('list-models', 'list-models')">執行</button>
+    <pre id="out-list-models">（尚未執行）</pre>
+  </div>
+
+</div>
+
+<script>
+async function runTest(testName, outKey) {
+  const prompt = document.getElementById('sharedPrompt').value.trim();
+  const model = document.getElementById('modelInput').value.trim();
+  const outEl = document.getElementById('out-' + outKey);
+  const badgeEl = document.getElementById('badge-' + outKey);
+
+  outEl.textContent = '執行中…';
+  badgeEl.style.display = 'none';
+
+  try {
+    const res = await fetch('/api/test-gemini', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ test: testName, prompt, model }),
+    });
+    const data = await res.json();
+
+    if (data.ok) {
+      badgeEl.textContent = '✓ OK';
+      badgeEl.className = 'badge ok';
+    } else {
+      badgeEl.textContent = '✗ Error';
+      badgeEl.className = 'badge err';
+    }
+    badgeEl.style.display = 'inline-block';
+
+    // 顯示摘要 + 完整 raw
+    let summary = '';
+    if (testName === 'text') {
+      summary = '【回覆】' + (data.text ?? '') + '\n\n';
+    } else if (testName === 'count-tokens') {
+      summary = '【Token 數】' + data.totalTokens + '\n\n';
+    } else if (testName === 'embed') {
+      summary = `【維度】${data.dimensions}\n【前 8 值】${JSON.stringify(data.preview)}\n\n`;
+    } else if (testName === 'list-models') {
+      summary = `【模型數】${data.total}\n` +
+        (data.models || []).map(m => `  ${m.id}  (${(m.methods || []).join(', ')})`).join('\n') + '\n\n';
+    }
+
+    outEl.textContent = summary + '--- raw ---\n' + JSON.stringify(data.raw ?? data, null, 2);
+  } catch (err) {
+    outEl.textContent = '網路錯誤：' + err.message;
+    badgeEl.textContent = '✗ Error';
+    badgeEl.className = 'badge err';
+    badgeEl.style.display = 'inline-block';
+  }
+}
+</script>
+</body>
+</html>
