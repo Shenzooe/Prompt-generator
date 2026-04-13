@@ -4,5 +4,8 @@
       "memory": 1024,
       "maxDuration": 60
     }
-  }
+  },
+  "rewrites": [
+    { "source": "/test-gemini", "destination": "/test-gemini.html" }
+  ]
 }
