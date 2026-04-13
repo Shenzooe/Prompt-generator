@@ -3,7 +3,7 @@ module.exports = async function handler(req, res) {
     return res.status(405).json({ error: "Method Not Allowed" });
   }
 
-  const { prompt, model = "gemini-3.1-flash" } = req.body || {};
+  const { prompt, model = "gemini-3.1-flash-latest" } = req.body || {};
 
   if (!prompt) {
     return res.status(400).json({ error: "Missing prompt" });
@@ -53,7 +53,8 @@ module.exports = async function handler(req, res) {
 
       if (!geminiRes.ok) {
         const text = await geminiRes.text();
-        return res.status(geminiRes.status).json({ error: text });
+        console.error(`[generate-image] ${geminiRes.status} for model=${model}:`, text);
+        return res.status(geminiRes.status).json({ error: text, model, status: geminiRes.status });
       }
 
       const data = await geminiRes.json();
