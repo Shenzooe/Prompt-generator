@@ -36,7 +36,7 @@ label { font-size: 13px; color: #555; display: block; margin-bottom: 4px; }
     <h2>共用設定</h2>
     <div class="field">
       <label>Model（文字生成 / Token 計數用）</label>
-      <input type="text" id="modelInput" value="gemini-2.0-flash">
+      <input type="text" id="modelInput" value="gemini-1.5-flash">
     </div>
     <div class="field">
       <label>測試用 Prompt</label>
@@ -96,9 +96,13 @@ async function runTest(testName, outKey) {
     });
     const data = await res.json();
 
+    const is429 = data?.error?.error?.code === 429 || res.status === 429;
     if (data.ok) {
       badgeEl.textContent = '✓ OK';
       badgeEl.className = 'badge ok';
+    } else if (is429) {
+      badgeEl.textContent = '✗ Quota 超限';
+      badgeEl.className = 'badge err';
     } else {
       badgeEl.textContent = '✗ Error';
       badgeEl.className = 'badge err';
@@ -118,6 +122,10 @@ async function runTest(testName, outKey) {
         (data.models || []).map(m => `  ${m.id}  (${(m.methods || []).join(', ')})`).join('\n') + '\n\n';
     }
 
+    if (is429) {
+      const retry = data?.error?.error?.details?.find(d => d.retryDelay)?.retryDelay ?? '';
+      summary = `⚠️ Quota 超限（free tier 已耗盡）\n請換用其他模型，或等 ${retry} 後再試。\n\n`;
+    }
     outEl.textContent = summary + '--- raw ---\n' + JSON.stringify(data.raw ?? data, null, 2);
   } catch (err) {
     outEl.textContent = '網路錯誤：' + err.message;

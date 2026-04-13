@@ -41,14 +41,17 @@ module.exports = async function handler(req, res) {
     // 3. Embedding
     if (test === "embed") {
       const embedModel = "text-embedding-004";
-      const r = await fetch(`${BASE}/models/${embedModel}:embedContent?key=${apiKey}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          model: `models/${embedModel}`,
-          content: { parts: [{ text: prompt }] },
-        }),
-      });
+      const r = await fetch(
+        `https://generativelanguage.googleapis.com/v1/models/${embedModel}:embedContent?key=${apiKey}`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            model: `models/${embedModel}`,
+            content: { parts: [{ text: prompt }] },
+          }),
+        }
+      );
       const data = await r.json();
       if (!r.ok) return res.status(r.status).json({ error: data });
       const values = data.embedding?.values ?? [];
