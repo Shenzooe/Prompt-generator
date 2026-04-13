@@ -40,9 +40,9 @@ module.exports = async function handler(req, res) {
 
     // 3. Embedding
     if (test === "embed") {
-      const embedModel = "text-embedding-004";
+      const embedModel = "gemini-embedding-001";
       const r = await fetch(
-        `https://generativelanguage.googleapis.com/v1/models/${embedModel}:embedContent?key=${apiKey}`,
+        `${BASE}/models/${embedModel}:embedContent?key=${apiKey}`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
