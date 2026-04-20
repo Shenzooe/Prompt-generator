@@ -176,6 +176,7 @@ h3 { font-size: 20px; font-weight: 500; margin-bottom: 1.25rem; }
     </div>
     <button id="gen-btn" onclick="generateImage()" style="width:100%;padding:11px;font-size:14px;cursor:pointer;background:#1a1a1a;border:none;border-radius:6px;color:#fff;font-weight:500;transition:opacity 0.15s">✦ 生成圖片</button>
     <div id="gen-status" style="display:none;margin-top:10px;font-size:12px;color:#888;text-align:center"></div>
+    <button id="gen-cancel" onclick="cancelGenerate()" style="display:none;width:100%;margin-top:8px;padding:8px;font-size:13px;cursor:pointer;background:transparent;border:1px solid #ddd;border-radius:6px;color:#888;transition:all 0.15s">✕ 取消生成</button>
     <div id="gen-result" style="display:none;margin-top:12px">
       <img id="gen-image" src="" alt="generated" style="width:100%;border-radius:6px;border:0.5px solid #e0ddd6">
       <div style="display:flex;gap:8px;margin-top:8px">
@@ -827,6 +828,17 @@ function fallbackCopy(text) {
 }
 
 // ── AI Image Generation ──────────────────────────────────────────────
+let genAbortController = null;
+
+function cancelGenerate() {
+  if (genAbortController) {
+    genAbortController.abort();
+    genAbortController = null;
+  }
+}
+
+document.getElementById('img-model').addEventListener('change', cancelGenerate);
+
 async function generateImage() {
   const fullPrompt = document.getElementById('prompt-output').textContent;
   if (!fullPrompt || fullPrompt.includes('請先在前幾步')) {
@@ -836,19 +848,28 @@ async function generateImage() {
   const [positivePrompt, negPart] = fullPrompt.split(' --no ');
   const model = document.getElementById('img-model').value;
   const btn = document.getElementById('gen-btn');
+  const cancelBtn = document.getElementById('gen-cancel');
   const status = document.getElementById('gen-status');
   const result = document.getElementById('gen-result');
   const errBox = document.getElementById('gen-error');
 
+  cancelGenerate();
+  genAbortController = new AbortController();
+  const { signal } = genAbortController;
+
   btn.disabled = true; btn.textContent = '生成中…'; btn.style.opacity = '0.6';
   status.style.display = 'block'; status.textContent = '⏳ 送出請求中，約需 10–30 秒…';
   result.style.display = 'none'; errBox.style.display = 'none';
+  cancelBtn.style.display = 'none';
+
+  const cancelTimer = setTimeout(() => { cancelBtn.style.display = 'block'; }, 30000);
 
   try {
     const res = await fetchWithRetry('/api/generate-image', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ prompt: positivePrompt.trim(), model, negative_prompt: negPart ? negPart.trim() : undefined }),
+      signal,
     }, 3, status);
 
     let data;
@@ -865,20 +886,33 @@ async function generateImage() {
     result.style.display = 'block';
     status.style.display = 'none';
   } catch (err) {
-    errBox.textContent = '❌ ' + err.message;
-    errBox.style.display = 'block';
-    status.style.display = 'none';
+    if (err.name === 'AbortError') {
+      status.style.display = 'none';
+      errBox.style.display = 'none';
+    } else {
+      errBox.textContent = '❌ ' + err.message;
+      errBox.style.display = 'block';
+      status.style.display = 'none';
+    }
   } finally {
+    clearTimeout(cancelTimer);
+    cancelBtn.style.display = 'none';
+    genAbortController = null;
     btn.disabled = false; btn.textContent = '✦ 生成圖片'; btn.style.opacity = '1';
   }
 }
 
 async function fetchWithRetry(url, options, maxRetries, statusEl) {
+  const { signal } = options;
   for (let i = 0; i < maxRetries; i++) {
+    if (signal?.aborted) throw new DOMException('Aborted', 'AbortError');
     const res = await fetch(url, options);
     if (res.status === 503) {
       statusEl.textContent = `⏳ 模型載入中，20 秒後自動重試（第 ${i+1} 次）…`;
-      await new Promise(r => setTimeout(r, 20000));
+      await new Promise((resolve, reject) => {
+        const t = setTimeout(resolve, 20000);
+        signal?.addEventListener('abort', () => { clearTimeout(t); reject(new DOMException('Aborted', 'AbortError')); }, { once: true });
+      });
       continue;
     }
     return res;
