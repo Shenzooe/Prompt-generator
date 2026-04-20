@@ -8,7 +8,7 @@ module.exports = async function handler(req, res) {
     return res.status(500).json({ error: "GEMINI_API_KEY not configured" });
   }
 
-  const { test, prompt = "Hello, reply in one sentence.", model = "gemini-2.0-flash" } = req.body || {};
+  const { test, prompt = "Hello, reply in one sentence.", model = "gemini-2.5-flash" } = req.body || {};
 
   const BASE = "https://generativelanguage.googleapis.com/v1beta";
 
