@@ -738,13 +738,15 @@
             reader.readAsDataURL(file);
         }
 
-        // ── Gemini Imagen 3 via /api/generate-image ────────────
+        // ── Gemini Imagen via /api/generate-image ─────────────
         async function generateSceneImage(theme) {
             const prompt = [
-                `Professional product lifestyle photography for a ${theme} celebration party.`,
-                `Beautifully styled event decoration scene featuring ${theme}-themed party supplies, table decor, and decorative accents that match the ${theme} occasion.`,
-                'Warm natural light, shallow depth of field, luxury editorial photography style, elegant and aspirational mood.',
-                'No text, no watermarks, no people, photorealistic.'
+                `Professional product lifestyle photography for a ${theme} event.`,
+                `Beautifully styled scene featuring ${theme}-themed wedding and party supplies: table linens, floral arrangements, centerpieces, decorative tableware, ribbons, candles, and event décor items specific to a ${theme} occasion.`,
+                'Warm natural light, shallow depth of field, luxury editorial photography style, elegant and aspirational composition.',
+                'No people, no humans, no faces, no body parts.',
+                'Only wedding and party supply products — no food, no buildings, no landscapes, no animals, no unrelated objects.',
+                'No text, no watermarks, no logos, photorealistic.'
             ].join(' ');
 
             const res = await fetch('/api/generate-image', {
@@ -780,125 +782,100 @@
         async function composeBanner(imgSrc, size, textData) {
             const { width, height } = size;
             const canvas = document.createElement('canvas');
-            canvas.width = width;
-            canvas.height = height;
+            canvas.width = width; canvas.height = height;
             const ctx = canvas.getContext('2d');
 
-            // Draw background image (cover)
+            // Background image (cover-fit)
             const img = await loadImg(imgSrc);
-            const scale = Math.max(width / img.width, height / img.height);
-            const sw = img.width * scale;
-            const sh = img.height * scale;
-            const sx = (width - sw) / 2;
-            const sy = (height - sh) / 2;
-            ctx.drawImage(img, sx, sy, sw, sh);
+            const sc = Math.max(width / img.width, height / img.height);
+            ctx.drawImage(img,
+                (width  - img.width  * sc) / 2,
+                (height - img.height * sc) / 2,
+                img.width * sc, img.height * sc
+            );
 
-            // Gradient overlay (left-heavy for text readability)
+            // Left-to-right gradient overlay for text readability
             const grad = ctx.createLinearGradient(0, 0, width, 0);
-            if (height < 120) {
-                // Leaderboard: full dark overlay
-                grad.addColorStop(0, 'rgba(40, 24, 10, 0.82)');
-                grad.addColorStop(1, 'rgba(40, 24, 10, 0.60)');
-            } else {
-                grad.addColorStop(0,   'rgba(40, 24, 10, 0.80)');
-                grad.addColorStop(0.55,'rgba(40, 24, 10, 0.40)');
-                grad.addColorStop(1,   'rgba(40, 24, 10, 0.05)');
-            }
+            grad.addColorStop(0,    'rgba(40,24,10,0.80)');
+            grad.addColorStop(0.55, 'rgba(40,24,10,0.40)');
+            grad.addColorStop(1,    'rgba(40,24,10,0.05)');
             ctx.fillStyle = grad;
             ctx.fillRect(0, 0, width, height);
 
-            const pad = Math.round(width * 0.055);
+            // Safe zone (Figma spec: 3.43% H-margin · 11.72% top · 17.19% bottom)
+            const sL = Math.round(width  * 0.0343);
+            const sT = Math.round(height * 0.1172);
+            const sB = Math.round(height * 0.8281);
+            const sH = sB - sT;
             const ratio = width / height;
 
+            let hlSize, subSize, ctaSize, maxW;
             if (ratio >= 3.5) {
-                // ── 超寬橫幅：Lander Banner_Desktop (2000×490, ratio≈4.1) ──
-                // 文字置左，headline 大，subheadline 一行，CTA 右側
-                const hlSize  = Math.round(height * 0.18);
-                const subSize = Math.round(height * 0.09);
-                const ctaSize = Math.round(height * 0.08);
-
-                ctx.fillStyle = '#FFFFFF';
-                ctx.textBaseline = 'alphabetic';
-                ctx.font = `400 ${hlSize}px 'DM Serif Display', Georgia, serif`;
-                const hlLines = wrapText(ctx, textData.headline, width * 0.38);
-                let y = height * 0.36;
-                hlLines.forEach(line => { ctx.fillText(line, pad, y); y += hlSize * 1.2; });
-
-                ctx.font = `400 ${subSize}px 'Montserrat', Arial, sans-serif`;
-                ctx.fillStyle = 'rgba(255,255,255,0.82)';
-                ctx.fillText(textData.subheadline.split(',')[0].trim(), pad, y + subSize * 1.1);
-
-                ctx.font = `600 ${ctaSize}px 'Montserrat', Arial, sans-serif`;
-                const ctaBtnW = ctx.measureText(textData.cta).width + pad;
-                const ctaBtnH = ctaSize * 2.2;
-                const ctaBtnY = y + subSize * 2.8;
-                drawRoundRect(ctx, pad, ctaBtnY, ctaBtnW, ctaBtnH, 6, '#D4A373');
-                ctx.fillStyle = '#FFFFFF';
-                ctx.textBaseline = 'middle';
-                ctx.fillText(textData.cta, pad + pad * 0.35, ctaBtnY + ctaBtnH / 2);
-
+                // Lander Desktop 2000×490
+                hlSize  = Math.round(sH * 0.28);
+                subSize = Math.round(sH * 0.14);
+                ctaSize = Math.round(sH * 0.12);
+                maxW    = width * 0.38;
             } else if (ratio >= 1.4) {
-                // ── 一般橫向：Desktop(1180×640), Mobile(768×480), Lander_Mobile(1100×595) ──
-                const hlSize  = Math.round(height * 0.13);
-                const subSize = Math.round(height * 0.068);
-                const ctaSize = Math.round(height * 0.058);
-                const maxTxtW = width * 0.48;
-
-                ctx.fillStyle = '#FFFFFF';
-                ctx.textBaseline = 'alphabetic';
-                ctx.font = `400 ${hlSize}px 'DM Serif Display', Georgia, serif`;
-                const hlLines = wrapText(ctx, textData.headline, maxTxtW);
-                let y = height * 0.38;
-                hlLines.forEach(line => { ctx.fillText(line, pad, y); y += hlSize * 1.2; });
-
-                ctx.font = `400 ${subSize}px 'Montserrat', Arial, sans-serif`;
-                ctx.fillStyle = 'rgba(255,255,255,0.82)';
-                const subLines = wrapText(ctx, textData.subheadline, maxTxtW * 0.95);
-                subLines.slice(0, 2).forEach(line => {
-                    ctx.fillText(line, pad, y + subSize * 1.1);
-                    y += subSize * 1.35;
-                });
-
-                ctx.font = `600 ${ctaSize}px 'Montserrat', Arial, sans-serif`;
-                const ctaBtnW = ctx.measureText(textData.cta).width + pad;
-                const ctaBtnH = ctaSize * 2.4;
-                const ctaBtnY = y + subSize * 1.2;
-                drawRoundRect(ctx, pad, ctaBtnY, ctaBtnW, ctaBtnH, 6, '#D4A373');
-                ctx.fillStyle = '#FFFFFF';
-                ctx.textBaseline = 'middle';
-                ctx.fillText(textData.cta, pad + pad * 0.35, ctaBtnY + ctaBtnH / 2);
-
+                // Desktop 1180×640 · Mobile 768×480 · Lander Mobile 1100×595
+                hlSize  = Math.round(sH * 0.24);
+                subSize = Math.round(sH * 0.12);
+                ctaSize = Math.round(sH * 0.105);
+                maxW    = width * 0.48;
             } else {
-                // ── 接近正方形：Newsletter (800×667, ratio≈1.2) ──
-                const hlSize  = Math.round(height * 0.1);
-                const subSize = Math.round(height * 0.056);
-                const ctaSize = Math.round(height * 0.05);
-                const maxTxtW = width * 0.82;
-
-                ctx.fillStyle = '#FFFFFF';
-                ctx.textBaseline = 'alphabetic';
-                ctx.font = `400 ${hlSize}px 'DM Serif Display', Georgia, serif`;
-                const hlLines = wrapText(ctx, textData.headline, maxTxtW);
-                let y = height * 0.42;
-                hlLines.forEach(line => { ctx.fillText(line, pad, y); y += hlSize * 1.2; });
-
-                ctx.font = `400 ${subSize}px 'Montserrat', Arial, sans-serif`;
-                ctx.fillStyle = 'rgba(255,255,255,0.82)';
-                const subLines = wrapText(ctx, textData.subheadline, maxTxtW * 0.9);
-                subLines.slice(0, 2).forEach(line => {
-                    ctx.fillText(line, pad, y + subSize * 1.1);
-                    y += subSize * 1.4;
-                });
-
-                ctx.font = `600 ${ctaSize}px 'Montserrat', Arial, sans-serif`;
-                const ctaBtnW = ctx.measureText(textData.cta).width + pad * 1.2;
-                const ctaBtnH = ctaSize * 2.2;
-                const ctaBtnY = y + subSize * 1.8;
-                drawRoundRect(ctx, pad, ctaBtnY, ctaBtnW, ctaBtnH, 6, '#D4A373');
-                ctx.fillStyle = '#FFFFFF';
-                ctx.textBaseline = 'middle';
-                ctx.fillText(textData.cta, pad + pad * 0.4, ctaBtnY + ctaBtnH / 2);
+                // Newsletter 800×667
+                hlSize  = Math.round(sH * 0.21);
+                subSize = Math.round(sH * 0.115);
+                ctaSize = Math.round(sH * 0.10);
+                maxW    = width * 0.82;
             }
+
+            // Calculate layout: wrap text, measure total block height
+            function calcLayout(hS, sS, cS) {
+                ctx.font = `400 ${hS}px 'DM Serif Display', Georgia, serif`;
+                const hl = wrapText(ctx, textData.headline, maxW);
+                ctx.font = `400 ${sS}px 'Montserrat', Arial, sans-serif`;
+                const sb = wrapText(ctx, textData.subheadline, maxW * 0.95).slice(0, 2);
+                const cH = Math.round(cS * 2.2);
+                const totalH = hl.length * hS * 1.2 + sS * 0.8 + sb.length * sS * 1.35 + sS * 0.9 + cH;
+                return { hl, sb, cH, totalH };
+            }
+
+            let lo = calcLayout(hlSize, subSize, ctaSize);
+
+            // Scale down proportionally if content overflows safe zone
+            if (lo.totalH > sH * 0.88) {
+                const f = (sH * 0.88) / lo.totalH;
+                hlSize  = Math.round(hlSize  * f);
+                subSize = Math.round(subSize * f);
+                ctaSize = Math.round(ctaSize * f);
+                lo = calcLayout(hlSize, subSize, ctaSize);
+            }
+
+            // Vertical start: position content in upper 40% of available safe space
+            const startY = sT + Math.round(Math.max(0, sH - lo.totalH) * 0.4);
+            let y = startY + hlSize;
+
+            // Draw headline
+            ctx.textBaseline = 'alphabetic';
+            ctx.font = `400 ${hlSize}px 'DM Serif Display', Georgia, serif`;
+            ctx.fillStyle = '#FFFFFF';
+            lo.hl.forEach(line => { ctx.fillText(line, sL, y); y += hlSize * 1.2; });
+
+            // Draw subheadline
+            y += subSize * 0.8;
+            ctx.font = `400 ${subSize}px 'Montserrat', Arial, sans-serif`;
+            ctx.fillStyle = 'rgba(255,255,255,0.82)';
+            lo.sb.forEach(line => { ctx.fillText(line, sL, y); y += subSize * 1.35; });
+
+            // Draw CTA button
+            y += subSize * 0.9;
+            ctx.font = `600 ${ctaSize}px 'Montserrat', Arial, sans-serif`;
+            const ctaBtnW = ctx.measureText(textData.cta).width + sL;
+            drawRoundRect(ctx, sL, y, ctaBtnW, lo.cH, 6, '#D4A373');
+            ctx.fillStyle = '#FFFFFF';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(textData.cta, sL + Math.round(sL * 0.4), y + lo.cH / 2);
 
             return canvas.toDataURL('image/jpeg', 0.92);
         }
