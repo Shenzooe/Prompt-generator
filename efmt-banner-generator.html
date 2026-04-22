@@ -777,16 +777,71 @@
         }
 
         // ── Gemini Imagen via /api/generate-image ─────────────
-        async function generateSceneImage(theme) {
-            const prompt = [
-                `Bright, airy editorial product photography styled specifically for a ${theme} celebration.`,
-                `The scene is filled exclusively with ${theme}-specific party and event supplies — every single item must be something you would actually find at a ${theme} party: thematic decorations, coordinated tableware, balloons, banners, confetti, ribbons, and centerpieces that are unmistakably and exclusively associated with ${theme}. Nothing generic, nothing from a different type of event.`,
-                'Composition: all decorative objects are clustered in the right half and center of the frame. The left one-third of the image is completely open — a clean white, ivory, or soft warm-neutral background with no objects at all, to allow space for text overlay.',
-                'Bright natural daylight, soft shadows, shallow depth of field. The overall tone is light, fresh, and luminous. No dark or moody lighting.',
-                'No people, no humans, no faces, no body parts.',
-                'No food, no buildings, no outdoor landscapes, no animals, no objects unrelated to the theme.',
-                'No text, no watermarks, no logos. Photorealistic, high resolution.'
+        function buildScenePrompt(theme) {
+            const t = theme.toLowerCase();
+
+            // Theme-specific eFavormart product descriptions
+            const catalog = {
+                graduation: {
+                    palette: 'black, gold, and white',
+                    scene: 'two round banquet tables draped with black satin tablecloths, gold foil letter balloons spelling GRAD mounted on a standing pipe-and-drape frame, white sheer chiffon fabric backdrop draping behind the tables, lush white rose and ranunculus floral centerpieces in gold vases, crystal clear glassware, gold cutlery, white china plates on silver charger plates, black and gold ribbon accents on the tables'
+                },
+                wedding: {
+                    palette: 'white, ivory, blush, and champagne gold',
+                    scene: 'round banquet tables with white and ivory satin tablecloths, white chiffon fabric draping backdrop on a pipe-and-drape stand, lush white and blush rose floral centerpieces in silver vases, crystal glassware, gold and silver cutlery, white china, ivory pillar candles in glass hurricanes, white tulle ribbon bows'
+                },
+                birthday: {
+                    palette: 'vibrant mixed festive colors',
+                    scene: 'festive round table with colorful printed tablecloth, large foil number balloons and latex balloon bouquets, tissue paper pom-poms hanging, colorful ribbon streamers, confetti scatter on table, birthday party tableware with plates and cups, gift-wrapped boxes with ribbon bows'
+                },
+                'baby shower': {
+                    palette: 'soft pastel — blush pink, mint, lavender',
+                    scene: 'delicate round table with soft pastel pink tablecloth, gentle balloon cluster in blush and mint, tissue paper flower wall backdrop, pastel ribbon bunting, soft floral centerpiece with peonies and eucalyptus, pastel tableware and favor boxes tied with satin ribbon'
+                },
+                christmas: {
+                    palette: 'deep red, forest green, and gold',
+                    scene: 'elegantly set round table with deep red tablecloth, gold and red ribbon garland, pine and holly centerpiece with red berries, clusters of red and gold ornament balls, gold pillar candles, festive red and white tableware, plaid ribbon accents'
+                },
+                halloween: {
+                    palette: 'orange, black, and purple',
+                    scene: 'round table with black tablecloth and orange runner, orange and black balloon bouquet, small decorative pumpkins and skull ornaments as centerpiece, purple and orange ribbon, black and orange tableware, spider web mesh fabric draping as backdrop'
+                },
+                thanksgiving: {
+                    palette: 'warm amber, burgundy, and brown',
+                    scene: 'round table with warm amber and burgundy tablecloth, autumn leaf and pumpkin centerpiece, orange and burgundy ribbon garland, warm-toned candles in glass holders, rustic burlap table runner, harvest-colored tableware, dried wheat and fall foliage accents'
+                },
+                'quinceañera': {
+                    palette: 'pink, gold, and white',
+                    scene: 'grand round table with soft pink satin tablecloth, large pink and gold floral centerpiece with roses, gold foil balloon clusters, white and pink chiffon backdrop draping, gold charger plates, crystal glassware, pink ribbon bows and gold candelabras'
+                }
+            };
+
+            let detail = null;
+            for (const [key, val] of Object.entries(catalog)) {
+                if (t.includes(key)) { detail = val; break; }
+            }
+
+            if (detail) {
+                return [
+                    `Professional editorial product photography for a ${theme} celebration. Color palette: ${detail.palette}.`,
+                    `The scene features: ${detail.scene}.`,
+                    `COMPOSITION: The product arrangement fills the right two-thirds of the frame, with objects extending from the far right edge toward the center. The leftmost 35% of the image is a completely clean, empty expanse of bright white background — no objects, no shadows, pure negative space — to allow text overlay.`,
+                    `Bright, high-key natural window lighting from the upper right. Soft shadows, shallow depth of field, magazine-quality sharpness on the products.`,
+                    `No people. No food. No outdoor scenes. No text, watermarks, or logos. Photorealistic, ultra-high resolution.`
+                ].join(' ');
+            }
+
+            return [
+                `Professional editorial product photography for a ${theme} celebration, featuring party and event decoration supplies in coordinated ${theme} colors.`,
+                `The scene includes: round banquet tables with themed tablecloths, balloon decorations in ${theme} colors, fabric backdrop draping, floral centerpieces, coordinated tableware, and ribbon accents — all products you would find at an upscale ${theme} party supply store.`,
+                `COMPOSITION: All products are grouped in the right two-thirds of the frame. The leftmost 35% of the image is a completely empty, bright white background — no objects — for text overlay.`,
+                `Bright natural window lighting, soft shadows, shallow depth of field. Light, airy, high-key tone.`,
+                `No people. No food. No outdoor scenes. No text, watermarks, or logos. Photorealistic, high resolution.`
             ].join(' ');
+        }
+
+        async function generateSceneImage(theme) {
+            const prompt = buildScenePrompt(theme);
 
             const res = await fetch('/api/generate-image', {
                 method: 'POST',
