@@ -1,0 +1,1136 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>eFavormart Banner Generator</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --color-primary: #D4A373;
+            --color-primary-light: #E8D5C4;
+            --color-primary-dark: #B8896B;
+            --color-accent: #C98474;
+            --color-accent-light: #E5B8AF;
+            --color-success: #8FB996;
+            --color-error: #D77A61;
+            --color-bg: #FAF8F5;
+            --color-surface: #FFFFFF;
+            --color-text: #3D3D3D;
+            --color-text-secondary: #7A7A7A;
+            --color-border: #E8E4DF;
+            --shadow-sm: 0 2px 8px rgba(61, 61, 61, 0.08);
+            --shadow-md: 0 4px 16px rgba(61, 61, 61, 0.12);
+            --shadow-lg: 0 8px 32px rgba(61, 61, 61, 0.16);
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --font-display: 'DM Serif Display', serif;
+            --font-body: 'Montserrat', sans-serif;
+        }
+
+        body {
+            font-family: var(--font-body);
+            background: var(--color-bg);
+            color: var(--color-text);
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 2rem 1rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+            animation: fadeInDown 0.6s ease;
+        }
+
+        .page-title {
+            font-family: var(--font-display);
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            font-weight: 400;
+            color: var(--color-primary-dark);
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.02em;
+        }
+
+        .page-subtitle {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--color-text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .card {
+            background: var(--color-surface);
+            border-radius: var(--radius-lg);
+            padding: 2rem;
+            box-shadow: var(--shadow-sm);
+            margin-bottom: 1.5rem;
+            animation: fadeInUp 0.6s ease;
+            animation-fill-mode: both;
+        }
+
+        .card:nth-child(2) { animation-delay: 0.1s; }
+        .card:nth-child(3) { animation-delay: 0.2s; }
+        .card:nth-child(4) { animation-delay: 0.3s; }
+        .card:nth-child(5) { animation-delay: 0.4s; }
+
+        .card-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--color-text);
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .card-title::before {
+            content: '';
+            display: inline-block;
+            width: 4px;
+            height: 1.5rem;
+            background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
+            border-radius: 2px;
+        }
+
+        /* Input Mode Toggle */
+        .input-mode-toggle {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .radio-btn {
+            flex: 1;
+            position: relative;
+        }
+
+        .radio-btn input[type="radio"] {
+            position: absolute;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .radio-btn label {
+            display: block;
+            padding: 1rem;
+            border: 2px solid var(--color-border);
+            border-radius: var(--radius-md);
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            background: var(--color-surface);
+        }
+
+        .radio-btn input:checked + label {
+            border-color: var(--color-primary);
+            background: var(--color-primary-light);
+            color: var(--color-primary-dark);
+        }
+
+        .radio-btn label:hover { border-color: var(--color-primary-dark); }
+
+        /* Form Fields */
+        .form-group { margin-bottom: 1.5rem; }
+
+        .form-label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--color-text);
+            margin-bottom: 0.5rem;
+        }
+
+        .form-label .required { color: var(--color-error); }
+
+        .form-input {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            border: 2px solid var(--color-border);
+            border-radius: var(--radius-md);
+            font-family: var(--font-body);
+            font-size: 0.95rem;
+            color: var(--color-text);
+            background: var(--color-surface);
+            transition: all 0.2s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--color-primary);
+            box-shadow: 0 0 0 3px rgba(212, 163, 115, 0.1);
+        }
+
+        .form-input::placeholder {
+            color: var(--color-text-secondary);
+            opacity: 0.6;
+        }
+
+        .validate-btn {
+            padding: 0.75rem 1.5rem;
+            border: 2px solid var(--color-primary);
+            border-radius: var(--radius-md);
+            background: transparent;
+            color: var(--color-primary);
+            font-family: var(--font-body);
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            margin-top: 0.5rem;
+        }
+
+        .validate-btn:hover { background: var(--color-primary); color: white; }
+        .validate-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        /* Promo Data */
+        .promo-data {
+            background: var(--color-primary-light);
+            border-radius: var(--radius-md);
+            padding: 1rem;
+            margin-top: 1rem;
+            display: none;
+        }
+
+        .promo-data.show { display: block; animation: fadeIn 0.3s ease; }
+
+        .promo-data-item {
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+        }
+
+        .promo-data-item strong { color: var(--color-primary-dark); }
+
+        /* Dropzone */
+        .dropzone {
+            border: 3px dashed var(--color-border);
+            border-radius: var(--radius-lg);
+            padding: 3rem 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: var(--color-bg);
+        }
+
+        .dropzone.dragover {
+            border-color: var(--color-primary);
+            background: var(--color-primary-light);
+            transform: scale(1.02);
+        }
+
+        .dropzone:hover { border-color: var(--color-primary-dark); }
+
+        .dropzone-icon { font-size: 3rem; margin-bottom: 1rem; opacity: 0.4; }
+        .dropzone-text { font-size: 0.95rem; color: var(--color-text-secondary); margin-bottom: 0.5rem; }
+        .dropzone-hint { font-size: 0.85rem; color: var(--color-accent); margin-top: 0.5rem; }
+
+        .image-preview {
+            display: none;
+            margin-top: 1rem;
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            max-width: 300px;
+            margin-left: auto;
+            margin-right: auto;
+            box-shadow: var(--shadow-md);
+        }
+
+        .image-preview.show { display: block; animation: fadeIn 0.3s ease; }
+        .image-preview img { width: 100%; height: auto; display: block; }
+
+        /* Buttons */
+        .generate-btn {
+            width: 100%;
+            padding: 1.25rem 2rem;
+            border: none;
+            border-radius: var(--radius-lg);
+            font-family: var(--font-body);
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: white;
+            background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-accent) 100%);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: var(--shadow-md);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .generate-btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
+        .generate-btn:active:not(:disabled) { transform: translateY(0); }
+        .generate-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+        .generate-btn.loading::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.3) 50%, transparent 100%);
+            animation: shimmer 1.5s infinite;
+        }
+
+        .more-sizes-btn {
+            width: 100%;
+            padding: 1rem 2rem;
+            border: 2px solid var(--color-primary-dark);
+            border-radius: var(--radius-lg);
+            font-family: var(--font-body);
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--color-primary-dark);
+            background: transparent;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 1rem;
+        }
+
+        .more-sizes-btn:hover:not(:disabled) {
+            background: var(--color-primary-dark);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .more-sizes-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        /* Progress */
+        .progress-container { display: none; margin-top: 2rem; }
+        .progress-container.show { display: block; animation: fadeIn 0.3s ease; }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: var(--color-border);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 1rem;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--color-primary) 0%, var(--color-accent) 100%);
+            transition: width 0.4s ease;
+            position: relative;
+        }
+
+        .progress-fill::after {
+            content: '';
+            position: absolute;
+            top: 0; right: 0;
+            width: 100px; height: 100%;
+            background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.5) 100%);
+            animation: progress-shimmer 1s infinite;
+        }
+
+        .progress-message {
+            font-size: 0.875rem;
+            color: var(--color-text-secondary);
+            text-align: center;
+        }
+
+        /* Results */
+        .results-section { display: none; }
+        .results-section.show { display: block; animation: fadeInUp 0.6s ease; }
+
+        .results-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .success-message {
+            background: var(--color-success);
+            color: white;
+            padding: 0.75rem 1.25rem;
+            border-radius: var(--radius-md);
+            font-weight: 500;
+            font-size: 0.95rem;
+        }
+
+        .section-label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--color-text-secondary);
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .gallery-grid.phase-1 {
+            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+        }
+
+        .banner-card {
+            background: var(--color-surface);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+            transition: all 0.3s ease;
+        }
+
+        .banner-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-md); }
+        .banner-card img { width: 100%; height: auto; display: block; }
+
+        .banner-info { padding: 1rem; }
+
+        .banner-name {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--color-text);
+            margin-bottom: 0.25rem;
+        }
+
+        .banner-size {
+            font-size: 0.8rem;
+            color: var(--color-text-secondary);
+            margin-bottom: 0.75rem;
+        }
+
+        .download-btn {
+            width: 100%;
+            padding: 0.625rem;
+            border: 2px solid var(--color-primary);
+            border-radius: var(--radius-sm);
+            background: transparent;
+            color: var(--color-primary);
+            font-family: var(--font-body);
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .download-btn:hover { background: var(--color-primary); color: white; }
+
+        .download-all-btn {
+            width: 100%;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: var(--radius-lg);
+            background: var(--color-primary-dark);
+            color: white;
+            font-family: var(--font-body);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 0.5rem;
+        }
+
+        .download-all-btn:hover { background: var(--color-primary); transform: translateY(-2px); }
+
+        /* Error */
+        .error-message {
+            background: var(--color-error);
+            color: white;
+            padding: 1rem;
+            border-radius: var(--radius-md);
+            margin-top: 1rem;
+            display: none;
+            font-size: 0.9rem;
+        }
+
+        .error-message.show { display: block; animation: fadeIn 0.3s ease; }
+
+        /* Divider */
+        .phase-divider {
+            display: none;
+            margin: 2rem 0 1.5rem;
+        }
+
+        .phase-divider.show { display: block; }
+
+        /* Animations */
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes shimmer { to { left: 100%; } }
+
+        @keyframes progress-shimmer {
+            0% { transform: translateX(-100px); }
+            100% { transform: translateX(100px); }
+        }
+
+        .hidden { display: none; }
+
+        @media (max-width: 768px) {
+            body { padding: 1rem 0.5rem; }
+            .card { padding: 1.5rem 1rem; }
+            .gallery-grid, .gallery-grid.phase-1 { grid-template-columns: 1fr; }
+            .results-header { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <h1 class="page-title">Banner Generator</h1>
+            <p class="page-subtitle">eFavormart Marketing Asset Creation</p>
+        </header>
+
+        <!-- Input Mode -->
+        <div class="card">
+            <h2 class="card-title">輸入方式</h2>
+            <div class="input-mode-toggle">
+                <div class="radio-btn">
+                    <input type="radio" name="inputMode" id="modeManual" value="manual" checked>
+                    <label for="modeManual">手動輸入</label>
+                </div>
+                <div class="radio-btn">
+                    <input type="radio" name="inputMode" id="modeAirtable" value="airtable">
+                    <label for="modeAirtable">Airtable Promo ID</label>
+                </div>
+            </div>
+        </div>
+
+        <!-- Manual Form -->
+        <div class="card" id="manualForm">
+            <h2 class="card-title">文案內容</h2>
+            <div class="form-group">
+                <label class="form-label" for="theme">Holiday / Theme <span class="required">*</span></label>
+                <input type="text" id="theme" class="form-input" placeholder="例如: Spring Wedding">
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="headline">Headline <span class="required">*</span></label>
+                <input type="text" id="headline" class="form-input" placeholder="Refresh Your Spring Tablescape">
+            </div>
+            <div class="form-group">
+                <label class="form-label" for="subheadline">Subheadline <span class="required">*</span></label>
+                <input type="text" id="subheadline" class="form-input" placeholder="Linens, plates, candles, and finishing touches.">
+            </div>
+            <div class="form-group" style="margin-bottom:0">
+                <label class="form-label" for="cta">CTA <span class="required">*</span></label>
+                <input type="text" id="cta" class="form-input" placeholder="Shop Spring Tablescapes">
+            </div>
+        </div>
+
+        <!-- Airtable Form -->
+        <div class="card hidden" id="airtableForm">
+            <h2 class="card-title">Airtable 資料</h2>
+            <div class="form-group">
+                <label class="form-label" for="promoId">Promo ID <span class="required">*</span></label>
+                <input type="text" id="promoId" class="form-input" placeholder="例如: BNET_050426__HVZ">
+                <button class="validate-btn" id="validateBtn">🔍 驗證 Promo ID</button>
+            </div>
+            <div class="promo-data" id="promoData"></div>
+            <div class="error-message" id="validateError"></div>
+        </div>
+
+        <!-- Image Upload -->
+        <div class="card">
+            <h2 class="card-title">商品情境圖（選填）</h2>
+            <div class="dropzone" id="dropzone">
+                <div class="dropzone-icon">📸</div>
+                <div class="dropzone-text">拖拽檔案到這裡上傳</div>
+                <div class="dropzone-text">或點擊選擇檔案</div>
+                <div class="dropzone-hint">✨ 不上傳？Gemini 會根據主題自動生成情境圖！</div>
+                <input type="file" id="fileInput" accept="image/*" style="display:none;">
+            </div>
+            <div class="image-preview" id="imagePreview">
+                <img id="previewImg" src="" alt="Preview">
+            </div>
+        </div>
+
+        <!-- Generate Button -->
+        <button class="generate-btn" id="generateBtn">✨ 生成情境圖 + 桌機版 Banner</button>
+
+        <!-- Progress -->
+        <div class="progress-container" id="progressContainer">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+            </div>
+            <div class="progress-message" id="progressMessage">準備中...</div>
+        </div>
+
+        <div class="error-message" id="generateError"></div>
+
+        <!-- Phase 1 Results -->
+        <div class="results-section" id="resultsPhase1">
+            <div class="results-header">
+                <div class="success-message" id="phase1Message">✅ 初版完成！</div>
+            </div>
+            <div class="section-label">情境圖 + 桌機版 Banner</div>
+            <div class="gallery-grid phase-1" id="galleryPhase1"></div>
+
+            <!-- More Sizes Button -->
+            <button class="more-sizes-btn" id="moreSizesBtn">
+                📐 初版 OK，繼續生成其他尺寸 →
+            </button>
+        </div>
+
+        <!-- Phase 2 Results -->
+        <div class="phase-divider" id="phaseDivider">
+            <div class="section-label">其他尺寸</div>
+        </div>
+        <div class="results-section" id="resultsPhase2">
+            <div class="gallery-grid" id="galleryPhase2"></div>
+            <button class="download-all-btn" id="downloadAllBtn">📦 下載全部 (ZIP)</button>
+        </div>
+    </div>
+
+    <script>
+        // ── State ──────────────────────────────────────────────
+        let uploadedImage = null;
+        let sceneImageDataUrl = null;
+        let currentTextData = null;
+        let allBannerDataUrls = {};
+
+        // ── Elements ───────────────────────────────────────────
+        const inputModeRadios = document.querySelectorAll('input[name="inputMode"]');
+        const airtableForm    = document.getElementById('airtableForm');
+        const manualForm      = document.getElementById('manualForm');
+        const promoIdInput    = document.getElementById('promoId');
+        const validateBtn     = document.getElementById('validateBtn');
+        const promoDataDiv    = document.getElementById('promoData');
+        const validateError   = document.getElementById('validateError');
+        const dropzone        = document.getElementById('dropzone');
+        const fileInput       = document.getElementById('fileInput');
+        const imagePreview    = document.getElementById('imagePreview');
+        const previewImg      = document.getElementById('previewImg');
+        const generateBtn     = document.getElementById('generateBtn');
+        const progressContainer = document.getElementById('progressContainer');
+        const progressFill    = document.getElementById('progressFill');
+        const progressMessage = document.getElementById('progressMessage');
+        const generateError   = document.getElementById('generateError');
+        const resultsPhase1   = document.getElementById('resultsPhase1');
+        const galleryPhase1   = document.getElementById('galleryPhase1');
+        const phase1Message   = document.getElementById('phase1Message');
+        const moreSizesBtn    = document.getElementById('moreSizesBtn');
+        const phaseDivider    = document.getElementById('phaseDivider');
+        const resultsPhase2   = document.getElementById('resultsPhase2');
+        const galleryPhase2   = document.getElementById('galleryPhase2');
+        const downloadAllBtn  = document.getElementById('downloadAllBtn');
+
+        // Banner size configs
+        const PHASE1_SIZES = [
+            { id: 'desktop_hero', name: 'Desktop Hero', width: 1920, height: 600, filename: 'desktop_hero_1920x600.jpg' }
+        ];
+
+        const PHASE2_SIZES = [
+            { id: 'square',      name: 'Square',      width: 600,  height: 600,  filename: 'square_600x600.jpg' },
+            { id: 'billboard',   name: 'Billboard',   width: 970,  height: 250,  filename: 'billboard_970x250.jpg' },
+            { id: 'leaderboard', name: 'Leaderboard', width: 728,  height: 90,   filename: 'leaderboard_728x90.jpg' },
+            { id: 'half_page',   name: 'Half Page',   width: 300,  height: 600,  filename: 'half_page_300x600.jpg' },
+        ];
+
+        // ── Input mode toggle ──────────────────────────────────
+        inputModeRadios.forEach(radio => {
+            radio.addEventListener('change', (e) => {
+                if (e.target.value === 'airtable') {
+                    airtableForm.classList.remove('hidden');
+                    manualForm.classList.add('hidden');
+                } else {
+                    airtableForm.classList.add('hidden');
+                    manualForm.classList.remove('hidden');
+                }
+            });
+        });
+
+        // ── Airtable Validate (requires backend) ───────────────
+        validateBtn.addEventListener('click', async () => {
+            const promoId = promoIdInput.value.trim();
+            if (!promoId) { showError(validateError, '請輸入 Promo ID'); return; }
+
+            validateBtn.disabled = true;
+            validateBtn.textContent = '驗證中...';
+            hideError(validateError);
+            promoDataDiv.classList.remove('show');
+
+            try {
+                const res = await fetch('/api/validate-promo', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ promo_id: promoId })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    currentTextData = data.promo;
+                    showPromoData(data.promo);
+                } else {
+                    showError(validateError, data.error || '驗證失敗');
+                }
+            } catch {
+                showError(validateError, '無法連接到後端伺服器（Airtable 模式需後端）');
+            } finally {
+                validateBtn.disabled = false;
+                validateBtn.textContent = '🔍 驗證 Promo ID';
+            }
+        });
+
+        function showPromoData(data) {
+            promoDataDiv.innerHTML = `
+                <div class="promo-data-item"><strong>Theme:</strong> ${escHtml(data.theme)}</div>
+                <div class="promo-data-item"><strong>Headline:</strong> ${escHtml(data.headline)}</div>
+                <div class="promo-data-item"><strong>Subheadline:</strong> ${escHtml(data.subheadline)}</div>
+                <div class="promo-data-item"><strong>CTA:</strong> ${escHtml(data.cta)}</div>
+            `;
+            promoDataDiv.classList.add('show');
+        }
+
+        // ── File Upload ────────────────────────────────────────
+        dropzone.addEventListener('click', () => fileInput.click());
+
+        dropzone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropzone.classList.add('dragover');
+        });
+
+        dropzone.addEventListener('dragleave', () => dropzone.classList.remove('dragover'));
+
+        dropzone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropzone.classList.remove('dragover');
+            handleFile(e.dataTransfer.files[0]);
+        });
+
+        fileInput.addEventListener('change', (e) => handleFile(e.target.files[0]));
+
+        function handleFile(file) {
+            if (!file || !file.type.startsWith('image/')) { alert('請上傳圖片檔案'); return; }
+            uploadedImage = file;
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                previewImg.src = e.target.result;
+                imagePreview.classList.add('show');
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // ── Gemini Imagen 3 via /api/generate-image ────────────
+        async function generateSceneImage(theme) {
+            const prompt = [
+                `Professional product lifestyle photography for a ${theme} event.`,
+                'Elegant table setting with decorative linens, floral centerpieces, fine tableware, and soft candles.',
+                'Warm golden-hour natural light, shallow depth of field, luxury editorial style.',
+                'No text, no watermarks, no people, photorealistic.'
+            ].join(' ');
+
+            const res = await fetch('/api/generate-image', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    prompt,
+                    model: 'imagen-3.0-generate-002',
+                    aspectRatio: '16:9'
+                })
+            });
+
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.error || `生成失敗 (${res.status})`);
+            return data.image;
+        }
+
+        // ── Canvas Banner Composer ─────────────────────────────
+        async function waitForFonts() {
+            try { await document.fonts.ready; } catch {}
+        }
+
+        function loadImg(src) {
+            return new Promise((resolve, reject) => {
+                const img = new Image();
+                img.crossOrigin = 'anonymous';
+                img.onload = () => resolve(img);
+                img.onerror = () => reject(new Error('圖片載入失敗'));
+                img.src = src;
+            });
+        }
+
+        async function composeBanner(imgSrc, size, textData) {
+            const { width, height } = size;
+            const canvas = document.createElement('canvas');
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d');
+
+            // Draw background image (cover)
+            const img = await loadImg(imgSrc);
+            const scale = Math.max(width / img.width, height / img.height);
+            const sw = img.width * scale;
+            const sh = img.height * scale;
+            const sx = (width - sw) / 2;
+            const sy = (height - sh) / 2;
+            ctx.drawImage(img, sx, sy, sw, sh);
+
+            // Gradient overlay (left-heavy for text readability)
+            const grad = ctx.createLinearGradient(0, 0, width, 0);
+            if (height < 120) {
+                // Leaderboard: full dark overlay
+                grad.addColorStop(0, 'rgba(40, 24, 10, 0.82)');
+                grad.addColorStop(1, 'rgba(40, 24, 10, 0.60)');
+            } else {
+                grad.addColorStop(0,   'rgba(40, 24, 10, 0.80)');
+                grad.addColorStop(0.55,'rgba(40, 24, 10, 0.40)');
+                grad.addColorStop(1,   'rgba(40, 24, 10, 0.05)');
+            }
+            ctx.fillStyle = grad;
+            ctx.fillRect(0, 0, width, height);
+
+            const pad = Math.round(width * 0.055);
+
+            if (height <= 120) {
+                // ── Leaderboard compact layout ──
+                const hl = Math.round(height * 0.38);
+                ctx.font = `400 ${hl}px 'DM Serif Display', Georgia, serif`;
+                ctx.fillStyle = '#FFFFFF';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(textData.headline, pad, height * 0.42);
+
+                const ctaFont = Math.round(height * 0.28);
+                ctx.font = `600 ${ctaFont}px 'Montserrat', Arial, sans-serif`;
+                const ctaText = `→ ${textData.cta}`;
+                const ctaW = ctx.measureText(ctaText).width + pad * 0.8;
+                const ctaX = width - ctaW - pad;
+                const ctaH = height * 0.56;
+                drawRoundRect(ctx, ctaX, height * 0.22, ctaW, ctaH, 4, '#D4A373');
+                ctx.fillStyle = '#FFFFFF';
+                ctx.fillText(ctaText, ctaX + pad * 0.4, height * 0.5);
+
+            } else if (width <= height * 1.1) {
+                // ── Square / Half Page (portrait-ish) ──
+                const hlSize  = Math.round(height * 0.085);
+                const subSize = Math.round(height * 0.048);
+                const ctaSize = Math.round(height * 0.042);
+
+                ctx.font = `400 ${hlSize}px 'DM Serif Display', Georgia, serif`;
+                ctx.fillStyle = '#FFFFFF';
+                ctx.textBaseline = 'alphabetic';
+                const hlLines = wrapText(ctx, textData.headline, width * 0.78);
+                let y = height * 0.45;
+                hlLines.forEach(line => {
+                    ctx.fillText(line, pad, y);
+                    y += hlSize * 1.25;
+                });
+
+                ctx.font = `400 ${subSize}px 'Montserrat', Arial, sans-serif`;
+                ctx.fillStyle = 'rgba(255,255,255,0.82)';
+                const subLines = wrapText(ctx, textData.subheadline, width * 0.72);
+                subLines.slice(0, 2).forEach(line => {
+                    ctx.fillText(line, pad, y + subSize * 1.1);
+                    y += subSize * 1.4;
+                });
+
+                const ctaBtnH = ctaSize * 2.2;
+                const ctaBtnW = ctx.measureText(textData.cta).width + pad * 1.2;
+                ctx.font = `600 ${ctaSize}px 'Montserrat', Arial, sans-serif`;
+                const ctaBtnY = y + subSize * 1.6;
+                drawRoundRect(ctx, pad, ctaBtnY, ctaBtnW, ctaBtnH, 6, '#D4A373');
+                ctx.fillStyle = '#FFFFFF';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(textData.cta, pad + pad * 0.4, ctaBtnY + ctaBtnH / 2);
+
+            } else {
+                // ── Wide banners: Hero, Billboard ──
+                const hlSize  = Math.round(height * 0.135);
+                const subSize = Math.round(height * 0.072);
+                const ctaSize = Math.round(height * 0.062);
+
+                ctx.font = `400 ${hlSize}px 'DM Serif Display', Georgia, serif`;
+                ctx.fillStyle = '#FFFFFF';
+                ctx.textBaseline = 'alphabetic';
+                const hlLines = wrapText(ctx, textData.headline, width * 0.52);
+                let y = height * 0.38;
+                hlLines.forEach(line => {
+                    ctx.fillText(line, pad, y);
+                    y += hlSize * 1.2;
+                });
+
+                ctx.font = `400 ${subSize}px 'Montserrat', Arial, sans-serif`;
+                ctx.fillStyle = 'rgba(255,255,255,0.82)';
+                const subLines = wrapText(ctx, textData.subheadline, width * 0.46);
+                subLines.slice(0, 2).forEach(line => {
+                    ctx.fillText(line, pad, y + subSize * 1.1);
+                    y += subSize * 1.35;
+                });
+
+                const ctaBtnH = ctaSize * 2.4;
+                ctx.font = `600 ${ctaSize}px 'Montserrat', Arial, sans-serif`;
+                const ctaBtnW = ctx.measureText(textData.cta).width + pad;
+                const ctaBtnY = y + subSize * 1.2;
+                drawRoundRect(ctx, pad, ctaBtnY, ctaBtnW, ctaBtnH, 6, '#D4A373');
+                ctx.fillStyle = '#FFFFFF';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(textData.cta, pad + pad * 0.35, ctaBtnY + ctaBtnH / 2);
+            }
+
+            return canvas.toDataURL('image/jpeg', 0.92);
+        }
+
+        function drawRoundRect(ctx, x, y, w, h, r, fillColor) {
+            ctx.beginPath();
+            if (ctx.roundRect) {
+                ctx.roundRect(x, y, w, h, r);
+            } else {
+                ctx.moveTo(x + r, y);
+                ctx.lineTo(x + w - r, y);
+                ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+                ctx.lineTo(x + w, y + h - r);
+                ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+                ctx.lineTo(x + r, y + h);
+                ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+                ctx.lineTo(x, y + r);
+                ctx.quadraticCurveTo(x, y, x + r, y);
+                ctx.closePath();
+            }
+            ctx.fillStyle = fillColor;
+            ctx.fill();
+        }
+
+        function wrapText(ctx, text, maxWidth) {
+            const words = text.split(' ');
+            const lines = [];
+            let current = '';
+            for (const word of words) {
+                const test = current ? `${current} ${word}` : word;
+                if (ctx.measureText(test).width > maxWidth && current) {
+                    lines.push(current);
+                    current = word;
+                } else {
+                    current = test;
+                }
+            }
+            if (current) lines.push(current);
+            return lines;
+        }
+
+        // ── Phase 1: Generate scene + desktop hero ─────────────
+        generateBtn.addEventListener('click', async () => {
+
+            const inputMode = document.querySelector('input[name="inputMode"]:checked').value;
+            let textData;
+
+            if (inputMode === 'airtable') {
+                if (!currentTextData) { showError(generateError, '請先驗證 Promo ID'); return; }
+                textData = currentTextData;
+            } else {
+                const theme      = document.getElementById('theme').value.trim();
+                const headline   = document.getElementById('headline').value.trim();
+                const subheadline = document.getElementById('subheadline').value.trim();
+                const cta        = document.getElementById('cta').value.trim();
+                if (!theme || !headline || !subheadline || !cta) {
+                    showError(generateError, '請填寫所有必填欄位');
+                    return;
+                }
+                textData = { theme, headline, subheadline, cta };
+            }
+
+            currentTextData = textData;
+            allBannerDataUrls = {};
+
+            generateBtn.disabled = true;
+            generateBtn.classList.add('loading');
+            hideError(generateError);
+            resultsPhase1.classList.remove('show');
+            resultsPhase2.classList.remove('show');
+            phaseDivider.classList.remove('show');
+            progressContainer.classList.add('show');
+            updateProgress(5, '準備中...');
+
+            try {
+                await waitForFonts();
+
+                // Step 1: Get or generate scene image
+                let sceneDataUrl;
+                if (uploadedImage) {
+                    updateProgress(20, '載入上傳的圖片...');
+                    sceneDataUrl = await readFileAsDataURL(uploadedImage);
+                } else {
+                    updateProgress(15, '呼叫 Gemini Imagen 3 生成情境圖...');
+                    sceneDataUrl = await generateSceneImage(textData.theme);
+                }
+
+                sceneImageDataUrl = sceneDataUrl;
+                allBannerDataUrls['scene'] = sceneDataUrl;
+                updateProgress(55, '情境圖完成，合成桌機版 Banner...');
+
+                // Step 2: Compose desktop hero
+                const heroDataUrl = await composeBanner(sceneDataUrl, PHASE1_SIZES[0], textData);
+                allBannerDataUrls['desktop_hero'] = heroDataUrl;
+
+                updateProgress(100, '完成！');
+
+                // Render phase 1
+                galleryPhase1.innerHTML = '';
+
+                addBannerCard(galleryPhase1, {
+                    name: 'Product Scene',
+                    size: uploadedImage ? '（上傳圖片）' : '（Gemini 生成）',
+                    dataUrl: sceneDataUrl,
+                    filename: 'product_scene.jpg'
+                });
+
+                addBannerCard(galleryPhase1, {
+                    name: PHASE1_SIZES[0].name,
+                    size: `${PHASE1_SIZES[0].width}×${PHASE1_SIZES[0].height}`,
+                    dataUrl: heroDataUrl,
+                    filename: PHASE1_SIZES[0].filename
+                });
+
+                phase1Message.textContent = '✅ 初版完成！確認無誤後繼續生成其他尺寸';
+                resultsPhase1.classList.add('show');
+                progressContainer.classList.remove('show');
+                moreSizesBtn.disabled = false;
+
+            } catch (err) {
+                showError(generateError, err.message || '發生錯誤，請重試');
+                progressContainer.classList.remove('show');
+            } finally {
+                generateBtn.disabled = false;
+                generateBtn.classList.remove('loading');
+            }
+        });
+
+        // ── Phase 2: Generate other sizes ─────────────────────
+        moreSizesBtn.addEventListener('click', async () => {
+            if (!sceneImageDataUrl || !currentTextData) return;
+
+            moreSizesBtn.disabled = true;
+            moreSizesBtn.textContent = '生成中...';
+            progressContainer.classList.add('show');
+            updateProgress(5, '準備生成其他尺寸...');
+
+            try {
+                await waitForFonts();
+                galleryPhase2.innerHTML = '';
+
+                for (let i = 0; i < PHASE2_SIZES.length; i++) {
+                    const size = PHASE2_SIZES[i];
+                    const pct = Math.round(10 + (i / PHASE2_SIZES.length) * 85);
+                    updateProgress(pct, `合成 ${size.name} (${size.width}×${size.height})...`);
+
+                    const dataUrl = await composeBanner(sceneImageDataUrl, size, currentTextData);
+                    allBannerDataUrls[size.id] = dataUrl;
+
+                    addBannerCard(galleryPhase2, {
+                        name: size.name,
+                        size: `${size.width}×${size.height}`,
+                        dataUrl,
+                        filename: size.filename
+                    });
+                }
+
+                updateProgress(100, '全部完成！');
+                phaseDivider.classList.add('show');
+                resultsPhase2.classList.add('show');
+                progressContainer.classList.remove('show');
+                moreSizesBtn.textContent = '✅ 其他尺寸已生成';
+
+            } catch (err) {
+                showError(generateError, err.message || '生成失敗');
+                progressContainer.classList.remove('show');
+                moreSizesBtn.disabled = false;
+                moreSizesBtn.textContent = '📐 初版 OK，繼續生成其他尺寸 →';
+            }
+        });
+
+        // ── Download All ───────────────────────────────────────
+        downloadAllBtn.addEventListener('click', async () => {
+            const entries = Object.entries(allBannerDataUrls);
+            if (!entries.length) return;
+
+            // Simple sequential download (no JSZip dependency)
+            for (const [id, dataUrl] of entries) {
+                const size = [...PHASE1_SIZES, ...PHASE2_SIZES].find(s => s.id === id);
+                const filename = size ? size.filename : (id === 'scene' ? 'product_scene.jpg' : `${id}.jpg`);
+                triggerDownload(dataUrl, filename);
+                await new Promise(r => setTimeout(r, 300));
+            }
+        });
+
+        // ── Helpers ────────────────────────────────────────────
+        function addBannerCard(container, { name, size, dataUrl, filename }) {
+            const card = document.createElement('div');
+            card.className = 'banner-card';
+            card.innerHTML = `
+                <img src="${dataUrl}" alt="${escHtml(name)}" loading="lazy">
+                <div class="banner-info">
+                    <div class="banner-name">${escHtml(name)}</div>
+                    <div class="banner-size">${escHtml(size)}</div>
+                    <button class="download-btn">下載</button>
+                </div>
+            `;
+            card.querySelector('.download-btn').addEventListener('click', () => {
+                triggerDownload(dataUrl, filename);
+            });
+            container.appendChild(card);
+        }
+
+        function triggerDownload(dataUrl, filename) {
+            const a = document.createElement('a');
+            a.href = dataUrl;
+            a.download = filename;
+            a.click();
+        }
+
+        function readFileAsDataURL(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = e => resolve(e.target.result);
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
+        }
+
+        function updateProgress(pct, msg) {
+            progressFill.style.width = `${pct}%`;
+            progressMessage.textContent = msg;
+        }
+
+        function showError(el, msg) {
+            el.textContent = msg;
+            el.classList.add('show');
+        }
+
+        function hideError(el) { el.classList.remove('show'); }
+
+        function escHtml(str) {
+            return String(str)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;');
+        }
+    </script>
+</body>
+</html>

@@ -16,6 +16,7 @@ module.exports = async function handler(req, res) {
 
   try {
     if (model.startsWith("imagen-")) {
+      const { aspectRatio } = req.body || {};
       const geminiRes = await fetch(
         `https://generativelanguage.googleapis.com/v1beta/models/${model}:predict?key=${apiKey}`,
         {
@@ -23,7 +24,10 @@ module.exports = async function handler(req, res) {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             instances: [{ prompt }],
-            parameters: { sampleCount: 1 },
+            parameters: {
+              sampleCount: 1,
+              ...(aspectRatio && { aspectRatio }),
+            },
           }),
         }
       );
