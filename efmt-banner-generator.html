@@ -929,10 +929,13 @@
             function calcLayout(hS, sS, cS) {
                 ctx.font = `400 ${hS}px 'DM Serif Display', Georgia, serif`;
                 const hl = wrapText(ctx, textData.headline, maxW);
-                ctx.font = `500 ${sS}px 'Montserrat', Arial, sans-serif`;
-                const sb = wrapText(ctx, textData.subheadline.toUpperCase(), maxW * 0.90).slice(0, 2);
-                const cH = Math.round(cS * 2.2);
-                const totalH = hl.length * hS * 1.2 + sS * 0.8 + sb.length * sS * 1.35 + sS * 0.9 + cH;
+                ctx.font = `400 ${sS}px 'Montserrat', Arial, sans-serif`;
+                ctx.letterSpacing = '0.07em';
+                const sb = wrapText(ctx, textData.subheadline.toUpperCase(), maxW * 0.88).slice(0, 2);
+                ctx.letterSpacing = '0px';
+                const cH = Math.round(cS * 2.0);
+                // gaps: hl→sub 0.35, sub line-height 1.28, sub→btn 0.45
+                const totalH = hl.length * hS * 1.12 + sS * 0.35 + sb.length * sS * 1.28 + sS * 0.45 + cH;
                 return { hl, sb, cH, totalH };
             }
 
@@ -951,27 +954,32 @@
             const startY = sT + Math.round(Math.max(0, sH - lo.totalH) * 0.4);
             let y = startY + hlSize;
 
-            // Draw headline
+            // Headline: tight leading, no letter-spacing
             ctx.textBaseline = 'alphabetic';
             ctx.font = `400 ${hlSize}px 'DM Serif Display', Georgia, serif`;
+            ctx.letterSpacing = '0px';
             ctx.fillStyle = '#1A1A1A';
-            lo.hl.forEach(line => { ctx.fillText(line, sL, y); y += hlSize * 1.2; });
+            lo.hl.forEach(line => { ctx.fillText(line, sL, y); y += hlSize * 1.12; });
 
-            // Draw subheadline (uppercase, medium weight)
-            y += subSize * 0.8;
-            ctx.font = `500 ${subSize}px 'Montserrat', Arial, sans-serif`;
-            ctx.fillStyle = 'rgba(30,30,30,0.65)';
-            lo.sb.forEach(line => { ctx.fillText(line.toUpperCase(), sL, y); y += subSize * 1.35; });
+            // Subheadline: light weight, wide-tracked uppercase, muted
+            y += subSize * 0.35;
+            ctx.font = `400 ${subSize}px 'Montserrat', Arial, sans-serif`;
+            ctx.letterSpacing = '0.07em';
+            ctx.fillStyle = 'rgba(30,30,30,0.52)';
+            lo.sb.forEach(line => { ctx.fillText(line.toUpperCase(), sL, y); y += subSize * 1.28; });
+            ctx.letterSpacing = '0px';
 
-            // Draw CTA button (brand black, symmetric padding)
-            y += subSize * 0.9;
-            ctx.font = `600 ${ctaSize}px 'Montserrat', Arial, sans-serif`;
-            const ctaPad = Math.round(ctaSize * 1.1);
+            // CTA button: sharp corners, tracked uppercase
+            y += subSize * 0.45;
+            ctx.font = `700 ${ctaSize}px 'Montserrat', Arial, sans-serif`;
+            ctx.letterSpacing = '0.1em';
+            const ctaPad = Math.round(ctaSize * 1.0);
             const ctaBtnW = ctx.measureText(textData.cta.toUpperCase()).width + ctaPad * 2;
-            drawRoundRect(ctx, sL, y, ctaBtnW, lo.cH, 3, '#1A1A1A');
+            drawRoundRect(ctx, sL, y, ctaBtnW, lo.cH, 0, '#1A1A1A');
             ctx.fillStyle = '#FFFFFF';
             ctx.textBaseline = 'middle';
             ctx.fillText(textData.cta.toUpperCase(), sL + ctaPad, y + lo.cH / 2);
+            ctx.letterSpacing = '0px';
 
             return canvas.toDataURL('image/jpeg', 0.92);
         }
