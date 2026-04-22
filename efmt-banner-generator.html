@@ -645,14 +645,14 @@
 
         // Banner size configs
         const PHASE1_SIZES = [
-            { id: 'desktop_hero', name: 'Desktop Hero', width: 1920, height: 600, filename: 'desktop_hero_1920x600.jpg' }
+            { id: 'desktop', name: 'Desktop', width: 1180, height: 640, filename: 'desktop_1180x640.jpg' }
         ];
 
         const PHASE2_SIZES = [
-            { id: 'square',      name: 'Square',      width: 600,  height: 600,  filename: 'square_600x600.jpg' },
-            { id: 'billboard',   name: 'Billboard',   width: 970,  height: 250,  filename: 'billboard_970x250.jpg' },
-            { id: 'leaderboard', name: 'Leaderboard', width: 728,  height: 90,   filename: 'leaderboard_728x90.jpg' },
-            { id: 'half_page',   name: 'Half Page',   width: 300,  height: 600,  filename: 'half_page_300x600.jpg' },
+            { id: 'mobile',           name: 'Mobile',                 width: 768,  height: 480, filename: 'mobile_768x480.jpg' },
+            { id: 'lander_desktop',   name: 'Lander Banner_Desktop',  width: 2000, height: 490, filename: 'lander_desktop_2000x490.jpg' },
+            { id: 'lander_mobile',    name: 'Lander Banner_Mobile',   width: 1100, height: 595, filename: 'lander_mobile_1100x595.jpg' },
+            { id: 'newsletter',       name: 'Newsletter',             width: 800,  height: 667, filename: 'newsletter_800x667.jpg' },
         ];
 
         // ── Input mode toggle ──────────────────────────────────
@@ -808,90 +808,96 @@
             ctx.fillRect(0, 0, width, height);
 
             const pad = Math.round(width * 0.055);
+            const ratio = width / height;
 
-            if (height <= 120) {
-                // ── Leaderboard compact layout ──
-                const hl = Math.round(height * 0.38);
-                ctx.font = `400 ${hl}px 'DM Serif Display', Georgia, serif`;
-                ctx.fillStyle = '#FFFFFF';
-                ctx.textBaseline = 'middle';
-                ctx.fillText(textData.headline, pad, height * 0.42);
+            if (ratio >= 3.5) {
+                // ── 超寬橫幅：Lander Banner_Desktop (2000×490, ratio≈4.1) ──
+                // 文字置左，headline 大，subheadline 一行，CTA 右側
+                const hlSize  = Math.round(height * 0.18);
+                const subSize = Math.round(height * 0.09);
+                const ctaSize = Math.round(height * 0.08);
 
-                const ctaFont = Math.round(height * 0.28);
-                ctx.font = `600 ${ctaFont}px 'Montserrat', Arial, sans-serif`;
-                const ctaText = `→ ${textData.cta}`;
-                const ctaW = ctx.measureText(ctaText).width + pad * 0.8;
-                const ctaX = width - ctaW - pad;
-                const ctaH = height * 0.56;
-                drawRoundRect(ctx, ctaX, height * 0.22, ctaW, ctaH, 4, '#D4A373');
-                ctx.fillStyle = '#FFFFFF';
-                ctx.fillText(ctaText, ctaX + pad * 0.4, height * 0.5);
-
-            } else if (width <= height * 1.1) {
-                // ── Square / Half Page (portrait-ish) ──
-                const hlSize  = Math.round(height * 0.085);
-                const subSize = Math.round(height * 0.048);
-                const ctaSize = Math.round(height * 0.042);
-
-                ctx.font = `400 ${hlSize}px 'DM Serif Display', Georgia, serif`;
                 ctx.fillStyle = '#FFFFFF';
                 ctx.textBaseline = 'alphabetic';
-                const hlLines = wrapText(ctx, textData.headline, width * 0.78);
-                let y = height * 0.45;
-                hlLines.forEach(line => {
-                    ctx.fillText(line, pad, y);
-                    y += hlSize * 1.25;
-                });
+                ctx.font = `400 ${hlSize}px 'DM Serif Display', Georgia, serif`;
+                const hlLines = wrapText(ctx, textData.headline, width * 0.38);
+                let y = height * 0.36;
+                hlLines.forEach(line => { ctx.fillText(line, pad, y); y += hlSize * 1.2; });
 
                 ctx.font = `400 ${subSize}px 'Montserrat', Arial, sans-serif`;
                 ctx.fillStyle = 'rgba(255,255,255,0.82)';
-                const subLines = wrapText(ctx, textData.subheadline, width * 0.72);
-                subLines.slice(0, 2).forEach(line => {
-                    ctx.fillText(line, pad, y + subSize * 1.1);
-                    y += subSize * 1.4;
-                });
+                ctx.fillText(textData.subheadline.split(',')[0].trim(), pad, y + subSize * 1.1);
 
-                const ctaBtnH = ctaSize * 2.2;
-                const ctaBtnW = ctx.measureText(textData.cta).width + pad * 1.2;
                 ctx.font = `600 ${ctaSize}px 'Montserrat', Arial, sans-serif`;
-                const ctaBtnY = y + subSize * 1.6;
+                const ctaBtnW = ctx.measureText(textData.cta).width + pad;
+                const ctaBtnH = ctaSize * 2.2;
+                const ctaBtnY = y + subSize * 2.8;
                 drawRoundRect(ctx, pad, ctaBtnY, ctaBtnW, ctaBtnH, 6, '#D4A373');
                 ctx.fillStyle = '#FFFFFF';
                 ctx.textBaseline = 'middle';
-                ctx.fillText(textData.cta, pad + pad * 0.4, ctaBtnY + ctaBtnH / 2);
+                ctx.fillText(textData.cta, pad + pad * 0.35, ctaBtnY + ctaBtnH / 2);
 
-            } else {
-                // ── Wide banners: Hero, Billboard ──
-                const hlSize  = Math.round(height * 0.135);
-                const subSize = Math.round(height * 0.072);
-                const ctaSize = Math.round(height * 0.062);
+            } else if (ratio >= 1.4) {
+                // ── 一般橫向：Desktop(1180×640), Mobile(768×480), Lander_Mobile(1100×595) ──
+                const hlSize  = Math.round(height * 0.13);
+                const subSize = Math.round(height * 0.068);
+                const ctaSize = Math.round(height * 0.058);
+                const maxTxtW = width * 0.48;
 
-                ctx.font = `400 ${hlSize}px 'DM Serif Display', Georgia, serif`;
                 ctx.fillStyle = '#FFFFFF';
                 ctx.textBaseline = 'alphabetic';
-                const hlLines = wrapText(ctx, textData.headline, width * 0.52);
+                ctx.font = `400 ${hlSize}px 'DM Serif Display', Georgia, serif`;
+                const hlLines = wrapText(ctx, textData.headline, maxTxtW);
                 let y = height * 0.38;
-                hlLines.forEach(line => {
-                    ctx.fillText(line, pad, y);
-                    y += hlSize * 1.2;
-                });
+                hlLines.forEach(line => { ctx.fillText(line, pad, y); y += hlSize * 1.2; });
 
                 ctx.font = `400 ${subSize}px 'Montserrat', Arial, sans-serif`;
                 ctx.fillStyle = 'rgba(255,255,255,0.82)';
-                const subLines = wrapText(ctx, textData.subheadline, width * 0.46);
+                const subLines = wrapText(ctx, textData.subheadline, maxTxtW * 0.95);
                 subLines.slice(0, 2).forEach(line => {
                     ctx.fillText(line, pad, y + subSize * 1.1);
                     y += subSize * 1.35;
                 });
 
-                const ctaBtnH = ctaSize * 2.4;
                 ctx.font = `600 ${ctaSize}px 'Montserrat', Arial, sans-serif`;
                 const ctaBtnW = ctx.measureText(textData.cta).width + pad;
+                const ctaBtnH = ctaSize * 2.4;
                 const ctaBtnY = y + subSize * 1.2;
                 drawRoundRect(ctx, pad, ctaBtnY, ctaBtnW, ctaBtnH, 6, '#D4A373');
                 ctx.fillStyle = '#FFFFFF';
                 ctx.textBaseline = 'middle';
                 ctx.fillText(textData.cta, pad + pad * 0.35, ctaBtnY + ctaBtnH / 2);
+
+            } else {
+                // ── 接近正方形：Newsletter (800×667, ratio≈1.2) ──
+                const hlSize  = Math.round(height * 0.1);
+                const subSize = Math.round(height * 0.056);
+                const ctaSize = Math.round(height * 0.05);
+                const maxTxtW = width * 0.82;
+
+                ctx.fillStyle = '#FFFFFF';
+                ctx.textBaseline = 'alphabetic';
+                ctx.font = `400 ${hlSize}px 'DM Serif Display', Georgia, serif`;
+                const hlLines = wrapText(ctx, textData.headline, maxTxtW);
+                let y = height * 0.42;
+                hlLines.forEach(line => { ctx.fillText(line, pad, y); y += hlSize * 1.2; });
+
+                ctx.font = `400 ${subSize}px 'Montserrat', Arial, sans-serif`;
+                ctx.fillStyle = 'rgba(255,255,255,0.82)';
+                const subLines = wrapText(ctx, textData.subheadline, maxTxtW * 0.9);
+                subLines.slice(0, 2).forEach(line => {
+                    ctx.fillText(line, pad, y + subSize * 1.1);
+                    y += subSize * 1.4;
+                });
+
+                ctx.font = `600 ${ctaSize}px 'Montserrat', Arial, sans-serif`;
+                const ctaBtnW = ctx.measureText(textData.cta).width + pad * 1.2;
+                const ctaBtnH = ctaSize * 2.2;
+                const ctaBtnY = y + subSize * 1.8;
+                drawRoundRect(ctx, pad, ctaBtnY, ctaBtnW, ctaBtnH, 6, '#D4A373');
+                ctx.fillStyle = '#FFFFFF';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(textData.cta, pad + pad * 0.4, ctaBtnY + ctaBtnH / 2);
             }
 
             return canvas.toDataURL('image/jpeg', 0.92);
