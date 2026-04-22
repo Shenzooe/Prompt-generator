@@ -15,8 +15,8 @@
         }
 
         :root {
-            --color-primary: #D4A373;
-            --color-primary-light: #E8D5C4;
+            --color-primary: #1A1A1A;
+            --color-primary-light: #444444;
             --color-primary-dark: #B8896B;
             --color-accent: #C98474;
             --color-accent-light: #E5B8AF;
@@ -774,13 +774,13 @@
         // ── Gemini Imagen via /api/generate-image ─────────────
         async function generateSceneImage(theme) {
             const prompt = [
-                `Professional product lifestyle photography for a ${theme} event.`,
-                `Beautifully styled scene featuring ${theme}-themed wedding and party supplies: table linens, floral arrangements, centerpieces, decorative tableware, ribbons, candles, and event décor items specific to a ${theme} occasion.`,
-                'Composition: main subjects arranged in the right half and center of the frame; upper-left area kept open, softly lit, and visually uncluttered to allow space for text overlay.',
-                'Warm natural light, shallow depth of field, luxury editorial photography style, elegant and aspirational.',
+                `Bright, airy editorial product photography for a ${theme} celebration.`,
+                `Scene features ${theme}-themed party and wedding supplies — table linens, floral centerpieces, decorative tableware, ribbons, and candles — styled on a clean white or soft cream surface.`,
+                'Composition: all decorative subjects clustered in the right half of the frame. The left half is open, softly lit, and nearly empty — a clean light background (white, ivory, or pale warm grey) with no objects, suitable for overlaying dark text.',
+                'Bright natural window light from the right, soft shadows, shallow depth of field. The overall tone is light, fresh, and luminous — no dark, moody, or dramatic lighting.',
                 'No people, no humans, no faces, no body parts.',
-                'Only wedding and party supply products — no food, no buildings, no landscapes, no animals, no unrelated objects.',
-                'No text, no watermarks, no logos, photorealistic.'
+                'Only party and wedding supply products visible — no food, no buildings, no outdoor landscapes, no animals, no unrelated objects.',
+                'No text, no watermarks, no logos, photorealistic, high resolution.'
             ].join(' ');
 
             const res = await fetch('/api/generate-image', {
@@ -828,11 +828,12 @@
                 img.width * sc, img.height * sc
             );
 
-            // Left-to-right gradient overlay for text readability
+            // Left-to-right cream overlay: bright left for dark text, photo shows on right
             const grad = ctx.createLinearGradient(0, 0, width, 0);
-            grad.addColorStop(0,    'rgba(40,24,10,0.80)');
-            grad.addColorStop(0.55, 'rgba(40,24,10,0.40)');
-            grad.addColorStop(1,    'rgba(40,24,10,0.05)');
+            grad.addColorStop(0,    'rgba(255,252,248,0.96)');
+            grad.addColorStop(0.42, 'rgba(255,252,248,0.80)');
+            grad.addColorStop(0.68, 'rgba(255,252,248,0.30)');
+            grad.addColorStop(1,    'rgba(255,252,248,0)');
             ctx.fillStyle = grad;
             ctx.fillRect(0, 0, width, height);
 
@@ -893,20 +894,20 @@
             // Draw headline
             ctx.textBaseline = 'alphabetic';
             ctx.font = `400 ${hlSize}px 'DM Serif Display', Georgia, serif`;
-            ctx.fillStyle = '#FFFFFF';
+            ctx.fillStyle = '#1A1A1A';
             lo.hl.forEach(line => { ctx.fillText(line, sL, y); y += hlSize * 1.2; });
 
             // Draw subheadline
             y += subSize * 0.8;
             ctx.font = `400 ${subSize}px 'Montserrat', Arial, sans-serif`;
-            ctx.fillStyle = 'rgba(255,255,255,0.82)';
+            ctx.fillStyle = 'rgba(30,30,30,0.72)';
             lo.sb.forEach(line => { ctx.fillText(line, sL, y); y += subSize * 1.35; });
 
-            // Draw CTA button
+            // Draw CTA button (brand black)
             y += subSize * 0.9;
             ctx.font = `600 ${ctaSize}px 'Montserrat', Arial, sans-serif`;
             const ctaBtnW = ctx.measureText(textData.cta).width + sL;
-            drawRoundRect(ctx, sL, y, ctaBtnW, lo.cH, 6, '#D4A373');
+            drawRoundRect(ctx, sL, y, ctaBtnW, lo.cH, 4, '#1A1A1A');
             ctx.fillStyle = '#FFFFFF';
             ctx.textBaseline = 'middle';
             ctx.fillText(textData.cta, sL + Math.round(sL * 0.4), y + lo.cH / 2);
