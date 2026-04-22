@@ -443,19 +443,24 @@
 
         .download-btn {
             width: 100%;
-            padding: 0.625rem;
-            border: 2px solid var(--color-primary);
-            border-radius: var(--radius-sm);
-            background: transparent;
-            color: var(--color-primary);
+            padding: 0.6rem 1rem;
+            border: none;
+            border-radius: 6px;
+            background: #1A1A1A;
+            color: #fff;
             font-family: var(--font-body);
-            font-size: 0.875rem;
+            font-size: 0.8rem;
             font-weight: 600;
+            letter-spacing: 0.06em;
             cursor: pointer;
-            transition: all 0.2s ease;
+            transition: background 0.18s ease, transform 0.18s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.4rem;
         }
-
-        .download-btn:hover { background: var(--color-primary); color: white; }
+        .download-btn::before { content: '↓'; font-size: 0.9rem; }
+        .download-btn:hover { background: #333; transform: translateY(-1px); }
 
         .download-all-btn {
             width: 100%;
@@ -774,13 +779,13 @@
         // ── Gemini Imagen via /api/generate-image ─────────────
         async function generateSceneImage(theme) {
             const prompt = [
-                `Bright, airy editorial product photography for a ${theme} celebration.`,
-                `Scene features ${theme}-themed party and wedding supplies — table linens, floral centerpieces, decorative tableware, ribbons, and candles — styled on a clean white or soft cream surface.`,
-                'Composition: all decorative subjects clustered in the right half of the frame. The left half is open, softly lit, and nearly empty — a clean light background (white, ivory, or pale warm grey) with no objects, suitable for overlaying dark text.',
-                'Bright natural window light from the right, soft shadows, shallow depth of field. The overall tone is light, fresh, and luminous — no dark, moody, or dramatic lighting.',
+                `Bright, airy editorial product photography styled specifically for a ${theme} celebration.`,
+                `The scene is filled exclusively with ${theme}-specific party and event supplies — every single item must be something you would actually find at a ${theme} party: thematic decorations, coordinated tableware, balloons, banners, confetti, ribbons, and centerpieces that are unmistakably and exclusively associated with ${theme}. Nothing generic, nothing from a different type of event.`,
+                'Composition: all decorative objects are clustered in the right half and center of the frame. The left one-third of the image is completely open — a clean white, ivory, or soft warm-neutral background with no objects at all, to allow space for text overlay.',
+                'Bright natural daylight, soft shadows, shallow depth of field. The overall tone is light, fresh, and luminous. No dark or moody lighting.',
                 'No people, no humans, no faces, no body parts.',
-                'Only party and wedding supply products visible — no food, no buildings, no outdoor landscapes, no animals, no unrelated objects.',
-                'No text, no watermarks, no logos, photorealistic, high resolution.'
+                'No food, no buildings, no outdoor landscapes, no animals, no objects unrelated to the theme.',
+                'No text, no watermarks, no logos. Photorealistic, high resolution.'
             ].join(' ');
 
             const res = await fetch('/api/generate-image', {
@@ -869,8 +874,8 @@
             function calcLayout(hS, sS, cS) {
                 ctx.font = `400 ${hS}px 'DM Serif Display', Georgia, serif`;
                 const hl = wrapText(ctx, textData.headline, maxW);
-                ctx.font = `400 ${sS}px 'Montserrat', Arial, sans-serif`;
-                const sb = wrapText(ctx, textData.subheadline, maxW * 0.95).slice(0, 2);
+                ctx.font = `500 ${sS}px 'Montserrat', Arial, sans-serif`;
+                const sb = wrapText(ctx, textData.subheadline.toUpperCase(), maxW * 0.90).slice(0, 2);
                 const cH = Math.round(cS * 2.2);
                 const totalH = hl.length * hS * 1.2 + sS * 0.8 + sb.length * sS * 1.35 + sS * 0.9 + cH;
                 return { hl, sb, cH, totalH };
@@ -897,20 +902,21 @@
             ctx.fillStyle = '#1A1A1A';
             lo.hl.forEach(line => { ctx.fillText(line, sL, y); y += hlSize * 1.2; });
 
-            // Draw subheadline
+            // Draw subheadline (uppercase, medium weight)
             y += subSize * 0.8;
-            ctx.font = `400 ${subSize}px 'Montserrat', Arial, sans-serif`;
-            ctx.fillStyle = 'rgba(30,30,30,0.72)';
-            lo.sb.forEach(line => { ctx.fillText(line, sL, y); y += subSize * 1.35; });
+            ctx.font = `500 ${subSize}px 'Montserrat', Arial, sans-serif`;
+            ctx.fillStyle = 'rgba(30,30,30,0.65)';
+            lo.sb.forEach(line => { ctx.fillText(line.toUpperCase(), sL, y); y += subSize * 1.35; });
 
-            // Draw CTA button (brand black)
+            // Draw CTA button (brand black, symmetric padding)
             y += subSize * 0.9;
             ctx.font = `600 ${ctaSize}px 'Montserrat', Arial, sans-serif`;
-            const ctaBtnW = ctx.measureText(textData.cta).width + sL;
-            drawRoundRect(ctx, sL, y, ctaBtnW, lo.cH, 4, '#1A1A1A');
+            const ctaPad = Math.round(ctaSize * 1.1);
+            const ctaBtnW = ctx.measureText(textData.cta.toUpperCase()).width + ctaPad * 2;
+            drawRoundRect(ctx, sL, y, ctaBtnW, lo.cH, 3, '#1A1A1A');
             ctx.fillStyle = '#FFFFFF';
             ctx.textBaseline = 'middle';
-            ctx.fillText(textData.cta, sL + Math.round(sL * 0.4), y + lo.cH / 2);
+            ctx.fillText(textData.cta.toUpperCase(), sL + ctaPad, y + lo.cH / 2);
 
             return canvas.toDataURL('image/jpeg', 0.92);
         }
@@ -1116,7 +1122,7 @@
                 <div class="banner-info">
                     <div class="banner-name">${escHtml(name)}</div>
                     <div class="banner-size">${escHtml(size)}</div>
-                    <button class="download-btn">下載</button>
+                    <button class="download-btn">Download</button>
                 </div>
             `;
             card.querySelector('.download-btn').addEventListener('click', () => {
