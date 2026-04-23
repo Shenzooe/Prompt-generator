@@ -937,7 +937,8 @@
                 // No trailing leading on last line of each block
                 const hlH = hl.length === 1 ? hS : (hl.length - 1) * hS * 1.12 + hS;
                 const sbH = sb.length === 1 ? sS : (sb.length - 1) * sS * 1.25 + sS;
-                const totalH = hlH + sS * 0.38 + sbH + sS * 0.48 + cH;
+                // Gap hl→sub uses hlSize (need to clear descenders), sub→btn uses subSize
+                const totalH = hlH + hS * 0.42 + sbH + sS * 0.55 + cH;
                 return { hl, sb, cH, totalH };
             }
 
@@ -967,7 +968,7 @@
             });
 
             // Subheadline: light weight, tracked uppercase, muted
-            y += subSize * 0.38;
+            y += hlSize * 0.42;
             ctx.font = `400 ${subSize}px 'Montserrat', Arial, sans-serif`;
             ctx.letterSpacing = '0.06em';
             ctx.fillStyle = 'rgba(30,30,30,0.50)';
@@ -978,7 +979,7 @@
             ctx.letterSpacing = '0px';
 
             // CTA button: sharp corners, moderate tracking
-            y += subSize * 0.48;
+            y += subSize * 0.55;
             ctx.font = `700 ${ctaSize}px 'Montserrat', Arial, sans-serif`;
             ctx.letterSpacing = '0.05em';
             const ctaPad = Math.round(ctaSize * 1.25);
