@@ -930,12 +930,14 @@
                 ctx.font = `400 ${hS}px 'DM Serif Display', Georgia, serif`;
                 const hl = wrapText(ctx, textData.headline, maxW);
                 ctx.font = `400 ${sS}px 'Montserrat', Arial, sans-serif`;
-                ctx.letterSpacing = '0.07em';
+                ctx.letterSpacing = '0.06em';
                 const sb = wrapText(ctx, textData.subheadline.toUpperCase(), maxW * 0.88).slice(0, 2);
                 ctx.letterSpacing = '0px';
-                const cH = Math.round(cS * 2.0);
-                // gaps: hl→sub 0.35, sub line-height 1.28, sub→btn 0.45
-                const totalH = hl.length * hS * 1.12 + sS * 0.35 + sb.length * sS * 1.28 + sS * 0.45 + cH;
+                const cH = Math.round(cS * 1.9);
+                // No trailing leading on last line of each block
+                const hlH = hl.length === 1 ? hS : (hl.length - 1) * hS * 1.12 + hS;
+                const sbH = sb.length === 1 ? sS : (sb.length - 1) * sS * 1.25 + sS;
+                const totalH = hlH + sS * 0.38 + sbH + sS * 0.48 + cH;
                 return { hl, sb, cH, totalH };
             }
 
@@ -954,26 +956,32 @@
             const startY = sT + Math.round(Math.max(0, sH - lo.totalH) * 0.4);
             let y = startY + hlSize;
 
-            // Headline: tight leading, no letter-spacing
+            // Headline: tight leading, only add gap between lines (not after last)
             ctx.textBaseline = 'alphabetic';
             ctx.font = `400 ${hlSize}px 'DM Serif Display', Georgia, serif`;
             ctx.letterSpacing = '0px';
             ctx.fillStyle = '#1A1A1A';
-            lo.hl.forEach(line => { ctx.fillText(line, sL, y); y += hlSize * 1.12; });
+            lo.hl.forEach((line, i) => {
+                ctx.fillText(line, sL, y);
+                if (i < lo.hl.length - 1) y += hlSize * 1.12;
+            });
 
-            // Subheadline: light weight, wide-tracked uppercase, muted
-            y += subSize * 0.35;
+            // Subheadline: light weight, tracked uppercase, muted
+            y += subSize * 0.38;
             ctx.font = `400 ${subSize}px 'Montserrat', Arial, sans-serif`;
-            ctx.letterSpacing = '0.07em';
-            ctx.fillStyle = 'rgba(30,30,30,0.52)';
-            lo.sb.forEach(line => { ctx.fillText(line.toUpperCase(), sL, y); y += subSize * 1.28; });
+            ctx.letterSpacing = '0.06em';
+            ctx.fillStyle = 'rgba(30,30,30,0.50)';
+            lo.sb.forEach((line, i) => {
+                ctx.fillText(line.toUpperCase(), sL, y);
+                if (i < lo.sb.length - 1) y += subSize * 1.25;
+            });
             ctx.letterSpacing = '0px';
 
-            // CTA button: sharp corners, tracked uppercase
-            y += subSize * 0.45;
+            // CTA button: sharp corners, moderate tracking
+            y += subSize * 0.48;
             ctx.font = `700 ${ctaSize}px 'Montserrat', Arial, sans-serif`;
-            ctx.letterSpacing = '0.1em';
-            const ctaPad = Math.round(ctaSize * 1.0);
+            ctx.letterSpacing = '0.05em';
+            const ctaPad = Math.round(ctaSize * 1.25);
             const ctaBtnW = ctx.measureText(textData.cta.toUpperCase()).width + ctaPad * 2;
             drawRoundRect(ctx, sL, y, ctaBtnW, lo.cH, 0, '#1A1A1A');
             ctx.fillStyle = '#FFFFFF';
