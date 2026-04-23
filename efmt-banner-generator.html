@@ -907,21 +907,21 @@
             let hlSize, subSize, ctaSize, maxW;
             if (ratio >= 3.5) {
                 // Lander Desktop 2000×490
-                hlSize  = Math.round(sH * 0.28);
-                subSize = Math.round(sH * 0.14);
-                ctaSize = Math.round(sH * 0.12);
+                hlSize  = Math.round(sH * 0.22);
+                subSize = Math.round(sH * 0.11);
+                ctaSize = Math.round(sH * 0.095);
                 maxW    = width * 0.38;
             } else if (ratio >= 1.4) {
                 // Desktop 1180×640 · Mobile 768×480 · Lander Mobile 1100×595
-                hlSize  = Math.round(sH * 0.24);
-                subSize = Math.round(sH * 0.12);
-                ctaSize = Math.round(sH * 0.105);
+                hlSize  = Math.round(sH * 0.17);
+                subSize = Math.round(sH * 0.085);
+                ctaSize = Math.round(sH * 0.078);
                 maxW    = width * 0.48;
             } else {
                 // Newsletter 800×667
-                hlSize  = Math.round(sH * 0.21);
-                subSize = Math.round(sH * 0.115);
-                ctaSize = Math.round(sH * 0.10);
+                hlSize  = Math.round(sH * 0.15);
+                subSize = Math.round(sH * 0.078);
+                ctaSize = Math.round(sH * 0.072);
                 maxW    = width * 0.82;
             }
 
@@ -934,11 +934,11 @@
                 const sb = wrapText(ctx, textData.subheadline.toUpperCase(), maxW * 0.88).slice(0, 2);
                 ctx.letterSpacing = '0px';
                 const cH = Math.round(cS * 1.9);
-                // No trailing leading on last line of each block
+                // No trailing leading on last line
                 const hlH = hl.length === 1 ? hS : (hl.length - 1) * hS * 1.12 + hS;
                 const sbH = sb.length === 1 ? sS : (sb.length - 1) * sS * 1.25 + sS;
-                // Gap hl→sub uses hlSize (need to clear descenders), sub→btn uses subSize
-                const totalH = hlH + hS * 0.42 + sbH + sS * 0.55 + cH;
+                // hl→sub: hlSize*0.75 clears descenders + breathing room; sub→btn: subSize*0.75
+                const totalH = hlH + hS * 0.75 + sbH + sS * 0.75 + cH;
                 return { hl, sb, cH, totalH };
             }
 
@@ -968,7 +968,7 @@
             });
 
             // Subheadline: light weight, tracked uppercase, muted
-            y += hlSize * 0.42;
+            y += hlSize * 0.75;
             ctx.font = `400 ${subSize}px 'Montserrat', Arial, sans-serif`;
             ctx.letterSpacing = '0.06em';
             ctx.fillStyle = 'rgba(30,30,30,0.50)';
@@ -979,7 +979,7 @@
             ctx.letterSpacing = '0px';
 
             // CTA button: sharp corners, moderate tracking
-            y += subSize * 0.55;
+            y += subSize * 0.75;
             ctx.font = `700 ${ctaSize}px 'Montserrat', Arial, sans-serif`;
             ctx.letterSpacing = '0.05em';
             const ctaPad = Math.round(ctaSize * 1.25);
