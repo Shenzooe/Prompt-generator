@@ -525,6 +525,48 @@
 
         .hidden { display: none; }
 
+        /* Prompt editor */
+        .prompt-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+        }
+        .prompt-hint {
+            font-size: 0.8rem;
+            color: var(--color-text-secondary);
+            margin-bottom: 0.75rem;
+        }
+        .prompt-textarea {
+            width: 100%;
+            padding: 10px 12px;
+            border: 0.5px solid var(--color-border);
+            border-radius: var(--radius-sm);
+            font-size: 0.8rem;
+            font-family: var(--font-body);
+            line-height: 1.6;
+            color: var(--color-text);
+            resize: vertical;
+            min-height: 130px;
+            outline: none;
+            background: var(--color-bg);
+            transition: border-color 0.2s;
+        }
+        .prompt-textarea:focus { border-color: #999; }
+        .reset-prompt-btn {
+            font-size: 0.75rem;
+            font-family: var(--font-body);
+            padding: 4px 10px;
+            border: 0.5px solid var(--color-border);
+            border-radius: var(--radius-sm);
+            background: transparent;
+            color: var(--color-text-secondary);
+            cursor: pointer;
+            transition: all 0.15s;
+            white-space: nowrap;
+        }
+        .reset-prompt-btn:hover { background: var(--color-bg); color: var(--color-text); }
+
         @media (max-width: 768px) {
             body { padding: 1rem 0.5rem; }
             .card { padding: 1.5rem 1rem; }
@@ -614,6 +656,16 @@
             </div>
         </div>
 
+        <!-- Prompt Editor -->
+        <div class="card" id="promptCard">
+            <div class="prompt-header">
+                <h2 class="card-title" style="margin-bottom:0">情境圖 Prompt</h2>
+                <button class="reset-prompt-btn" id="resetPromptBtn" type="button">↺ 重設</button>
+            </div>
+            <p class="prompt-hint">Imagen 4 將以此 prompt 生成情境圖，可直接編輯。上傳圖片時此欄位不生效。</p>
+            <textarea class="prompt-textarea" id="promptTextarea" placeholder="填寫 Theme 後自動產生..."></textarea>
+        </div>
+
         <!-- Generate Button -->
         <button class="generate-btn" id="generateBtn">✨ 生成情境圖 + 桌機版 Banner</button>
 
@@ -680,6 +732,8 @@
         const resultsPhase2   = document.getElementById('resultsPhase2');
         const galleryPhase2   = document.getElementById('galleryPhase2');
         const downloadAllBtn  = document.getElementById('downloadAllBtn');
+        const promptTextarea  = document.getElementById('promptTextarea');
+        const resetPromptBtn  = document.getElementById('resetPromptBtn');
 
         // Banner size configs
         const PHASE1_SIZES = [
@@ -706,6 +760,23 @@
             });
         });
 
+        // ── Prompt textarea: auto-populate on theme change ─────
+        document.getElementById('theme').addEventListener('input', (e) => {
+            const theme = e.target.value.trim();
+            promptTextarea.value = theme ? buildScenePrompt(theme) : '';
+        });
+
+        resetPromptBtn.addEventListener('click', () => {
+            const theme = document.getElementById('theme').value.trim();
+            promptTextarea.value = theme ? buildScenePrompt(theme) : '';
+        });
+
+        // Initialise with default theme value
+        (() => {
+            const theme = document.getElementById('theme').value.trim();
+            if (theme) promptTextarea.value = buildScenePrompt(theme);
+        })();
+
         // ── Airtable Validate (requires backend) ───────────────
         validateBtn.addEventListener('click', async () => {
             const promoId = promoIdInput.value.trim();
@@ -726,6 +797,7 @@
                 if (data.success) {
                     currentTextData = data.promo;
                     showPromoData(data.promo);
+                    if (data.promo.theme) promptTextarea.value = buildScenePrompt(data.promo.theme);
                 } else {
                     showError(validateError, data.error || '驗證失敗');
                 }
@@ -825,7 +897,7 @@
                 return [
                     `Professional editorial product photography for a ${theme} celebration. Color palette: ${detail.palette}.`,
                     `The scene features: ${detail.scene}.`,
-                    `COMPOSITION: The product arrangement fills the right two-thirds of the frame, with objects extending from the far right edge toward the center. The leftmost 35% of the image is a completely clean, empty expanse of bright white background — no objects, no shadows, pure negative space — to allow text overlay.`,
+                    `COMPOSITION: The product arrangement fills the right two-thirds of the frame, with objects extending from the far right edge toward the center. The leftmost 35% of the image is a completely clean, empty expanse of bright white background — no objects, no shadows, pure negative space — to allow text overlay. CRITICAL: Keep the entire product arrangement vertically compact and centered — all objects must fit within the center 50% of the image height, leaving empty neutral background in the top 25% and bottom 25% of the frame. The scene must remain fully visible when the image is cropped to an ultra-wide horizontal banner.`,
                     `Bright, high-key natural window lighting from the upper right. Soft shadows, shallow depth of field, magazine-quality sharpness on the products.`,
                     `No people. No food. No outdoor scenes. No text, watermarks, or logos. Photorealistic, ultra-high resolution.`
                 ].join(' ');
@@ -834,15 +906,13 @@
             return [
                 `Professional editorial product photography for a ${theme} celebration, featuring party and event decoration supplies in coordinated ${theme} colors.`,
                 `The scene includes: round banquet tables with themed tablecloths, balloon decorations in ${theme} colors, fabric backdrop draping, floral centerpieces, coordinated tableware, and ribbon accents — all products you would find at an upscale ${theme} party supply store.`,
-                `COMPOSITION: All products are grouped in the right two-thirds of the frame. The leftmost 35% of the image is a completely empty, bright white background — no objects — for text overlay.`,
+                `COMPOSITION: All products are grouped in the right two-thirds of the frame. The leftmost 35% of the image is a completely empty, bright white background — no objects — for text overlay. CRITICAL: Keep the entire product arrangement vertically compact and centered — all objects must fit within the center 50% of the image height, with empty neutral background at top and bottom 25% of frame. The scene must remain visible when cropped to an ultra-wide horizontal banner.`,
                 `Bright natural window lighting, soft shadows, shallow depth of field. Light, airy, high-key tone.`,
                 `No people. No food. No outdoor scenes. No text, watermarks, or logos. Photorealistic, high resolution.`
             ].join(' ');
         }
 
-        async function generateSceneImage(theme) {
-            const prompt = buildScenePrompt(theme);
-
+        async function generateSceneImage(prompt) {
             const res = await fetch('/api/generate-image', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -909,19 +979,19 @@
                 // Lander Desktop 2000×490
                 hlSize  = Math.round(sH * 0.22);
                 subSize = Math.round(sH * 0.11);
-                ctaSize = Math.round(sH * 0.095);
+                ctaSize = Math.round(sH * 0.074);
                 maxW    = width * 0.38;
             } else if (ratio >= 1.4) {
                 // Desktop 1180×640 · Mobile 768×480 · Lander Mobile 1100×595
                 hlSize  = Math.round(sH * 0.17);
                 subSize = Math.round(sH * 0.085);
-                ctaSize = Math.round(sH * 0.078);
+                ctaSize = Math.round(sH * 0.058);
                 maxW    = width * 0.48;
             } else {
                 // Newsletter 800×667
                 hlSize  = Math.round(sH * 0.15);
                 subSize = Math.round(sH * 0.078);
-                ctaSize = Math.round(sH * 0.072);
+                ctaSize = Math.round(sH * 0.054);
                 maxW    = width * 0.82;
             }
 
@@ -933,12 +1003,12 @@
                 ctx.letterSpacing = '0.06em';
                 const sb = wrapText(ctx, textData.subheadline.toUpperCase(), maxW * 0.88).slice(0, 2);
                 ctx.letterSpacing = '0px';
-                const cH = Math.round(cS * 1.9);
+                const cH = Math.round(cS * 1.65);
                 // No trailing leading on last line
                 const hlH = hl.length === 1 ? hS : (hl.length - 1) * hS * 1.12 + hS;
                 const sbH = sb.length === 1 ? sS : (sb.length - 1) * sS * 1.25 + sS;
-                // hl→sub: hlSize*0.75 clears descenders + breathing room; sub→btn: subSize*0.75
-                const totalH = hlH + hS * 0.75 + sbH + sS * 0.75 + cH;
+                // hl→sub: tight (pair), sub→btn: wide (separated)
+                const totalH = hlH + hS * 0.68 + sbH + sS * 1.5 + cH;
                 return { hl, sb, cH, totalH };
             }
 
@@ -967,8 +1037,8 @@
                 if (i < lo.hl.length - 1) y += hlSize * 1.12;
             });
 
-            // Subheadline: light weight, tracked uppercase, muted
-            y += hlSize * 0.75;
+            // Subheadline: light weight, tracked uppercase, muted — tight to headline (same group)
+            y += hlSize * 0.68;
             ctx.font = `400 ${subSize}px 'Montserrat', Arial, sans-serif`;
             ctx.letterSpacing = '0.06em';
             ctx.fillStyle = 'rgba(30,30,30,0.50)';
@@ -978,11 +1048,11 @@
             });
             ctx.letterSpacing = '0px';
 
-            // CTA button: sharp corners, moderate tracking
-            y += subSize * 0.75;
+            // CTA button: sharp corners, moderate tracking — visually separated from text group
+            y += subSize * 1.5;
             ctx.font = `700 ${ctaSize}px 'Montserrat', Arial, sans-serif`;
             ctx.letterSpacing = '0.05em';
-            const ctaPad = Math.round(ctaSize * 1.25);
+            const ctaPad = Math.round(ctaSize * 0.9);
             const ctaBtnW = ctx.measureText(textData.cta.toUpperCase()).width + ctaPad * 2;
             drawRoundRect(ctx, sL, y, ctaBtnW, lo.cH, 0, '#1A1A1A');
             ctx.fillStyle = '#FFFFFF';
@@ -1072,8 +1142,9 @@
                     updateProgress(20, '載入上傳的圖片...');
                     sceneDataUrl = await readFileAsDataURL(uploadedImage);
                 } else {
-                    updateProgress(15, '呼叫 Gemini Imagen 3 生成情境圖...');
-                    sceneDataUrl = await generateSceneImage(textData.theme);
+                    updateProgress(15, '呼叫 Gemini Imagen 4 生成情境圖...');
+                    const finalPrompt = promptTextarea.value.trim() || buildScenePrompt(textData.theme);
+                    sceneDataUrl = await generateSceneImage(finalPrompt);
                 }
 
                 sceneImageDataUrl = sceneDataUrl;

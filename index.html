@@ -26,6 +26,7 @@ h3 { font-size: 20px; font-weight: 500; margin-bottom: 1.25rem; }
 .custom-row input[type=text] { flex: 1; padding: 10px 14px; border: 0.5px solid #ccc; border-radius: 8px; font-size: 16px; outline: none; }
 .custom-row input[type=text]:focus { border-color: #999; }
 .prompt-box { background: #f5f4f0; border-radius: 6px; padding: 1rem; font-size: 14px; line-height: 1.8; color: #1a1a1a; white-space: pre-wrap; word-break: break-word; min-height: 110px; }
+textarea.prompt-box { width: 100%; border: none; outline: none; resize: vertical; font-family: inherit; cursor: text; }
 .copy-btn { margin-top: 8px; width: 100%; padding: 11px; font-size: 16px; cursor: pointer; background: #fff; border: 0.5px solid #ccc; border-radius: 6px; color: #1a1a1a; transition: background 0.12s; }
 .copy-btn:hover { background: #f0ede8; }
 .tabs { display: flex; margin-bottom: 1.25rem; border-bottom: 0.5px solid #e0ddd6; }
@@ -146,7 +147,7 @@ h3 { font-size: 20px; font-weight: 500; margin-bottom: 1.25rem; }
 <div id="tab-output" style="display:none">
   <div class="section-label">主 Prompt</div>
   <div class="card">
-    <div class="prompt-box" id="prompt-output">（請先在前幾步選擇設定）</div>
+    <textarea class="prompt-box" id="prompt-output" placeholder="（請先在前幾步選擇設定）"></textarea>
     <button class="copy-btn" onclick="copyText('prompt-output', this)">複製 Prompt</button>
   </div>
 
@@ -752,7 +753,7 @@ function buildPrompt(colorOverride) {
 
 function generatePrompt() {
   const prompt = buildPrompt(null);
-  document.getElementById('prompt-output').textContent = prompt;
+  document.getElementById('prompt-output').value = prompt;
 
   const allColors = [...state.colors, ...state.customColors];
   const batchWrap = document.getElementById('batch-btn-wrap');
@@ -810,7 +811,8 @@ function renderBatch(allColors) {
 
 // ── Clipboard ────────────────────────────────────────────────────────
 function copyText(id, btn) {
-  fallbackCopy(document.getElementById(id).textContent);
+  const el = document.getElementById(id);
+  fallbackCopy(el.tagName === 'TEXTAREA' ? el.value : el.textContent);
   const orig = btn.textContent;
   btn.textContent = '已複製！';
   setTimeout(() => btn.textContent = orig, 1500);
@@ -840,7 +842,7 @@ function cancelGenerate() {
 document.getElementById('img-model').addEventListener('change', cancelGenerate);
 
 async function generateImage() {
-  const fullPrompt = document.getElementById('prompt-output').textContent;
+  const fullPrompt = document.getElementById('prompt-output').value;
   if (!fullPrompt || fullPrompt.includes('請先在前幾步')) {
     alert('請先前往「輸出 Prompt」頁面產生 Prompt，再生成圖片。');
     return;
